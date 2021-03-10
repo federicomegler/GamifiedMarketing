@@ -12,9 +12,13 @@ import entities.User;
 public class UserService {
 	@PersistenceContext(unitName = "GamifiedMarketingEJB")
 	private EntityManager em;
+
+	public UserService() {}
 	
 	public User checkCredentials(String username, String password) throws Exception{
 		List<User> users = null;
+		System.out.println(username);
+		System.out.println(password);
 		try {
 			users = em.createNamedQuery("User.checkCredentials", User.class).setParameter(1, username).setParameter(2, password).getResultList();
 		} catch (Exception e) {

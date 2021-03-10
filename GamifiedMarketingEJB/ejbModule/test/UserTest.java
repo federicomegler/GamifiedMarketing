@@ -14,7 +14,7 @@ public class UserTest {
 		EntityManager em = emf.createEntityManager();
 		
 		//Testing the namede query checkCredentials
-		List<User> users = em.createNamedQuery("User.checkCredentials", User.class).setParameter(1, "fedemeg").setParameter(2, "federico").getResultList();
+		List<User> users = em.createNamedQuery("User.checkCredentials", User.class).setParameter(1, "a").setParameter(2, "a").getResultList();
 		System.out.println(users.get(0).getUsername());
 		
 		em.close();
