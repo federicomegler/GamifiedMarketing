@@ -16,9 +16,7 @@ public class UserService {
 	public User checkCredentials(String username, String password) throws Exception{
 		List<User> users = null;
 		try {
-			System.out.println("entro");
 			users = em.createNamedQuery("User.checkCredentials", User.class).setParameter(1, username).setParameter(2, password).getResultList();
-			System.out.println(users.isEmpty());
 		} catch (Exception e) {
 			// TODO: handle exception with a specific class
 			e.printStackTrace();

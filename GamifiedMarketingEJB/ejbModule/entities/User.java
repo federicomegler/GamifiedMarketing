@@ -7,18 +7,14 @@ import javax.persistence.Id;
 import javax.persistence.NamedQuery;
 
 @Entity
-@NamedQuery(name = "User.checkCredentials" , query = "SELECT u FROM User u WHERE u.username = ?1 and u.password = ?2")
+@NamedQuery(name = "User.checkCredentials", query = "SELECT u FROM User u WHERE u.username = ?1 and u.password = ?2")
 public class User implements Serializable{
 	private static final long serialVersionUID = 1L;
-
+	
 	@Id
 	private String username;
 	
 	private String password;
-	
-	
-	
-	
 	
 	
 	
