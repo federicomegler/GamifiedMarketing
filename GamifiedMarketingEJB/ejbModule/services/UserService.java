@@ -20,7 +20,7 @@ public class UserService {
 		System.out.println(username);
 		System.out.println(password);
 		try {
-			users = em.createNamedQuery("User.checkCredentials", User.class).setParameter(1, username).setParameter(2, password).getResultList();
+			users = em.createNamedQuery("User.checkCredentials", User.class).setParameter("name", username).setParameter("password", password).getResultList();
 		} catch (Exception e) {
 			// TODO: handle exception with a specific class
 			e.printStackTrace();
