@@ -1,6 +1,9 @@
 package controllers;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
@@ -36,7 +39,9 @@ public class CheckLogin extends HttpServlet {
 		String path = "";
 		User user = null;
 		try {
-			user = us.checkCredentials(request.getParameter("username"), request.getParameter("password"));
+			String salt = us.getSalt(request.getParameter("username"));
+			String password = get_SHA_512_Password(request.getParameter("password"), salt);
+			user = us.checkCredentials(request.getParameter("username"), password);
 		} catch (Exception e) {
 			// TODO: handle exception for specific class
 		}
@@ -49,5 +54,22 @@ public class CheckLogin extends HttpServlet {
 			response.sendRedirect(path);
 		}
 	}
-
+	
+	public String get_SHA_512_Password(String password, String salt) throws NoSuchAlgorithmException{
+	    String generatedPassword = null;
+	    
+        MessageDigest md = MessageDigest.getInstance("SHA-512");
+        md.update(salt.getBytes(StandardCharsets.UTF_8));
+        byte[] bytes = md.digest(password.getBytes(StandardCharsets.UTF_8));
+        StringBuilder sb = new StringBuilder();
+        
+        for(int i=0; i< bytes.length ;i++){
+            sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+        }
+        
+        generatedPassword = sb.toString();
+	    return generatedPassword;
+	}
 }
+
+

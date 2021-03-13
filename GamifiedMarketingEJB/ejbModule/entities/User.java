@@ -11,7 +11,8 @@ import javax.persistence.NamedQuery;
 @Entity
 @NamedQueries({
 		@NamedQuery(name = "User.checkCredentials", query = "SELECT u FROM User u WHERE (u.username = :name or u.email = :name) and u.password = :password"),
-		@NamedQuery(name = "User.existCredentials", query="SELECT u FROM User u WHERE (u.username = :username or u.email = :email)")
+		@NamedQuery(name = "User.existCredentials", query="SELECT u FROM User u WHERE (u.username = :username or u.email = :email)"),
+		@NamedQuery(name = "User.getSalt", query="SELECT u.salt FROM User u WHERE (u.username = :name or u.email = :name)")
 })
 @IdClass(UserId.class)
 public class User implements Serializable{
@@ -23,27 +24,30 @@ public class User implements Serializable{
 	private String email;
 	
 	private String password;
+	private String salt;
 	private int ban;
 	private int admin;
 	
+	
 	public User() {}
 	
-	public User(String username, String email, String password) {
+	public User(String username, String email, String password, String salt) {
 		this.username = username;
 		this.email = email;
-		this.password = password;
-		this.admin = 0;
-		this.ban = 0;
+		this.setPassword(password);
+		this.setSalt(salt);
+		this.setAdmin(0);
+		this.setBan(0);
 	}
 	
 	public String getUsername() {
 		return username;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public String getEmail() {
+		return email;
 	}
-
+	
 	public String getPassword() {
 		return password;
 	}
@@ -66,5 +70,13 @@ public class User implements Serializable{
 
 	public void setAdmin(int admin) {
 		this.admin = admin;
+	}
+
+	public String getSalt() {
+		return salt;
+	}
+
+	public void setSalt(String salt) {
+		this.salt = salt;
 	}
 }

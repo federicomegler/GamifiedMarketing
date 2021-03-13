@@ -40,10 +40,18 @@ public class UserService {
 		//TODO throw specific exception for multiple users
 	}
 	
-	public User registerUser(String username, String email, String password) throws Exception{
-		User user = new User(username, email, password);
+	public User registerUser(String username, String email, String password, String salt) throws Exception{
+		User user = new User(username, email, password, salt);
 		em.persist(user);
 		return user;
+	}
+	
+	public String getSalt(String name) {
+		List<String> salts = em.createNamedQuery("User.getSalt", String.class).setParameter("name", name).getResultList();
+		if(!salts.isEmpty()) {
+			return salts.get(0);
+		}
+		return null;
 	}
 	
 	

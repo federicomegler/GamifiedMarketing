@@ -1,6 +1,10 @@
 package controllers;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 import javax.ejb.EJB;
 import javax.servlet.ServletContext;
@@ -68,8 +72,10 @@ public class Register extends HttpServlet {
 			}
 			else {
 				User user = null;
+				String salt = generateSalt();
 				try {
-					user = us.registerUser(username, email, password);
+					String hash_password = get_SHA_512_Password(password, salt);
+					user = us.registerUser(username, email, hash_password, salt);
 				} catch (Exception e) {
 					// TODO: handle exception
 				}
@@ -91,5 +97,30 @@ public class Register extends HttpServlet {
 			// TODO: handle exception
 		}
 	}
-
+	
+	
+	// Storing the plain password in the DB is unsecure, so it's better to store the hash. 
+	// The salt is randomly generated and it's used to avoid that two identical password generates the same hash
+	public String generateSalt() {
+		SecureRandom random = new SecureRandom();
+		byte[] salt = new byte[64];
+		random.nextBytes(salt);
+		return salt.toString();
+	}
+	
+	public String get_SHA_512_Password(String password, String salt) throws NoSuchAlgorithmException{
+	    String generatedPassword = null;
+	    
+        MessageDigest md = MessageDigest.getInstance("SHA-512");
+        md.update(salt.getBytes(StandardCharsets.UTF_8));
+        byte[] bytes = md.digest(password.getBytes(StandardCharsets.UTF_8));
+        StringBuilder sb = new StringBuilder();
+        
+        for(int i=0; i< bytes.length ;i++){
+            sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+        }
+        
+        generatedPassword = sb.toString();
+	    return generatedPassword;
+	}
 }
