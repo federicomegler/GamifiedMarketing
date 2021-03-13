@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Register</title>
+</head>
+<body>
+	<div class="form">
+			<form action="Register" method="POST">
+			<input type="text" name="username" placeholder="username" required> <br>
+			<input type="email" name="email" placeholder="email" required><br>
+			<input type="password" name="password" placeholder="password" required><br>
+			<input type="password" name="confirmpassword" placeholder="confirm password" required> <br>
+			<input type="submit" value="Register"><br>
+		</form>
+	</div>
+	<div class="error">
+		<p th:if="${error == 1}"> Registration failed! Try again.</p>
+	</div>
+</body>
+</html>

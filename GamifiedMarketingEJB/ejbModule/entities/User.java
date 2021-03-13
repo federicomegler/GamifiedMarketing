@@ -5,10 +5,14 @@ import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 
 @Entity
-@NamedQuery(name = "User.checkCredentials", query = "SELECT u FROM User u WHERE (u.username = :name or u.email = :name) and u.password = :password")
+@NamedQueries({
+		@NamedQuery(name = "User.checkCredentials", query = "SELECT u FROM User u WHERE (u.username = :name or u.email = :name) and u.password = :password"),
+		@NamedQuery(name = "User.existCredentials", query="SELECT u FROM User u WHERE (u.username = :username or u.email = :email)")
+})
 @IdClass(UserId.class)
 public class User implements Serializable{
 	private static final long serialVersionUID = 1L;
@@ -22,7 +26,15 @@ public class User implements Serializable{
 	private int ban;
 	private int admin;
 	
+	public User() {}
 	
+	public User(String username, String email, String password) {
+		this.username = username;
+		this.email = email;
+		this.password = password;
+		this.admin = 0;
+		this.ban = 0;
+	}
 	
 	public String getUsername() {
 		return username;
