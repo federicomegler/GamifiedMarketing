@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
 <title>HomePage</title>
@@ -8,12 +8,19 @@
 <body>
 	<div class="navbar">
 		
-	  	<a href="Logout">Logout</a>
+	  	<a href="Logout" class="logout">Logout</a>
+	</div>
+	<img alt="Product Of The Day" th:src="*{'data:image/png;base64,'+ image}">
+	This is the home page!!!
+	
+	<div th:if="${admin == 1}">
+		You are the ADMIN!!!
+		<form action="CreateProduct" enctype="multipart/form-data" method="POST">
+			<input name="imagename" type="text" placeholder="Product name">
+			<input type="file" name="image">
+			<input type="submit" value="Add Product">
+		</form>
 	</div>
 	
-	<div class="main">
-	  <p>Some text some text some text some text..</p>
-	</div>
-	This is the home page!!!
 </body>
 </html>

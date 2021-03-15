@@ -1,42 +1,47 @@
 package controllers;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.ejb.EJB;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
 
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
-import entities.Product;
-import entities.User;
 import services.ProductService;
+import services.UserService;
+import utils.ImageUtils;
 
 /**
- * Servlet implementation class Home
+ * Servlet implementation class CreateImage
  */
-@WebServlet("/Home")
-public class Home extends HttpServlet {
+@WebServlet("/CreateProduct")
+@MultipartConfig
+public class CreateProduct extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private TemplateEngine templateEngine;
+	TemplateEngine templateEngine;
 	@EJB(name = "service/ProductService")
 	ProductService ps;
+       
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public Home() {
+    public CreateProduct() {
         super();
         // TODO Auto-generated constructor stub
     }
-    
+
     public void init() throws ServletException {
 		ServletContext servletContext = getServletContext();
 		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
@@ -45,29 +50,36 @@ public class Home extends HttpServlet {
 		this.templateEngine.setTemplateResolver(templateResolver);
 		templateResolver.setSuffix(".html");
 	}
-
+    
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		response.getWriter().append("Served at: ").append(request.getContextPath());
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String path = "";
 		HttpSession session = request.getSession();
 		final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
-		if(session.isNew() || session.getAttribute("user") == null) {
-			path = getServletContext().getContextPath() + "/index.html";
-			response.sendRedirect(path);
-		}
-		else {
-			ctx.setVariable("admin", ((User)session.getAttribute("user")).getAdmin()); 
-			ctx.setVariable("image", ps.getProductOfTheDay().getImageData());
-			path = "/WEB-INF/Home.html";
+		String imageName = request.getParameter("imagename");
+		Part image = request.getPart("image");
+		InputStream imageData = image.getInputStream();
+		byte[] imageBytes = ImageUtils.readImage(imageData);
+		if(imageBytes.length == 0) {
+			ctx.setVariable("error", 1);
+			path = "WEB-INF/Home.html";
 			templateEngine.process(path, ctx, response.getWriter());
 		}
-	}
-
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
+		else {
+			ps.insertNewProduct(imageName, imageBytes);
+			path = "WEB-INF/Home.html";
+			templateEngine.process(path, ctx, response.getWriter());
+		}
 	}
 
 }

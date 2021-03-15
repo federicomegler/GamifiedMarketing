@@ -62,12 +62,14 @@ public class Register extends HttpServlet {
 		String password = StringEscapeUtils.escapeJava(request.getParameter("password"));
 		String confirm = StringEscapeUtils.escapeJava(request.getParameter("confirmpassword"));
 		
+		ServletContext servletContext = getServletContext();
+		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		try {
 			if(us.existCredentials(username, email) || !password.equals(confirm) || password.length() <= 8) {
 				String path = "/WEB-INF/Register.html";
 				request.setAttribute("error", 1);
-				ServletContext servletContext = getServletContext();
-				final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+				
+				
 				templateEngine.process(path, ctx, response.getWriter());
 			}
 			else {
@@ -82,9 +84,7 @@ public class Register extends HttpServlet {
 				
 				if(user == null) {
 					String path = "/WEB-INF/Register.html";
-					request.setAttribute("error", 1);
-					ServletContext servletContext = getServletContext();
-					final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+					ctx.setVariable("error", 1);
 					templateEngine.process(path, ctx, response.getWriter());
 				}
 				else {
