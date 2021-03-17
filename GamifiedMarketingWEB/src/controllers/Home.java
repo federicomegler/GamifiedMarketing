@@ -58,7 +58,7 @@ public class Home extends HttpServlet {
 			response.sendRedirect(path);
 		}
 		else {
-			ctx.setVariable("admin", ((User)session.getAttribute("user")).getAdmin()); 
+			ctx.setVariable("user", ((User)session.getAttribute("user"))); 
 			ctx.setVariable("image", ps.getProductOfTheDay().getImageData());
 			path = "/WEB-INF/Home.html";
 			templateEngine.process(path, ctx, response.getWriter());

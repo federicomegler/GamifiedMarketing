@@ -65,11 +65,9 @@ public class Register extends HttpServlet {
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		try {
-			if(us.existCredentials(username, email) || !password.equals(confirm) || password.length() <= 8) {
+			if(us.existCredentials(username, email) || !password.equals(confirm) || password.length() < 8) {
 				String path = "/WEB-INF/Register.html";
 				request.setAttribute("error", 1);
-				
-				
 				templateEngine.process(path, ctx, response.getWriter());
 			}
 			else {
