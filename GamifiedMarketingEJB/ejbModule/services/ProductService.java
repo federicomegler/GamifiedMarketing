@@ -16,7 +16,7 @@ public class ProductService {
 	
 	public Product getProductOfTheDay() {
 		Product product = null;
-		product = em.createNamedQuery("Product.getProductOfTheDay", Product.class).getSingleResult();
+		product = em.createNamedQuery("Product.getProductOfTheDay", Product.class).getResultList().get(0);
 		return product;
 	}
 	

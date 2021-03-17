@@ -18,7 +18,9 @@ import javax.persistence.TemporalType;
 import java.util.Base64;
 
 @Entity
-@NamedQueries({@NamedQuery(name = "Product.getProductOfTheDay", query = "SELECT p FROM Product p WHERE p.date = (SELECT MAX(p1.date) FROM Product p1)")})
+@NamedQueries({
+	@NamedQuery(name = "Product.getProductOfTheDay", query = "SELECT p FROM Product p WHERE p.date = (SELECT MAX(p1.date) FROM Product p1)")
+	})
 public class Product implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
