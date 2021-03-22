@@ -72,12 +72,14 @@ public class CreateProduct extends HttpServlet {
 		byte[] imageBytes = ImageUtils.readImage(imageData);
 		if(imageBytes.length == 0) {
 			ctx.setVariable("error", 1);
+			ctx.setVariable("user", session.getAttribute("user"));
 			path = "WEB-INF/Home.html";
 			templateEngine.process(path, ctx, response.getWriter());
 		}
 		else {
 			ps.insertNewProduct(imageName, imageBytes);
-			path = "WEB-INF/Home.html";
+			ctx.setVariable("user", session.getAttribute("user"));
+			path = "Home";
 			templateEngine.process(path, ctx, response.getWriter());
 		}
 	}

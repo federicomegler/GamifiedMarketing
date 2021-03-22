@@ -34,7 +34,7 @@ public class Product implements Serializable{
 	@Lob
 	private byte[] image;
 
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	Date date;
 	
 	
