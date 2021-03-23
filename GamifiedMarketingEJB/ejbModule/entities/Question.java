@@ -22,7 +22,7 @@ public class Question implements Serializable{
 	private String question;
 	
 	@ManyToOne
-	@JoinColumn(name = "product")
+	@JoinColumn(name = "product_question")
 	private Product product;
 	
 	@OneToMany(mappedBy = "question")
