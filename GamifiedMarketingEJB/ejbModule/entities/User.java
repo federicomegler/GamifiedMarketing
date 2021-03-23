@@ -79,4 +79,6 @@ public class User implements Serializable{
 	public void setSalt(String salt) {
 		this.salt = salt;
 	}
+	
+	//dio bonino
 }
