@@ -14,6 +14,7 @@ import javax.persistence.ManyToOne;
 public class Answer implements Serializable{
 	private static final long serialVersionUID = 1L;
 
+	//commento
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
