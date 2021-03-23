@@ -1,12 +1,13 @@
 package entities;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.IdClass;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 
 @Entity
 @NamedQueries({
@@ -14,20 +15,29 @@ import javax.persistence.NamedQuery;
 		@NamedQuery(name = "User.existCredentials", query="SELECT u FROM User u WHERE (u.username = :username or u.email = :email)"),
 		@NamedQuery(name = "User.getSalt", query="SELECT u.salt FROM User u WHERE (u.username = :name or u.email = :name)")
 })
-@IdClass(UserId.class)
 public class User implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	@Id
 	private String username;
-	@Id
-	private String email;
 	
+	private String email;
 	private String password;
 	private String salt;
 	private int ban;
 	private int admin;
 	
+	@OneToMany(mappedBy = "user")
+	private List<Answer> answers;
+	
+	@OneToMany(mappedBy = "user")
+	private List<StatisticalAnswer> statistical_answers;
+	
+	@OneToMany(mappedBy = "user")
+	private List<Review> reviews;
+	
+	@OneToMany(mappedBy = "user")
+	private List<Log> logs;
 	
 	public User() {}
 	
@@ -79,6 +89,4 @@ public class User implements Serializable{
 	public void setSalt(String salt) {
 		this.salt = salt;
 	}
-	
-	//dio bonino
 }

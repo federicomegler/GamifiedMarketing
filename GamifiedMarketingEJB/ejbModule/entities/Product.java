@@ -2,6 +2,7 @@ package entities;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Basic;
 import javax.persistence.Entity;
@@ -12,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -36,6 +38,15 @@ public class Product implements Serializable{
 
 	@Temporal(TemporalType.TIMESTAMP)
 	Date date;
+	
+	@OneToMany(mappedBy = "product")
+	private List<Question> questions;
+	
+	@OneToMany(mappedBy = "product")
+	private List<Review> reviews;
+	
+	@OneToMany(mappedBy = "product")
+	private List<StatisticalAnswer> statistical_answers;
 	
 	
 	public Date getDate() {
