@@ -50,6 +50,9 @@ public class Home extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		//prova commit
+		
 		String path = "";
 		HttpSession session = request.getSession();
 		final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
