@@ -24,6 +24,6 @@ public class Log implements Serializable{
 	private Date date;
 	
 	@ManyToOne
-	@JoinColumn(name = "user")
+	@JoinColumn(name = "user_date")
 	private User user;
 }

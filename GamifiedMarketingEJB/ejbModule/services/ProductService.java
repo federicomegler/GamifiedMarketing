@@ -20,12 +20,13 @@ public class ProductService {
 		return product;
 	}
 	
-	public void insertNewProduct(String name, byte[] image) {
+	public void insertNewProduct(String name, byte[] image, String ean) {
 		Product product = new Product();
 		Date date = new Date(System.currentTimeMillis());
 		product.setName(name);
 		product.setDate(date);
 		product.setImage(image);
+		product.setEan(ean);
 		em.persist(product);
 	}
 }

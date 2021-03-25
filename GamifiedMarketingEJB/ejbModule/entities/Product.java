@@ -36,18 +36,21 @@ public class Product implements Serializable{
 	@Lob
 	private byte[] image;
 
-	@Temporal(TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.DATE)
 	Date date;
 	
 	@OneToMany(mappedBy = "product")
 	private List<Question> questions;
 	
 	@OneToMany(mappedBy = "product")
-	private List<Review> reviews;
-	
-	@OneToMany(mappedBy = "product")
 	private List<StatisticalAnswer> statistical_answers;
 	
+	private String ean;
+	
+	
+	public int getId() {
+		return id;
+	}
 	
 	public Date getDate() {
 		return date;
@@ -75,6 +78,14 @@ public class Product implements Serializable{
 	
 	public String getImageData() {
 		return Base64.getMimeEncoder().encodeToString(this.image);
+	}
+
+	public String getEan() {
+		return ean;
+	}
+
+	public void setEan(String ean) {
+		this.ean = ean;
 	}
 	
 }

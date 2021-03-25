@@ -9,5 +9,8 @@
 		<class>entities.Review</class>
 		<class>entities.StatisticalAnswer</class>
 		<class>entities.User</class>
+		<properties>
+			<property name="eclipselink.logging.level" value="FINE" />
+		</properties>
 	</persistence-unit>
 </persistence>

@@ -10,8 +10,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 
 @Entity
+@NamedQuery(name = "Review.getReviewsOfProductOfTheDay", query = "SELECT r FROM Review r WHERE r.ean = (SELECT p.ean FROM Product p WHERE p.date = CURRENT_DATE)")
 public class Review implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
@@ -25,9 +27,7 @@ public class Review implements Serializable{
 	@JoinColumn(name = "user")
 	private User user;
 	
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-	@JoinColumn(name = "product")
-	private Product product;
+	private String ean;
 	
 	public String getContent() {
 		return content;
@@ -35,5 +35,21 @@ public class Review implements Serializable{
 
 	public void setContent(String content) {
 		this.content = content;
+	}
+	
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public String getEan() {
+		return ean;
+	}
+
+	public void setEan(String ean) {
+		this.ean = ean;
 	}
 }
