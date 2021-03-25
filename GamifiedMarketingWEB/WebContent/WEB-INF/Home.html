@@ -17,7 +17,7 @@
 
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
-
+<link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
 </head>
 <!-- <body> -->
 <!-- 	<div class="navbar"> -->
@@ -231,7 +231,55 @@
                                 </div>
                             </div>
                         </div>
+                        
+                        <div class="col-lg-6 mb-4">
+                        	<div class="card shadow mb-4">
+                                									<!-- Card Header - Accordion -->
+                                <a href="#collapseCardReview" class="d-block card-header py-3" data-toggle="collapse"
+                                    role="button" aria-expanded="true" aria-controls="collapseCardAdmin">
+                                    <h6 class="m-0 font-weight-bold text-primary">Reviews</h6>
+                                </a>
+                                <!-- Card Content - Collapse -->
+                                <div class="collapse show" id="collapseCardReview">
+                                    <div class="card-body">
+	                                
+	                               	<th:block th:each="review : ${reviews}">
+	                                	<strong>[[${review.getUser().getUsername()}]]</strong><br>
+	                                	<p>[[${review.getContent()}]]</p>
+	                                </th:block>
+	                                
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">DataTables Example</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="reviewtable" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Usernameame</th>
+                                            <th>Review</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
+                        
+                    </div>
+                    
+                    
+                    
+                        <!-- Admin column -->
+                        
                     
 
                 </div>
@@ -284,9 +332,12 @@
 
     <!-- Core plugin JavaScript-->
     <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
 
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>
+    <script src="js/demo/reviewtable.js"></script>
 
 </body>
 

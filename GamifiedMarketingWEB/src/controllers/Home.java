@@ -19,6 +19,7 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 import entities.Product;
 import entities.User;
 import services.ProductService;
+import services.ReviewService;
 
 /**
  * Servlet implementation class Home
@@ -27,8 +28,10 @@ import services.ProductService;
 public class Home extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private TemplateEngine templateEngine;
-	@EJB(name = "service/ProductService")
+	@EJB(name = "services/ProductService")
 	ProductService ps;
+	@EJB(name = "services/ReviewService")
+	ReviewService rs;
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -61,8 +64,9 @@ public class Home extends HttpServlet {
 			response.sendRedirect(path);
 		}
 		else {
-			ctx.setVariable("user", ((User)session.getAttribute("user"))); 
-			ctx.setVariable("image", ps.getProductOfTheDay().getImageData());
+			Product prod = ps.getProductOfTheDay();
+			ctx.setVariable("user", ((User)session.getAttribute("user")));
+			ctx.setVariable("image", prod.getImageData());
 			path = "/WEB-INF/Home.html";
 			templateEngine.process(path, ctx, response.getWriter());
 		}

@@ -77,7 +77,7 @@ public class CreateProduct extends HttpServlet {
 			templateEngine.process(path, ctx, response.getWriter());
 		}
 		else {
-			ps.insertNewProduct(imageName, imageBytes);
+			ps.insertNewProduct(imageName, imageBytes, "123456");
 			ctx.setVariable("user", session.getAttribute("user"));
 			path = "Home";
 			templateEngine.process(path, ctx, response.getWriter());
