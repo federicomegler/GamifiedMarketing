@@ -15,22 +15,22 @@ import javax.servlet.http.HttpSession;
 import com.google.gson.Gson;
 
 import entities.Review;
-import services.ReviewService;
+import entities.User;
+import services.UserService;
 
 /**
- * Servlet implementation class GetReviews
+ * Servlet implementation class GetLeaderboard
  */
-@WebServlet("/GetReviews")
-public class GetReviews extends HttpServlet {
+@WebServlet("/GetLeaderboard")
+public class GetLeaderboard extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	@EJB(name = "services/ReviewService")
-	ReviewService rs;
+	@EJB(name = "services/UserService")
+	UserService us;
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public GetReviews() {
+    public GetLeaderboard() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
 	/**
@@ -39,17 +39,19 @@ public class GetReviews extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession();
 		if(session.isNew() || session.getAttribute("user") == null) {
-			String path = getServletContext().getContextPath() + "/index.html";
-			response.sendRedirect(path);
+			String path = getServletContext().getContextPath();
+			response.sendRedirect(path + "/index.html");
 		}
-		else {
-			List<Review> reviews = rs.getReviewsOfProductOfTheDay();
+		else{
+			List<User> users = us.getLeaderboard();
 			List<List<String>> table = new ArrayList<>();
 		    
-			for(Review r : reviews) {
+			for(int i=0; i<users.size(); ++i) {
 				List<String> elements = new ArrayList<String>();
-				elements.add(r.getUser().getUsername());
-				elements.add(r.getContent());
+				elements.add(Integer.toString(i+1));
+				elements.add(users.get(i).getUsername());
+				System.out.println(users.get(i).getPoints());
+				elements.add(Integer.toString(users.get(i).getPoints()));
 				table.add(elements);
 			}
 			
@@ -64,7 +66,6 @@ public class GetReviews extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
 

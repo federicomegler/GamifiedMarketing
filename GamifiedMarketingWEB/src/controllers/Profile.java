@@ -1,10 +1,8 @@
 package controllers;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
-import javax.ejb.EJB;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -12,26 +10,37 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.google.gson.Gson;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.WebContext;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
-import entities.Review;
-import services.ReviewService;
+import entities.Product;
+import entities.User;
 
 /**
- * Servlet implementation class GetReviews
+ * Servlet implementation class Profile
  */
-@WebServlet("/GetReviews")
-public class GetReviews extends HttpServlet {
+@WebServlet("/Profile")
+public class Profile extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	@EJB(name = "services/ReviewService")
-	ReviewService rs;
+    private TemplateEngine templateEngine;
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public GetReviews() {
+    public Profile() {
         super();
         // TODO Auto-generated constructor stub
     }
+    
+    public void init() throws ServletException {
+		ServletContext servletContext = getServletContext();
+		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
+		templateResolver.setTemplateMode(TemplateMode.HTML);
+		this.templateEngine = new TemplateEngine();
+		this.templateEngine.setTemplateResolver(templateResolver);
+		templateResolver.setSuffix(".html");
+	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -42,21 +51,12 @@ public class GetReviews extends HttpServlet {
 			String path = getServletContext().getContextPath() + "/index.html";
 			response.sendRedirect(path);
 		}
-		else {
-			List<Review> reviews = rs.getReviewsOfProductOfTheDay();
-			List<List<String>> table = new ArrayList<>();
-		    
-			for(Review r : reviews) {
-				List<String> elements = new ArrayList<String>();
-				elements.add(r.getUser().getUsername());
-				elements.add(r.getContent());
-				table.add(elements);
-			}
-			
-		    String json = new Gson().toJson(table);
-		    response.setContentType("application/json");
-		    response.setCharacterEncoding("UTF-8");
-		    response.getWriter().write(json);
+		else{
+			String path = "";
+			final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
+			ctx.setVariable("user", ((User)session.getAttribute("user")));
+			path = "/WEB-INF/Profile.html";
+			templateEngine.process(path, ctx, response.getWriter());
 		}
 	}
 
@@ -64,7 +64,6 @@ public class GetReviews extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
 

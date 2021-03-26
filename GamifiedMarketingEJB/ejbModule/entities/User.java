@@ -13,7 +13,8 @@ import javax.persistence.OneToMany;
 @NamedQueries({
 		@NamedQuery(name = "User.checkCredentials", query = "SELECT u FROM User u WHERE (u.username = :name or u.email = :name) and u.password = :password"),
 		@NamedQuery(name = "User.existCredentials", query="SELECT u FROM User u WHERE (u.username = :username or u.email = :email)"),
-		@NamedQuery(name = "User.getSalt", query="SELECT u.salt FROM User u WHERE (u.username = :name or u.email = :name)")
+		@NamedQuery(name = "User.getSalt", query="SELECT u.salt FROM User u WHERE (u.username = :name or u.email = :name)"),
+		@NamedQuery(name = "User.getLeaderboard", query = "SELECT u FROM User u ORDER BY u.points DESC")
 })
 public class User implements Serializable{
 	private static final long serialVersionUID = 1L;
@@ -26,6 +27,7 @@ public class User implements Serializable{
 	private String salt;
 	private int ban;
 	private int admin;
+	private int points;
 	
 	@OneToMany(mappedBy = "user")
 	private List<Answer> answers;
@@ -88,5 +90,13 @@ public class User implements Serializable{
 
 	public void setSalt(String salt) {
 		this.salt = salt;
+	}
+
+	public int getPoints() {
+		return points;
+	}
+
+	public void setPoints(int points) {
+		this.points = points;
 	}
 }

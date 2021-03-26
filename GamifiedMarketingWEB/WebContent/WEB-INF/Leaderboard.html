@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html>
 <head>
 <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Home</title>
+    <title>Leaderboard</title>
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -19,28 +19,8 @@
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
 <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
 </head>
-<!-- <body> -->
-<!-- 	<div class="navbar"> -->
-		
-<!-- 	  	<a href="Logout" class="logout">Logout</a> -->
-<!-- 	</div> -->
-<!-- 	<img alt="Product Of The Day" th:src="*{'data:image/png;base64,'+ image}"> -->
-<!-- 	This is the home page!!! -->
-	
-<!-- 	<div th:if="${admin == 1}"> -->
-<!-- 		You are the ADMIN!!! -->
-<!-- 		<form action="CreateProduct" enctype="multipart/form-data" method="POST"> -->
-<!-- 			<input name="imagename" type="text" placeholder="Product name"> -->
-<!-- 			<input type="file" name="image"> -->
-<!-- 			<input type="submit" value="Add Product"> -->
-<!-- 		</form> -->
-<!-- 	</div> -->
-	
-<!-- </body> -->
-
 <body id="page-top">
-
-    <!-- Page Wrapper -->
+	<!-- Page Wrapper -->
     <div id="wrapper">
 
         <!-- Sidebar -->
@@ -64,12 +44,12 @@
                     <span>HomePage</span></a>
             </li>
 
+            <!-- Divider -->
             
 
             <!-- Heading: Admin section -->
         <th:block th:if="${user.getAdmin() == 1}">
-        	<!-- Divider -->
-            <hr class="sidebar-divider">
+        	<hr class="sidebar-divider">
             <div class="sidebar-heading">
                 Admin settings
             </div>
@@ -80,20 +60,14 @@
 	        </li>
 	        
 	        </th:block>
-	        
 	        <hr class="sidebar-divider">
-	        
-	        <div class="sidebar-heading">
-                Information
-            </div>
-	        
 	        <li class="nav-item">
                 <a class="nav-link" href="GoToLeaderboard">
                     <i class="fas fa-fw fa-list-ol"></i>
                     <span>Leaderboard</span></a>
             </li>
-            
-            <hr class="sidebar-divider">
+	        
+	        <hr class="sidebar-divider">
 		<!-- Sidebar Toggler (Sidebar) -->
             <div class="text-center d-none d-md-inline">
                 <button class="rounded-circle border-0" id="sidebarToggle"></button>
@@ -157,47 +131,35 @@
 
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
-
-                    <div class="row">
-                        <div class="col-lg-6 mb-4">
-
-                            <!-- Illustrations -->
-                            <div class="card shadow mb-4">
-                                <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Product of the day</h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="text-center">
-                                        <img class="img-fluid px-3 px-sm-4 mt-3 mb-4" style="width: 25rem;"
-                                            alt="Product Of The Day" th:src="*{'data:image/png;base64,'+ image}">
-                                    </div>
-                                    <p></p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6 mb-4">
-                        <div class="card shadow mb-4">
+                    <!-- Leaderboard  -->
+                    <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Product reviews</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">Leaderboard</h6>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-bordered" id="reviewtable" width="100%" cellspacing="0">
+                                <table class="table table-bordered" id="leaderboard" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
+                                            <th>Position</th>
                                             <th>Username</th>
-                                            <th>Review</th>
+                                            <th>Points</th>
                                         </tr>
                                     </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Position</th>
+                                            <th>Username</th>
+                                            <th>Points</th>
+                                        </tr>
+                                    </tfoot>
                                     <tbody>
+                                        
                                     </tbody>
                                 </table>
                             </div>
                         </div>
-                    	</div>
-                    	</div>
                     </div>
-                    
                     
                 </div>
                 <!-- /.container-fluid -->
@@ -254,8 +216,6 @@
 
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>
-    <script src="js/demo/reviewtable.js"></script>
-
+    <script src="js/demo/leaderboardtable.js"></script>
 </body>
-
 </html>

@@ -6,6 +6,9 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
+
 import entities.User;
 
 @Stateless
@@ -67,5 +70,10 @@ public class UserService {
 			return false;
 		}
 		return true;
+	}
+	
+	public List<User> getLeaderboard(){
+		List<User> users = em.createNamedQuery("User.getLeaderboard", User.class).setHint(QueryHints.REFRESH, HintValues.TRUE).getResultList();
+		return users;
 	}
 }
