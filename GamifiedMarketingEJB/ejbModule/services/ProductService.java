@@ -1,7 +1,7 @@
 package services;
 
-import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -15,9 +15,12 @@ public class ProductService {
 	EntityManager em;
 	
 	public Product getProductOfTheDay() {
-		Product product = null;
-		product = em.createNamedQuery("Product.getProductOfTheDay", Product.class).getResultList().get(0);
-		return product;
+		List<Product> products;
+		products = em.createNamedQuery("Product.getProductOfTheDay", Product.class).getResultList();
+		if(products.isEmpty())
+			return null;
+		else
+			return products.get(0);
 	}
 	
 	public void insertNewProduct(String name, byte[] image, String ean) {

@@ -29,9 +29,9 @@ public class Home extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private TemplateEngine templateEngine;
 	@EJB(name = "services/ProductService")
-	ProductService ps;
+	private ProductService ps;
 	@EJB(name = "services/ReviewService")
-	ReviewService rs;
+	private ReviewService rs;
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -65,10 +65,20 @@ public class Home extends HttpServlet {
 		}
 		else {
 			Product prod = ps.getProductOfTheDay();
-			ctx.setVariable("user", ((User)session.getAttribute("user")));
-			ctx.setVariable("image", prod.getImageData());
-			path = "/WEB-INF/Home.html";
-			templateEngine.process(path, ctx, response.getWriter());
+			if(prod == null) {
+				ctx.setVariable("user", ((User)session.getAttribute("user")));
+				ctx.setVariable("noproductfound", 1);
+				path = "/WEB-INF/Home.html";
+				templateEngine.process(path, ctx, response.getWriter());
+			}
+			else {
+				ctx.setVariable("user", ((User)session.getAttribute("user")));
+				ctx.setVariable("image", prod.getImageData());
+				ctx.setVariable("noproductfound", 0);
+				ctx.setVariable("ean", prod.getEan());
+				path = "/WEB-INF/Home.html";
+				templateEngine.process(path, ctx, response.getWriter());
+			}
 		}
 	}
 

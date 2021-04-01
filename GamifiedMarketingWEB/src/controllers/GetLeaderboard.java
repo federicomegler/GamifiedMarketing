@@ -25,7 +25,7 @@ import services.UserService;
 public class GetLeaderboard extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	@EJB(name = "services/UserService")
-	UserService us;
+	private UserService us;
     /**
      * @see HttpServlet#HttpServlet()
      */

@@ -4,12 +4,17 @@ import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
+import javax.security.auth.login.CredentialException;
 
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
 
 import entities.User;
+import exceptions.CredentialsException;
+import exceptions.RegistrationException;
 
 @Stateless
 public class UserService {
@@ -18,19 +23,13 @@ public class UserService {
 
 	public UserService() {}
 	
-	public User checkCredentials(String name, String password) throws Exception{
+	public User checkCredentials(String name, String password) throws CredentialException, NonUniqueResultException{
 		List<User> users = null;
-		System.out.println(name);
-		System.out.println(password);
+		
 		try {
 			users = em.createNamedQuery("User.checkCredentials", User.class).setParameter("name", name).setParameter("password", password).getResultList();
-		} catch (Exception e) {
-			// TODO: handle exception with a specific class
-			e.printStackTrace();
-		}
-		if(users == null) {
-			System.out.println("error");
-			return null;
+		} catch (PersistenceException e) {
+			throw new CredentialException("Failed to login");
 		}
 		if(users.isEmpty()) {
 			return null;
@@ -38,15 +37,19 @@ public class UserService {
 		else if(users.size() == 1) {
 			return users.get(0);
 		}
-		existCredentials(password, password);
-		throw new Exception();
-		//TODO throw specific exception for multiple users
+		throw new NonUniqueResultException("More than one user registered with same credentials");
 	}
 	
-	public User registerUser(String username, String email, String password, String salt) throws Exception{
-		User user = new User(username, email, password, salt);
-		em.persist(user);
-		return user;
+	public User registerUser(String username, String email, String password, String salt) throws RegistrationException{
+		try {
+			User user = new User(username, email, password, salt);
+			em.persist(user);
+			return user;
+		}
+		catch(PersistenceException e) {
+			throw new RegistrationException("Registration failed");
+		}
+		
 	}
 	
 	public String getSalt(String name) {
@@ -59,12 +62,12 @@ public class UserService {
 	
 	
 	//This method is used by Register servlet in order to reject registretions with an existing username or email (avoid rise of exception for primary key)	
-	public boolean existCredentials(String username, String email) throws Exception{
+	public boolean existCredentials(String username, String email) throws CredentialsException{
 		List<User> users = null;
 		try {
 			users = em.createNamedQuery("User.existCredentials", User.class).setParameter("username", username).setParameter("email", email).getResultList();
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (PersistenceException e) {
+			throw new CredentialsException("Unable to register! Server error");
 		}
 		if(users.isEmpty()) {
 			return false;
@@ -75,5 +78,12 @@ public class UserService {
 	public List<User> getLeaderboard(){
 		List<User> users = em.createNamedQuery("User.getLeaderboard", User.class).setHint(QueryHints.REFRESH, HintValues.TRUE).getResultList();
 		return users;
+	}
+	
+	public User updatePassword(String password, String username) {
+		User user = em.find(User.class, username);
+		user.setPassword(password);
+		em.merge(user);
+		return user;
 	}
 }

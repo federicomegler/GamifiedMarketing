@@ -32,7 +32,7 @@ public class CreateProduct extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	TemplateEngine templateEngine;
 	@EJB(name = "service/ProductService")
-	ProductService ps;
+	private ProductService ps;
        
     /**
      * @see HttpServlet#HttpServlet()

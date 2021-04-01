@@ -78,7 +78,15 @@
 	            	<a class="nav-link" href="#"><i class="fas fa-fw fa-cart-plus"></i>
                     <span>AddProduct</span></a>
 	        </li>
+	        <li class="nav-item">
+	            	<a class="nav-link" href="#"><i class="fas fa-fw fa-trash-alt"></i>
+                    <span>Delete questionnaire</span></a>
+	        </li>
 	        
+	        <li class="nav-item">
+	            	<a class="nav-link" href="#"><i class="fas fa-fw fa-eye"></i>
+                    <span>Show questionnaires</span></a>
+	        </li>
 	        </th:block>
 	        
 	        <hr class="sidebar-divider">
@@ -168,10 +176,16 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="text-center">
-                                        <img class="img-fluid px-3 px-sm-4 mt-3 mb-4" style="width: 25rem;"
+                                    <th:block th:if="${noproductfound == 0}">
+                                    	 <img class="img-fluid px-3 px-sm-4 mt-3 mb-4" style="width: 25rem;"
                                             alt="Product Of The Day" th:src="*{'data:image/png;base64,'+ image}">
+                                    </th:block>
+                                    <th:block th:if="${noproductfound == 1}">
+                                    	 <img class="img-fluid px-3 px-sm-4 mt-3 mb-4" style="width: 25rem;"
+                                            alt="Product Not Found" src="img/prodnotfound.png">
+                                    </th:block>
+                                       
                                     </div>
-                                    <p></p>
                                 </div>
                             </div>
                         </div>
@@ -192,7 +206,13 @@
                                     <tbody>
                                     </tbody>
                                 </table>
-                            </div>
+                            </div>                            
+                            <hr>
+                           	<form class="user" action="Comment" method="POST">
+                            		<textarea name="review" class="form-control" maxlength="500" style="resize: none" placeholder="Write a comment here..." required></textarea><br>
+                            		<input type="text" th:value="${ean}" name="ean" hidden="true" required>
+                            		<input type="submit" class="btn btn-primary btn-user btn-block" value="Send review">
+                           	</form>                            
                         </div>
                     	</div>
                     	</div>

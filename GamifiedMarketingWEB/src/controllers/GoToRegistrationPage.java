@@ -20,7 +20,7 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 @WebServlet("/GoToRegistrationPage")
 public class GoToRegistrationPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-    TemplateEngine templateEngine;
+    private TemplateEngine templateEngine;
     /**
      * @see HttpServlet#HttpServlet()
      */

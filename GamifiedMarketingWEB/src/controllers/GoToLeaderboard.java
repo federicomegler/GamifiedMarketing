@@ -23,7 +23,7 @@ import entities.User;
 @WebServlet("/GoToLeaderboard")
 public class GoToLeaderboard extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	TemplateEngine templateEngine;
+	private TemplateEngine templateEngine;
        
     /**
      * @see HttpServlet#HttpServlet()

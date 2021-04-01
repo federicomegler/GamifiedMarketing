@@ -21,7 +21,10 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import entities.User;
+import exceptions.CredentialsException;
+import exceptions.RegistrationException;
 import services.UserService;
+import utils.LoginUtils;
 
 /**
  * Servlet implementation class Register
@@ -29,7 +32,7 @@ import services.UserService;
 @WebServlet("/Register")
 public class Register extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-    TemplateEngine templateEngine;
+    private TemplateEngine templateEngine;
     @EJB(name = "services/UserService")
     private UserService us;
     /**
@@ -65,19 +68,46 @@ public class Register extends HttpServlet {
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		try {
-			if(us.existCredentials(username, email) || !password.equals(confirm) || password.length() < 8) {
+			if(us.existCredentials(username, email)) {
 				String path = "/WEB-INF/Register.html";
-				request.setAttribute("error", 1);
+				ctx.setVariable("error", 1);
+				ctx.setVariable("errormsg", "Username or email already exists");
+				templateEngine.process(path, ctx, response.getWriter());
+			}
+			else if(!password.equals(confirm)) {
+				String path = "/WEB-INF/Register.html";
+				ctx.setVariable("error", 1);
+				ctx.setVariable("errormsg", "Passwords do not match");
+				templateEngine.process(path, ctx, response.getWriter());
+			}
+			else if(password.length() < 8) {
+				String path = "/WEB-INF/Register.html";
+				ctx.setVariable("error", 1);
+				ctx.setVariable("errormsg", "The password is too short (min 8 characters)");
+				templateEngine.process(path, ctx, response.getWriter());
+			}
+			else if(!LoginUtils.validate(email)) {
+				String path = "/WEB-INF/Register.html";
+				ctx.setVariable("error", 1);
+				ctx.setVariable("errormsg", "Invalid email");
 				templateEngine.process(path, ctx, response.getWriter());
 			}
 			else {
 				User user = null;
-				String salt = generateSalt();
+				String salt = LoginUtils.generateSalt();
 				try {
-					String hash_password = get_SHA_512_Password(password, salt);
+					String hash_password = LoginUtils.get_SHA_512_Password(password, salt);
 					user = us.registerUser(username, email, hash_password, salt);
-				} catch (Exception e) {
-					// TODO: handle exception
+				} catch (RegistrationException e) {
+					String path = "/WEB-INF/Register.html";
+					ctx.setVariable("error", 1);
+					ctx.setVariable("errormsg", e.getMessage());
+					templateEngine.process(path, ctx, response.getWriter());
+				} catch (NoSuchAlgorithmException e) {
+					String path = "/WEB-INF/Register.html";
+					ctx.setVariable("error", 1);
+					ctx.setVariable("errormsg", "Server error! Try again");
+					templateEngine.process(path, ctx, response.getWriter());
 				}
 				
 				if(user == null) {
@@ -91,34 +121,12 @@ public class Register extends HttpServlet {
 					response.sendRedirect(path);
 				}
 			}
-		} catch (Exception e) {
-			// TODO: handle exception
+		} 
+		catch (CredentialsException e) {
+			String path = "/WEB-INF/Register.html";
+			ctx.setVariable("error", 1);
+			ctx.setVariable("errormsg", e.getMessage());
+			templateEngine.process(path, ctx, response.getWriter());
 		}
-	}
-	
-	
-	// Storing the plain password in the DB is unsecure, so it's better to store the hash. 
-	// The salt is randomly generated and it's used to avoid that two identical password generates the same hash
-	public String generateSalt() {
-		SecureRandom random = new SecureRandom();
-		byte[] salt = new byte[64];
-		random.nextBytes(salt);
-		return salt.toString();
-	}
-	
-	public String get_SHA_512_Password(String password, String salt) throws NoSuchAlgorithmException{
-	    String generatedPassword = null;
-	    
-        MessageDigest md = MessageDigest.getInstance("SHA-512");
-        md.update(salt.getBytes(StandardCharsets.UTF_8));
-        byte[] bytes = md.digest(password.getBytes(StandardCharsets.UTF_8));
-        StringBuilder sb = new StringBuilder();
-        
-        for(int i=0; i< bytes.length ;i++){
-            sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
-        }
-        
-        generatedPassword = sb.toString();
-	    return generatedPassword;
 	}
 }
