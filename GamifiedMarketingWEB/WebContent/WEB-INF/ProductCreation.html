@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Add new product of the day</title>
+</head>
+<body>
+	<form  id="productForm" action="/AddProduct">
+		
+		<input type="text" id="prodName">
+		<br>
+		<input type="text" id="prodEAN">
+		<input type="date" id="data" min="2021-03-25">
+		<br>
+		<input type="file" id="prodImage" accept="image/png, image/jpeg, image/jpg">
+		
+
+		
+	</form>
+	
+	<button onclick="addQuestion()">aggiungi domanda </button>
+</body>
+</html>
+
+<script>
+var x=1;
+
+
+var addQuestion= function()
+{
+	var form= document.getElementById("productForm");
+	var newInput=document.createElement("input");
+	var newLabel= document.createElement("label")
+	newLabel.innerHTML="Question number "+x;
+	newLabel.setAttribute("for","Question"+x);
+	newInput.type="text";
+	newInput.id="Question"+x;
+	
+	
+	form.appendChild(newLabel);
+	form.appendChild(newInput);
+	x=x+1;
+}
+</script>
