@@ -60,8 +60,8 @@ public class Register extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String username = StringEscapeUtils.escapeJava(request.getParameter("username"));
-		String email = StringEscapeUtils.escapeJava(request.getParameter("email"));
+		String username = StringEscapeUtils.escapeHtml(request.getParameter("username"));
+		String email = StringEscapeUtils.escapeHtml(request.getParameter("email"));
 		String password = StringEscapeUtils.escapeJava(request.getParameter("password"));
 		String confirm = StringEscapeUtils.escapeJava(request.getParameter("confirmpassword"));
 		

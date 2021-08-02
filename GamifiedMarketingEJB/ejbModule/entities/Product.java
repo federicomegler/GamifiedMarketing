@@ -21,7 +21,8 @@ import java.util.Base64;
 
 @Entity
 @NamedQueries({
-	@NamedQuery(name = "Product.getProductOfTheDay", query = "SELECT p FROM Product p WHERE p.date = CURRENT_DATE")
+	@NamedQuery(name = "Product.getProductOfTheDay", query = "SELECT p FROM Product p WHERE p.date = CURRENT_DATE"),
+	@NamedQuery(name = "Product.getAllProducts", query = "SELECT p FROM Product p")
 	})
 public class Product implements Serializable{
 	private static final long serialVersionUID = 1L;

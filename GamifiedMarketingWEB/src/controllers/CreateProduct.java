@@ -19,6 +19,7 @@ import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
+import exceptions.ProductException;
 import services.ProductService;
 import services.UserService;
 import utils.ImageUtils;
@@ -77,7 +78,14 @@ public class CreateProduct extends HttpServlet {
 			templateEngine.process(path, ctx, response.getWriter());
 		}
 		else {
-			ps.insertNewProduct(imageName, imageBytes, "123456");
+			try {
+				ps.insertNewProduct(imageName, imageBytes, "123456");
+			} catch (ProductException e) {
+				ctx.setVariable("error", 1);
+				ctx.setVariable("user", session.getAttribute("user"));
+				path = "WEB-INF/Home.html";
+				templateEngine.process(path, ctx, response.getWriter());
+			}
 			ctx.setVariable("user", session.getAttribute("user"));
 			path = "Home";
 			templateEngine.process(path, ctx, response.getWriter());

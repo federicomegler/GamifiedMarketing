@@ -12,26 +12,25 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.StringEscapeUtils;
-
 import com.google.gson.Gson;
 
-import entities.Review;
-import exceptions.ReviewException;
-import services.ReviewService;
+import entities.Product;
+import entities.User;
+import exceptions.ProductException;
+import services.ProductService;
 
 /**
- * Servlet implementation class GetReviews
+ * Servlet implementation class getProductInfo
  */
-@WebServlet("/GetReviews")
-public class GetReviews extends HttpServlet {
+@WebServlet("/GetProducts")
+public class GetProducts extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	@EJB(name = "services/ReviewService")
-	private ReviewService rs;
+	@EJB(name = "services/ProductService")
+	private ProductService ps;
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public GetReviews() {
+    public GetProducts() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -42,31 +41,24 @@ public class GetReviews extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession();
 		if(session.isNew() || session.getAttribute("user") == null) {
-			String path = getServletContext().getContextPath() + "/index.html";
-			response.sendRedirect(path);
+			String path = getServletContext().getContextPath();
+			response.sendRedirect(path + "/index.html");
 		}
-		else {
-			List<Review> reviews = null;
-			List<List<String>> table = new ArrayList<>();
-			
-			
+		else{
+			List<Product> products = null;
 			try {
-				reviews = rs.getReviewsOfProductOfTheDay();
-			} catch (ReviewException e) {
-				List<String> elements = new ArrayList<String>();
-				elements.add("");
-				elements.add("Unable to load reviews");
-				table.add(elements);
-				String json = new Gson().toJson(table);
-			    response.setContentType("application/json");
-			    response.setCharacterEncoding("UTF-8");
-			    response.getWriter().write(json);
+				products = ps.getAllProducts();
+			} catch (ProductException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
+			List<List<String>> table = new ArrayList<>();
 		    
-			for(Review r : reviews) {
+			for(int i=0; i<products.size(); ++i) {
 				List<String> elements = new ArrayList<String>();
-				elements.add(r.getUser().getUsername());
-				elements.add(StringEscapeUtils.escapeHtml(r.getContent()));
+				elements.add(products.get(i).getName());
+				elements.add(products.get(i).getDate().toString());
+				elements.add(products.get(i).getEan());
 				table.add(elements);
 			}
 			

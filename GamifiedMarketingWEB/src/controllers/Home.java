@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -18,6 +19,7 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import entities.Product;
 import entities.User;
+import exceptions.ProductException;
 import services.ProductService;
 import services.ReviewService;
 
@@ -64,7 +66,15 @@ public class Home extends HttpServlet {
 			response.sendRedirect(path);
 		}
 		else {
-			Product prod = ps.getProductOfTheDay();
+			Product prod = null;
+			try {
+				prod = ps.getProductOfTheDay();
+			} catch (ProductException e) {
+				ctx.setVariable("user", ((User)session.getAttribute("user")));
+				ctx.setVariable("noproductfound", 1);
+				path = "/WEB-INF/Home.html";
+				templateEngine.process(path, ctx, response.getWriter());
+			}
 			if(prod == null) {
 				ctx.setVariable("user", ((User)session.getAttribute("user")));
 				ctx.setVariable("noproductfound", 1);
