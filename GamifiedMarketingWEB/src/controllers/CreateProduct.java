@@ -2,6 +2,9 @@ package controllers;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
 
 import javax.ejb.EJB;
 import javax.servlet.ServletContext;
@@ -67,28 +70,37 @@ public class CreateProduct extends HttpServlet {
 		String path = "";
 		HttpSession session = request.getSession();
 		final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
-		String imageName = request.getParameter("imagename");
-		Part image = request.getPart("image");
+		//String imageName = request.getParameter("imagename");
+		Part image = request.getPart("prodImage");
+		String prodName = request.getParameter("productName");
+		String EAN = request.getParameter("productEAN");
+		java.util.Date questionnaireDate= new java.util.Date();
+		
+		try {
+			questionnaireDate = new SimpleDateFormat("yyyy-MM-dd").parse(request.getParameter("date"));
+			
+		} catch (ParseException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		
 		InputStream imageData = image.getInputStream();
 		byte[] imageBytes = ImageUtils.readImage(imageData);
 		if(imageBytes.length == 0) {
-			ctx.setVariable("error", 1);
-			ctx.setVariable("user", session.getAttribute("user"));
-			path = "WEB-INF/Home.html";
-			templateEngine.process(path, ctx, response.getWriter());
+			response.sendRedirect("Home");
+			
 		}
 		else {
 			try {
-				ps.insertNewProduct(imageName, imageBytes, "123456");
+				ps.insertNewProduct(prodName, imageBytes, EAN, questionnaireDate);
 			} catch (ProductException e) {
 				ctx.setVariable("error", 1);
 				ctx.setVariable("user", session.getAttribute("user"));
 				path = "WEB-INF/Home.html";
 				templateEngine.process(path, ctx, response.getWriter());
 			}
-			ctx.setVariable("user", session.getAttribute("user"));
-			path = "Home";
-			templateEngine.process(path, ctx, response.getWriter());
+			response.sendRedirect("Home");
 		}
 	}
 

@@ -41,11 +41,11 @@ public class ProductService {
 			return products.get(0);
 	}
 	
-	public void insertNewProduct(String name, byte[] image, String ean) throws ProductException {
+	public void insertNewProduct(String name, byte[] image, String ean, java.util.Date date) throws ProductException {
 		
 		try {
 			Product product = new Product();
-			Date date = new Date(System.currentTimeMillis());
+			
 			product.setName(name);
 			product.setDate(date);
 			product.setImage(image);
