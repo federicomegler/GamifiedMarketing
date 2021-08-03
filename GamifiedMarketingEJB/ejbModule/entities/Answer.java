@@ -22,9 +22,17 @@ public class Answer implements Serializable{
 	private String content;
 	
 	@ManyToOne
-	@JoinColumn(name = "user")
-	private User user;
+	@JoinColumn(name = "user_answer")
+	private User user_answer;
 	
+	public User getUser() {
+		return user_answer;
+	}
+
+	public void setUser(User user) {
+		this.user_answer = user;
+	}
+
 	@ManyToOne
 	@JoinColumn(name = "question")
 	private Question question;

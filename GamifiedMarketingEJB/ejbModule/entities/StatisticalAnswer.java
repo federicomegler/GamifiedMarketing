@@ -27,7 +27,7 @@ public class StatisticalAnswer implements Serializable{
 	
 	@ManyToOne
 	@JoinColumn(name = "user")
-	private User user;
+	private User user_stat;
 	
 	
 	public int getAge() {

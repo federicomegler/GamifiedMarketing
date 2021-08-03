@@ -9,7 +9,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
+
+import entities.Answer;
 import entities.Product;
+import entities.Question;
+import entities.User;
 import exceptions.ProductException;
 
 @Stateless
@@ -55,12 +61,49 @@ public class ProductService {
 	public List<Product> getAllProducts() throws ProductException{
 		List<Product> products = new ArrayList<Product>();
 		try {
-			products = em.createNamedQuery("Product.getAllProducts", Product.class).getResultList();
+			products = em.createNamedQuery("Product.getAllProducts", Product.class).setHint(QueryHints.REFRESH, HintValues.TRUE).getResultList();
 		}
 		catch(PersistenceException e){
 			throw new ProductException("Unable to get products");
 		}
 		return products;
+	}
+	
+	
+	public List<String> getUserSubmit(int id) {
+		List<String> users = new ArrayList<String>();
+		
+		Product product = em.find(Product.class, id);
+		
+		
+		List<User> part = em.createQuery("SELECT DISTINCT(a.user_answer) FROM Answer a JOIN Question q ON (a.question = q) WHERE q.product = :prod", User.class).setParameter("prod", product).getResultList();
+		for(int j=0; j< part.size(); ++j) {
+			users.add(part.get(j).getUsername());
+		}
+		
+		/*
+		List<Question> questions = product.getQuestions();
+		for(int i=0; i<questions.size(); ++i) {
+			List<Answer> answers = questions.get(i).getAnswers();
+			for(int j=0; j< answers.size(); ++j) {
+				if(!users.contains(answers.get(j).getUser().getUsername())) {
+					users.add(answers.get(j).getUser().getUsername());
+				}
+			}
+		}*/
+		return users;
+	}
+	
+	public List<String> getUserCancelled(int id, List<String> usersSubmit){
+		List<User> users = new ArrayList<User>();
+		Product product = em.find(Product.class, id);
+		
+		users = em.createQuery("SELECT l.user_log FROM Log l WHERE l.product_log = :prod AND l.user_log NOT IN (SELECT DISTINCT(a.user_answer) FROM Answer a JOIN Question q ON (a.question = q) WHERE q.product = :prod)", User.class).setParameter("prod", product).getResultList();
+		List<String> usernames = new ArrayList<String>();
+		for(int i=0; i< users.size(); ++i) {
+			usernames.add(users.get(i).getUsername());
+		}
+		return usernames;
 	}
 	
 }

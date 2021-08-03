@@ -19,7 +19,7 @@ public class Question implements Serializable{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	
-	private String question;
+	private String content;
 	
 	@ManyToOne
 	@JoinColumn(name = "product_question")
@@ -28,11 +28,19 @@ public class Question implements Serializable{
 	@OneToMany(mappedBy = "question")
 	private List<Answer> answers;
 
-	public String getQuestion() {
-		return question;
+	public List<Answer> getAnswers() {
+		return answers;
 	}
 
-	public void setQuestion(String question) {
-		this.question = question;
+	public void setAnswers(List<Answer> answers) {
+		this.answers = answers;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
 	}
 }

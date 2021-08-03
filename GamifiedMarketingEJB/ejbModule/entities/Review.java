@@ -25,7 +25,7 @@ public class Review implements Serializable{
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "user")
-	private User user;
+	private User user_review;
 	
 	private String ean;
 	
@@ -38,11 +38,11 @@ public class Review implements Serializable{
 	}
 	
 	public User getUser() {
-		return user;
+		return user_review;
 	}
 
 	public void setUser(User user) {
-		this.user = user;
+		this.user_review = user;
 	}
 
 	public String getEan() {

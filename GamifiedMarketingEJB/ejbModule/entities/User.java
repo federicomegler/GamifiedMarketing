@@ -29,16 +29,16 @@ public class User implements Serializable{
 	private int admin;
 	private int points;
 	
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "user_answer")
 	private List<Answer> answers;
 	
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "user_stat")
 	private List<StatisticalAnswer> statistical_answers;
 	
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "user_review")
 	private List<Review> reviews;
 	
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "user_log")
 	private List<Log> logs;
 	
 	public User() {}

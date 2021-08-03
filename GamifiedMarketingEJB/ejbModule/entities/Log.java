@@ -20,10 +20,32 @@ public class Log implements Serializable{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	
-	@Temporal(TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.DATE)
 	private Date date;
 	
 	@ManyToOne
-	@JoinColumn(name = "user_date")
-	private User user;
+	@JoinColumn(name = "user_log")
+	private User user_log;
+	
+	@ManyToOne
+	@JoinColumn(name = "product_log")
+	private Product product_log;
+	
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
+	}
+
+	public User getUser_log() {
+		return user_log;
+	}
+
+	public void setUser_log(User user_log) {
+		this.user_log = user_log;
+	}
+
+	
 }

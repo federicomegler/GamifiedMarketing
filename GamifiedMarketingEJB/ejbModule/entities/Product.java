@@ -25,6 +25,14 @@ import java.util.Base64;
 	@NamedQuery(name = "Product.getAllProducts", query = "SELECT p FROM Product p")
 	})
 public class Product implements Serializable{
+	public List<Question> getQuestions() {
+		return questions;
+	}
+
+	public void setQuestions(List<Question> questions) {
+		this.questions = questions;
+	}
+
 	private static final long serialVersionUID = 1L;
 	
 	@Id

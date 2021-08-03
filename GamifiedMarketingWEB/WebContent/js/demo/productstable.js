@@ -9,13 +9,29 @@ $.get("GetProducts", function(responseJson) {    // Execute Ajax GET request on 
 			"columnDefs": [ {
             "targets": -1,
             "data": null,
-            "defaultContent": "<i class=\"fas fa-search\"></i>"
+            "defaultContent": "<a class=\"btn btn-primary btn-circle\"> <i style=\"color:white\" class=\"fas fa-search\"></i> </a>"
         	} ]
 		});
 		
-		$('#products tbody').on( 'click', 'i', function () {
+		$('#products tbody').on( 'click', 'a', function () {
         var data = table.row( $(this).parents('tr') ).data();
-        alert( data[0] +"'s salary is: "+ data[2] );
+		var id = data[0];
+		$.get("GetSubmitUser", {"id" : id} , function(responseJson) {
+        data = responseJson;
+		console.log(data);
+		$('#submit').DataTable().destroy();
+		$('#cancelled').DataTable().destroy();
+		
+		$('#submit').DataTable({
+			data: data['submit']
+			});
+		$('#cancelled').DataTable({
+			data: data['cancelled']
+		});
+		});
     } );
 		
-    });
+});
+
+
+
