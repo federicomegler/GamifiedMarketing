@@ -16,7 +16,7 @@ $.get("GetProducts", function(responseJson) {    // Execute Ajax GET request on 
 		$('#products tbody').on( 'click', 'a', function () {
         var data = table.row( $(this).parents('tr') ).data();
 		var id = data[0];
-		$.get("GetSubmitUser", {"id" : id} , function(responseJson) {
+		$.get("GetInfoUserProduct", {"id" : id} , function(responseJson) {
         data = responseJson;
 		console.log(data);
 		$('#submit').DataTable().destroy();
@@ -29,6 +29,11 @@ $.get("GetProducts", function(responseJson) {    // Execute Ajax GET request on 
 			data: data['cancelled']
 		});
 		});
+		
+		$.get("GetQNA", {"id" : id}, function(response){
+			console.log(response);
+		});
+		
     } );
 		
 });

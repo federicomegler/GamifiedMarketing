@@ -25,8 +25,8 @@ import services.ProductService;
 /**
  * Servlet implementation class GetSubmitUser
  */
-@WebServlet("/GetSubmitUser")
-public class GetSubmitUser extends HttpServlet {
+@WebServlet("/GetInfoUserProduct")
+public class GetInfoUserProduct extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	@EJB(name = "services/ProductService")
 	private ProductService ps;
@@ -34,7 +34,7 @@ public class GetSubmitUser extends HttpServlet {
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public GetSubmitUser() {
+    public GetInfoUserProduct() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -76,6 +76,8 @@ public class GetSubmitUser extends HttpServlet {
 			}
 			
 			tables.put("cancelled", tableCancelled);
+			
+			
 			
 		    String json = new Gson().toJson(tables);
 		    response.setContentType("application/json");

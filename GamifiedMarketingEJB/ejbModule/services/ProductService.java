@@ -81,16 +81,6 @@ public class ProductService {
 			users.add(part.get(j).getUsername());
 		}
 		
-		/*
-		List<Question> questions = product.getQuestions();
-		for(int i=0; i<questions.size(); ++i) {
-			List<Answer> answers = questions.get(i).getAnswers();
-			for(int j=0; j< answers.size(); ++j) {
-				if(!users.contains(answers.get(j).getUser().getUsername())) {
-					users.add(answers.get(j).getUser().getUsername());
-				}
-			}
-		}*/
 		return users;
 	}
 	
@@ -103,6 +93,7 @@ public class ProductService {
 		for(int i=0; i< users.size(); ++i) {
 			usernames.add(users.get(i).getUsername());
 		}
+		
 		return usernames;
 	}
 	
