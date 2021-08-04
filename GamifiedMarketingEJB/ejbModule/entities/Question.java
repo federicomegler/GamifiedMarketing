@@ -35,6 +35,11 @@ public class Question implements Serializable{
 	public void setAnswers(List<Answer> answers) {
 		this.answers = answers;
 	}
+	
+	public void setProductQuestion(Product p )
+	{
+		this.product=p;
+	}
 
 	public String getContent() {
 		return content;

@@ -24,6 +24,7 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import exceptions.ProductException;
 import services.ProductService;
+import services.QuestionService;
 import services.UserService;
 import utils.ImageUtils;
 
@@ -37,6 +38,8 @@ public class CreateProduct extends HttpServlet {
 	TemplateEngine templateEngine;
 	@EJB(name = "service/ProductService")
 	private ProductService ps;
+	@EJB(name="service/QuestionService")
+	private QuestionService qs;
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -74,6 +77,9 @@ public class CreateProduct extends HttpServlet {
 		Part image = request.getPart("prodImage");
 		String prodName = request.getParameter("productName");
 		String EAN = request.getParameter("productEAN");
+		String questionNumber=request.getParameter("questionNumber");
+		int qn=Integer.parseInt(questionNumber);
+		
 		java.util.Date questionnaireDate= new java.util.Date();
 		
 		try {
@@ -84,6 +90,7 @@ public class CreateProduct extends HttpServlet {
 			e1.printStackTrace();
 		}
 		
+		String content;
 		
 		InputStream imageData = image.getInputStream();
 		byte[] imageBytes = ImageUtils.readImage(imageData);
@@ -93,7 +100,14 @@ public class CreateProduct extends HttpServlet {
 		}
 		else {
 			try {
-				ps.insertNewProduct(prodName, imageBytes, EAN, questionnaireDate);
+				int id=ps.insertNewProduct(prodName, imageBytes, EAN, questionnaireDate);
+				
+				for(int i=1;i<=qn;i++)
+				{
+					content=request.getParameter("Question"+Integer.toString(i));
+					qs.insertQuestionOfProduct(content,id );
+					
+				}
 			} catch (ProductException e) {
 				ctx.setVariable("error", 1);
 				ctx.setVariable("user", session.getAttribute("user"));
