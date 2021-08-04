@@ -41,7 +41,7 @@ public class ProductService {
 			return products.get(0);
 	}
 	
-	public void insertNewProduct(String name, byte[] image, String ean, java.util.Date date) throws ProductException {
+	public int insertNewProduct(String name, byte[] image, String ean, java.util.Date date) throws ProductException {
 		
 		try {
 			Product product = new Product();
@@ -51,6 +51,8 @@ public class ProductService {
 			product.setImage(image);
 			product.setEan(ean);
 			em.persist(product);
+			em.flush();
+			return product.getId();
 		}
 		catch(PersistenceException e) {
 			throw new ProductException("Unable to get the product of the day");
