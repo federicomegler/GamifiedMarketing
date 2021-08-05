@@ -100,7 +100,8 @@ public class testDate extends HttpServlet {
 		{
 		List<Question> questions=qs.getQuestions(p.getId());
 		
-		ctx.setVariable("questions", questions);		
+		ctx.setVariable("questions", questions);
+		ctx.setVariable("nrQuestions", questions.size());
 		
 		String path = "/WEB-INF/Wizard.html";
 		templateEngine.process(path, ctx, response.getWriter());
