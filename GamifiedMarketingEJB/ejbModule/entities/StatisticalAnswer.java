@@ -48,4 +48,14 @@ public class StatisticalAnswer implements Serializable{
 	public void setExpertise_level(int expertise_level) {
 		this.expertise_level = expertise_level;
 	}
+	
+	public void setUser(User u)
+	{
+		this.user_stat=u;
+	}
+	
+	public void setProduct(Product p)
+	{
+		this.product=p;
+	}
 }
