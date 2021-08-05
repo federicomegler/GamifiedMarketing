@@ -45,7 +45,12 @@ public class Question implements Serializable{
 	{
 		this.product=p;
 	}
-
+	
+	public int getId()
+	{
+		return this.id;
+	}
+	
 	public String getContent() {
 		return content;
 	}

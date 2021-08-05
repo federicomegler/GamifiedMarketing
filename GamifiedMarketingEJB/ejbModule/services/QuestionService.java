@@ -17,6 +17,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
+
 import entities.Product;
 import entities.Question;
 import exceptions.ProductException;
@@ -69,5 +71,16 @@ public class QuestionService {
 		catch(PersistenceException e) {
 			throw new ProductException("Unable to get the product of the day");
 		}
+	}
+	
+	
+	public Boolean isValid(int questionID)
+	{
+		List<Question> result=em.createQuery("SELECT q from Question q where q.product in (select p from Product p where p.date=CURRENT_DATE) and q.id=:questionID",Question.class).setParameter("questionID", questionID).getResultList();
+		if(result.isEmpty())
+		{
+			return false;
+		}
+		return true;
 	}
 }

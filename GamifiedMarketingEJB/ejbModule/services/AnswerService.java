@@ -19,12 +19,12 @@ public class AnswerService {
 	@PersistenceContext(unitName = "GamifiedMarketingEJB")
 	EntityManager em;
 	
-	public void insertAnswer(String content, int questionID, int userID ) throws ProductException
+	public void insertAnswer(String content, int questionID, String username ) throws ProductException
 	{
 		try {
 			Answer a = new Answer();
 			Question q=em.find(Question.class, questionID);
-			User u= em.find(User.class, userID);
+			User u= em.find(User.class, username);
 			a.setContent(content);
 			a.setQuestion(q);
 			a.setUser(u);
