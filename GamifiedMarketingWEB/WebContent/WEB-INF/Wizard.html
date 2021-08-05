@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Questionnaire response</title>
+
+    <!-- Custom fonts for this template-->
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+	<link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+</head>
+<body >
+
+	<div class="container">
+
+        <!-- Outer Row -->
+        <div class="row justify-content-center">
+
+            <div class="col-xl-10 col-lg-12 col-md-9">
+
+                <div class="card o-hidden border-0 shadow-lg my-5">
+                    <div class="card-body p-0">
+                        <!-- Nested Row within Card Body -->
+                           <div class="p-5">
+                               <div class="text-center">
+                                   <h1 class="h4 text-gray-900 mb-4">Compile the questionnaire</h1>
+                               </div>
+                               
+                                
+                                
+                               <form class="user" id="questionnaireForm" name="questionnaireForm" action="addResponses" method="POST" >
+                                   <div id="part1">
+                                   		
+                                   		<div th:each="question, iterator: ${questions}" class="form-check">
+                                   	   		<label th:for="${'Question'+iterator.count}" th:text="${question.content}"></label>
+    								  	 	<input type="text" class="form-control" th:id="${'Question'+iterator.count}" th:name="${'Question'+iterator.count}" placeholder="type here...">
+    								   </div>
+    								   
+    								   <div class="form-check">
+                                   	   		<button type="button" class="btn btn-primary" onclick="goNext()">Next</button>
+    								   </div>
+    								   
+                                   </div >
+                                   <div id="part2" style="display:none">
+	                                   <p>Select Gender:</p>
+	                                   <div class="form-check">
+										  <input class="form-check-input" type="radio" name="genderRadio" id="maleRadio" value="M" checked >
+										  <label class="form-check-label" for="flexRadioDefault1">
+										   	 Male
+										  </label>
+									   </div>
+									   <div class="form-check">
+										  <input class="form-check-input" type="radio" name="genderRadio" id="femaleRadio" value="F">
+										  <label class="form-check-label" for="flexRadioDefault1">
+										   	 Female
+										  </label>
+									   </div>
+	                                   <div class="form-group">
+									    	<label for="expLevel">select your expertise level</label>
+										    <select class="form-control" id="expLevel" name="expLevel" required>
+										      <option>Low</option>
+										      <option>Medium</option>
+										      <option>High</option>
+										    </select>
+									  	</div>
+									  	<div class="form-group">
+									    	<label for="age">Age:</label>
+										    <input class="form-control" id="age" name="age" type=number min=16 max=90 required>
+									  	</div>
+									  	<div align="center">
+									  	<button type="button" class="btn btn-primary" onclick="goPrev()">Back</button>
+									  	<button type="button" class="btn btn-primary" onclick="cancelForm()">Delete</button>
+									  	<input type="submit" class="btn btn-primary" onclick="submitForm" value="invia">
+									  	</div>
+								  	</div>
+                               </form>
+                               
+                               
+                           </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+                            
+    
+	
+	
+</body>
+</html>
+
+<script>
+
+var submitForm=function()
+{
+	var form=document.getElementById("questionnaireForm");
+	form.submit();
+}
+
+var cancelForm= function()
+{
+	window.location.replace("Home");
+}
+
+var goPrev=function()
+{
+	var div1=document.getElementById("part1");
+	var div2=document.getElementById("part2");
+	
+	div2.style="display:none";
+	div1.style="display:blocks";
+}
+
+var goNext= function()
+{
+	var div1=document.getElementById("part1");
+	var div2=document.getElementById("part2");
+	
+	div2.style="display:block";
+	div1.style="display:none";
+}
+
+
+</script>

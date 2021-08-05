@@ -50,6 +50,14 @@ public class QuestionService {
 	}
 	
 	
+	public List<Question> getQuestions(int prodID)
+	{
+		List<Question> questions= new ArrayList<Question>();
+		Product product = em.find(Product.class, prodID);
+		questions = em.createNamedQuery("Question.getQuestionsByProductId", Question.class).setParameter("product", product).getResultList();
+		return questions;
+	}
+	
 	public void insertQuestionOfProduct(String content, int productID ) throws ProductException
 	{
 		try {
