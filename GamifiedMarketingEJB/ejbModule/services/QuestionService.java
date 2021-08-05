@@ -51,6 +51,7 @@ public class QuestionService {
 		return qna;
 	}
 	
+	
 	public List<Question> getQuestions(int prodID)
 	{
 		List<Question> questions= new ArrayList<Question>();
