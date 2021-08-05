@@ -49,6 +49,7 @@ public class QuestionService {
 		return qna;
 	}
 	
+	
 	public void insertQuestionOfProduct(String content, int productID ) throws ProductException
 	{
 		try {
