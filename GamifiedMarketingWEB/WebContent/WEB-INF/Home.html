@@ -56,7 +56,7 @@
             </div>
             
             <li class="nav-item">
-	            	<a class="nav-link" href="#"><i class="fas fa-fw fa-cart-plus"></i>
+	            	<a class="nav-link" href="GoToAddProduct"><i class="fas fa-fw fa-cart-plus"></i>
                     <span>AddProduct</span></a>
 	        </li>
 	        <li class="nav-item">
@@ -171,6 +171,11 @@
                                     </th:block>
                                        
                                     </div>
+                                    <th:block th:if="${noproductfound == 0}">
+                                    	<th:block th:if="${user.getBan() == 0}">
+                                    		<a href="GoToQuestionnaireOfTheDay" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-question text-white-50"></i> Go to questionnaire</a>
+                                    	</th:block>
+                                    </th:block>
                                 </div>
                             </div>
                         </div>

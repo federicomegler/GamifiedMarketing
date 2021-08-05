@@ -57,8 +57,10 @@ public class CheckLogin extends HttpServlet {
 		
 		try {
 			String salt = us.getSalt(request.getParameter("username"));
-			String password = LoginUtils.get_SHA_512_Password(request.getParameter("password"), salt);
-			user = us.checkCredentials(request.getParameter("username"), password);
+			if(salt != null) {
+				String password = LoginUtils.get_SHA_512_Password(request.getParameter("password"), salt);
+				user = us.checkCredentials(request.getParameter("username"), password);
+			}
 		} catch (CredentialException e) {
 			final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
 			path = "/index.html";
