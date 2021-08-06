@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Statistics</title>
+    <title>Home</title>
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -65,10 +65,9 @@
 	        </li>
 	        
 	        <li class="nav-item">
-	            	<a class="nav-link" href="#"><i class="fas fa-fw fa-eye"></i>
+	            	<a class="nav-link" href="ShowQuestionnaires"><i class="fas fa-fw fa-eye"></i>
                     <span>Show questionnaires</span></a>
 	        </li>
-	        
 	        <li class="nav-item">
 	            	<a class="nav-link" href="GoToStatisticsPage"><i class="fas fa-fw fa-chart-pie"></i>
                     <span>Show statistics</span></a>
@@ -151,11 +150,62 @@
 
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
+
                     <div class="row">
-                        
-                        
-                        
+                        <div class="col-lg-6 mb-4">
+
+                            <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Products</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="products" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>Date</th>
+                                            <th>EAN</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>Date</th>
+                                            <th>EAN</th>
+                                            <th></th>
+                                        </tr>
+                                    </tfoot>
+                                    <tbody>
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
+                            
+                        </div>
+                        <div class="col-lg-6 mb-4">
+                        	
+                        	<div class="card shadow mb-4">
+                                <!-- Card Header - Accordion -->
+                                <a href="#collapseCard3" class="d-block card-header py-3 collapsed" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseCard3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Questions</h6>
+                                </a>
+                                <!-- Card Content - Collapse -->
+                                <div class="collapse" id="collapseCard3">
+                                    <div class="card-body" id="question_space">
+                          
+                                    </div>
+                                </div>
+                            </div>
+                        	
+                        	
+                    	</div>
+                    </div>
+                    
+                    
                 </div>
                 <!-- /.container-fluid -->
 
@@ -211,7 +261,7 @@
 
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>
-    <script src="js/demo/reviewtable.js"></script>
-
+    <script src="js/demo/deleteQuestionnaireScript.js" type="text/javascript"></script>
 </body>
+
 </html>

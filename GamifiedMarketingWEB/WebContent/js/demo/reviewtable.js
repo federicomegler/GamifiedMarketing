@@ -5,6 +5,8 @@ $.get("GetReviews", function(responseJson) {    // Execute Ajax GET request on U
         data = responseJson;
 		console.log(data);
 		$('#reviewtable').DataTable({
-			data: data
+			data: data,
+			pageLength: 5,
+			lengthMenu: [[5,10,20], [5,10,20]]
 			});
     });

@@ -10,6 +10,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
@@ -18,6 +19,7 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import entities.Product;
 import entities.Question;
+import entities.User;
 import exceptions.ProductException;
 import services.ProductService;
 import services.QuestionService;
@@ -55,34 +57,38 @@ public class Questionnaire extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
 		Product p= null;
-		try {
-			p= ps.getProductOfTheDay();
-		} catch (ProductException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		HttpSession session = request.getSession();
+		String path = getServletContext().getContextPath() + "/index.html";
+		if(session.isNew() || session.getAttribute("user") == null) {
+			path = getServletContext().getContextPath() + "/index.html";
+			response.sendRedirect(path);
 		}
-		if(p==null)
-		{
-			response.getWriter().append("Served at: ").append("non ci sono prodotti del giorno");
-		}else
-		{
-			List<Question> questions=qs.getQuestions(p.getId());
+		else {
+			try {
+				p = ps.getProductOfTheDay();
+			} catch (ProductException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if(p == null) {
+				// TODO mettere reindirizzamento ad home con errore
+				response.getWriter().append("Served at: ").append("non ci sono prodotti del giorno");
+			}
+			else {
+				List<Question> questions = qs.getQuestions(p.getId());
+				
+				ctx.setVariable("questions", questions);
+				ctx.setVariable("nrQuestions", questions.size());
+				ctx.setVariable("user", (User)session.getAttribute("user"));
+				
+				path = "/WEB-INF/Wizard.html";
+				templateEngine.process(path, ctx, response.getWriter());
+			}
 			
-			ctx.setVariable("questions", questions);
-			ctx.setVariable("nrQuestions", questions.size());
 			
-			String path = "/WEB-INF/Wizard.html";
-			templateEngine.process(path, ctx, response.getWriter());
-			//response.getWriter().append("Served at: ").append(questions.get(1).getContent());
-		}
-		
-		/*String path = "/WEB-INF/Wizard.html";
-		RequestDispatcher rd=request.getRequestDispatcher(path);
-		rd.forward(request, response);*/
-		
+		}		
 	}
 
 	/**

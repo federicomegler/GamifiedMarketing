@@ -76,22 +76,16 @@ public class AddResponses extends HttpServlet {
 		}
 		String expL=request.getParameter("expLevel");
 		int expLev=0;
-		if(expL=="Low")
-		{
-			expLev=1;
+		
+		switch (expL) {
+		
+			case "Low": expLev = 1;
+			case "Medium": expLev = 2;
+			case "High" : expLev = 3;
+			default: expLev = 1; // TODO print errore;
+			
 		}
-		else if(expL=="Medium")
-		{
-			expLev=2;
-		}
-		else if(expL=="High")
-		{
-			expLev=3;
-		}
-		else
-		{
-			//print errore
-		}
+		
 		
 		try {
 			sas.insertStatisticalAnswer(Integer.parseInt(request.getParameter("age")), 
@@ -114,6 +108,9 @@ public class AddResponses extends HttpServlet {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}*/
+		
+		//TODO inserire nel log l'utente che ha commentato
+		
 	}
 
 	/**
