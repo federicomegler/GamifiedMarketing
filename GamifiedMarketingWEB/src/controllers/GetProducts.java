@@ -1,6 +1,7 @@
 package controllers;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,7 +59,7 @@ public class GetProducts extends HttpServlet {
 				List<String> elements = new ArrayList<String>();
 				elements.add(Integer.toString(products.get(i).getId()));
 				elements.add(products.get(i).getName());
-				elements.add(products.get(i).getDate().toString());
+				elements.add(new SimpleDateFormat("dd-MM-yyyy").format(products.get(i).getDate()));
 				elements.add(products.get(i).getEan());
 				table.add(elements);
 			}

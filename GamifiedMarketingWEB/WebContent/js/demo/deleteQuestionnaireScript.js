@@ -22,12 +22,25 @@ $.get("GetProducts", function(responseJson) {    // Execute Ajax GET request on 
 			map = response;
 			questions = Object.keys(map);
 			document.getElementById("question_space").innerHTML = "";
-			for(let i in questions){
-				quest = document.createElement('b');
-				quest.innerHTML = questions[i];
-				document.getElementById("question_space").appendChild(quest);
-				document.getElementById("question_space").appendChild(document.createElement('br'))
+			btn = document.getElementById("btn-delete");
+			if(questions.length == 0){
+				btn.style = "display:none;";
+				btn.href = "#";
 			}
+			else{
+				
+				for(let i in questions){
+					quest = document.createElement('b');
+					quest.innerHTML = questions[i];
+					document.getElementById("question_space").appendChild(quest);
+					document.getElementById("question_space").appendChild(document.createElement('br'));
+				}
+				
+				btn.style = "dysplay:block;";
+				btn.href = "DeleteQuestionnaire?id=" + id;
+			}
+			
+			
 			console.log(response);
 		});
 		

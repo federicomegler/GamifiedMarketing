@@ -2,6 +2,7 @@ package entities;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -30,7 +31,7 @@ public class Question implements Serializable{
 	@JoinColumn(name = "product_question")
 	private Product product;
 	
-	@OneToMany(mappedBy = "question")
+	@OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE)
 	private List<Answer> answers;
 
 	public List<Answer> getAnswers() {

@@ -22,6 +22,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.Embeddabl
 import entities.Product;
 import entities.Question;
 import exceptions.ProductException;
+import exceptions.QuestionException;
 
 @Stateless
 public class QuestionService {
@@ -52,16 +53,14 @@ public class QuestionService {
 	}
 	
 	
-	public List<Question> getQuestions(int prodID)
-	{
+	public List<Question> getQuestions(int prodID) {
 		List<Question> questions= new ArrayList<Question>();
 		Product product = em.find(Product.class, prodID);
 		questions = em.createNamedQuery("Question.getQuestionsByProductId", Question.class).setParameter("product", product).getResultList();
 		return questions;
 	}
 	
-	public void insertQuestionOfProduct(String content, int productID ) throws ProductException
-	{
+	public void insertQuestionOfProduct(String content, int productID ) throws ProductException {
 		try {
 			Question q = new Question();
 			Product p=em.find(Product.class, productID);
@@ -75,13 +74,25 @@ public class QuestionService {
 	}
 	
 	
-	public Boolean isValid(int questionID)
-	{
+	public Boolean isValid(int questionID) {
 		List<Question> result=em.createQuery("SELECT q from Question q where q.product in (select p from Product p where p.date=CURRENT_DATE) and q.id=:questionID",Question.class).setParameter("questionID", questionID).getResultList();
-		if(result.isEmpty())
-		{
+		if(result.isEmpty()) {
 			return false;
 		}
 		return true;
+	}
+	
+	public void deleteQuestionnaire(int prod_id) throws QuestionException {
+		List<Question> questions =  getQuestions(prod_id);
+		for(int i=0; i<questions.size(); ++i) {
+			try {
+				em.remove(questions.get(i));
+			}
+			catch(PersistenceException e) {
+				throw new QuestionException("Unable to remove question");
+			}
+		}
+		
+		return;
 	}
 }
