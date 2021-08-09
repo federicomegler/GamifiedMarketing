@@ -86,7 +86,7 @@ public class ProductService {
 		return users;
 	}
 	
-	public List<String> getUserCancelled(int id, List<String> usersSubmit){
+	public List<String> getUserCancelled(int id, List<String> usersSubmit) {
 		List<User> users = new ArrayList<User>();
 		Product product = em.find(Product.class, id);
 		
@@ -99,4 +99,13 @@ public class ProductService {
 		return usernames;
 	}
 	
+	public List<Product> getUserProducts(String username) {
+		List<Product> products = new ArrayList<Product>();
+		
+		User user = em.find(User.class, username);
+		
+		products = em.createQuery("SELECT DISTINCT(p) FROM Product p INNER JOIN p.questions q INNER JOIN q.answers a WHERE a.user_answer = :user", Product.class).setParameter("user", user).getResultList();
+		
+		return products;
+	}
 }

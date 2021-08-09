@@ -12,6 +12,8 @@ import javax.persistence.PersistenceContext;
 import entities.Answer;
 import entities.Product;
 import entities.Question;
+import entities.User;
+
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -29,7 +31,7 @@ public class QuestionService {
 	@PersistenceContext(unitName = "GamifiedMarketingEJB")
 	EntityManager em;
 	
-	public Map<String, Map<String,String>> getQuestionsByProductId(int id){
+	public Map<String, Map<String,String>> getQNAByProductId(int id){
 		Map<String, Map<String,String>> qna = new HashMap<String, Map<String,String>>();
 		List<Question> questions = new ArrayList<Question>();
 		
@@ -47,6 +49,28 @@ public class QuestionService {
 			}
 			System.out.println(questions.get(i).getContent());
 			qna.put(questions.get(i).getContent(), userAnswer);
+		}
+		
+		return qna;
+	}
+	
+	
+	public Map<String, String> getQNAByProductAndUser(int id, String username) {
+		Product product = em.find(Product.class, id);
+		Map<String,String> qna = new HashMap<String, String>();
+		
+		List<Question> questions = new ArrayList<Question>();
+		questions = em.createNamedQuery("Question.getQuestionsByProductId", Question.class).setParameter("product", product).getResultList();
+		
+		for(int i=0; i < questions.size(); ++i) {
+			List<Answer> answers = questions.get(i).getAnswers();
+			for(int j=0; j < answers.size(); ++j) {
+				if(answers.get(j).getUser().getUsername().equals(username)) {
+					System.out.println(j + answers.get(j).getUser().getUsername() + answers.get(j).getContent());
+					qna.put(questions.get(i).getContent(), answers.get(j).getContent());
+				}
+				
+			}
 		}
 		
 		return qna;
@@ -90,6 +114,25 @@ public class QuestionService {
 			}
 			catch(PersistenceException e) {
 				throw new QuestionException("Unable to remove question");
+			}
+		}
+		
+		return;
+	}
+	
+	public void deleteMyQuestionnaire(int prod_id, String username) throws QuestionException {
+		List<Question> questions =  getQuestions(prod_id);
+		for(int i=0; i<questions.size(); ++i) {
+			List<Answer> answers = questions.get(i).getAnswers();
+			for(int j=0; j<answers.size(); ++j) {
+				if(answers.get(j).getUser().getUsername().equals(username)) {
+					try {
+						em.remove(questions.get(i));
+					}
+					catch(PersistenceException e) {
+						throw new QuestionException("Unable to remove question");
+					}
+				}
 			}
 		}
 		

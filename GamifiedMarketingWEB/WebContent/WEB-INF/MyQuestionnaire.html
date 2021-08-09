@@ -11,13 +11,13 @@
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="css/error_banner.css" rel="stylesheet" type="text/css">
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
 
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
-    <link href="css/error_banner.css" rel="stylesheet">
 <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
 </head>
 <body id="page-top">
@@ -46,10 +46,7 @@
                     <span>HomePage</span></a>
             </li>
 
-            <li class="nav-item">
-	            	<a class="nav-link" href="GoToMyQuestionnaire"><i class="fab fa-fw fa-wpforms"></i>
-                    <span>My Questionnaires</span></a>
-	        </li>
+            
 
             <!-- Heading: Admin section -->
         <th:block th:if="${user.getAdmin() == 1}">
@@ -64,7 +61,7 @@
                     <span>AddProduct</span></a>
 	        </li>
 	        <li class="nav-item">
-	            	<a class="nav-link" href="GoToDeletionPage"><i class="fas fa-fw fa-trash-alt"></i>
+	            	<a class="nav-link" href="#"><i class="fas fa-fw fa-trash-alt"></i>
                     <span>Delete questionnaire</span></a>
 	        </li>
 	        
@@ -150,72 +147,84 @@
                     </ul>
 
                 </nav>
-                <!-- End of Topbar -->
                 
-                <th:block th:if="${user.getBan() == 1}">
-					<div class="alert warning">
+                <!-- End of Topbar -->
+                <th:block th:if="${delete_error == 1}">
+					<div class="alert">
                     	<span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
-                    	<strong>You're banned!</strong> Your account is limited.
+                    	<strong>Error!</strong> Unable to delete questionnaire.
                 	</div>
                 </th:block>
-
+                <th:block th:if="${success == 1}">
+					<div class="alert success">
+                    	<span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
+                    	<strong>Done!</strong> Questionnaire successfully removed.
+                	</div>
+                </th:block>
+                
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
 
                     <div class="row">
                         <div class="col-lg-6 mb-4">
 
-                            <!-- Illustrations -->
                             <div class="card shadow mb-4">
-                                <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Product of the day</h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="text-center">
-                                    <th:block th:if="${noproductfound == 0}">
-                                    	 <img class="img-fluid px-3 px-sm-4 mt-3 mb-4" style="width: 25rem;"
-                                            alt="Product Of The Day" th:src="*{'data:image/png;base64,'+ image}">
-                                    </th:block>
-                                    <th:block th:if="${noproductfound == 1}">
-                                    	 <img class="img-fluid px-3 px-sm-4 mt-3 mb-4" style="width: 25rem;"
-                                            alt="Product Not Found" src="img/prodnotfound.png">
-                                    </th:block>
-                                       
-                                    </div>
-                                    <th:block th:if="${noproductfound == 0}">
-                                    	<th:block th:if="${user.getBan() == 0}">
-                                    		<a href="Questionnaire" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-question text-white-50"></i> Go to questionnaire</a>
-                                    	</th:block>
-                                    </th:block>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6 mb-4">
-                        <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Product reviews</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">Products</h6>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-bordered" id="reviewtable" width="100%" cellspacing="0">
+                                <table class="table table-bordered" id="products" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
-                                            <th>Username</th>
-                                            <th>Review</th>
+                                            <th>Product</th>
+                                            <th>Date</th>
+                                            <th>EAN</th>
+                                            <th></th>
                                         </tr>
                                     </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>Date</th>
+                                            <th>EAN</th>
+                                            <th></th>
+                                        </tr>
+                                    </tfoot>
                                     <tbody>
+                                        
                                     </tbody>
                                 </table>
-                            </div>                            
-                            <hr>
-                           	<form class="user" action="Comment" method="POST">
-                            		<textarea name="review" class="form-control" maxlength="500" style="resize: none" placeholder="Write a comment here..." required></textarea><br>
-                            		<input type="text" th:value="${ean}" name="ean" hidden="true" required>
-                            		<input type="submit" class="btn btn-primary btn-user btn-block" value="Send review">
-                           	</form>                            
+                            </div>
                         </div>
-                    	</div>
+                    </div>
+                            
+                        </div>
+                        <div class="col-lg-6 mb-4">
+                        	
+                        	<div class="card shadow mb-4">
+                                <!-- Card Header - Accordion -->
+                                <a href="#collapseCard3" class="d-block card-header py-3 collapsed" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseCard3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Questions</h6>
+                                </a>
+                                <!-- Card Content - Collapse -->
+                                <div class="collapse" id="collapseCard3">
+                                    <div class="card-body" id="question_space">
+                          				
+                                    </div>
+                                    <div class="card-body" id="question_button">
+                          				<a href="#" id="btn-delete" class="btn btn-danger btn-icon-split" style="display:none">
+                                        <span class="icon text-white-50">
+                                            <i class="fas fa-trash"></i>
+                                        </span>
+                                        <span class="text">Delete questionnaire</span>
+                                    	</a>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        	
+                        	
                     	</div>
                     </div>
                     
@@ -275,8 +284,7 @@
 
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>
-    <script src="js/demo/reviewtable.js"></script>
-
+    <script src="js/demo/myQuestionnaireScript.js" type="text/javascript"></script>
 </body>
 
 </html>

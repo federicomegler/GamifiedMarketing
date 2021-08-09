@@ -86,4 +86,11 @@ public class UserService {
 		em.merge(user);
 		return user;
 	}
+	
+	public User banUser(String username) {
+		User user = em.find(User.class, username);
+		user.setBan(1);
+		em.merge(user);
+		return user;
+	}
 }

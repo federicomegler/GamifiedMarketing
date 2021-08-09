@@ -1,9 +1,7 @@
 package controllers;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.ejb.EJB;
@@ -16,23 +14,22 @@ import javax.servlet.http.HttpSession;
 
 import com.google.gson.Gson;
 
-import entities.Answer;
-import entities.Question;
 import entities.User;
 import services.QuestionService;
 
 /**
- * Servlet implementation class GetQNA
+ * Servlet implementation class GetMyQNA
  */
-@WebServlet("/GetQNA")
-public class GetQNA extends HttpServlet {
+@WebServlet("/GetMyQNA")
+public class GetMyQNA extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-    @EJB(name = "services/QuestionServices")
+	@EJB(name = "services/QuestionServices")
     private QuestionService qs;
+       
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public GetQNA() {
+    public GetMyQNA() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -48,9 +45,9 @@ public class GetQNA extends HttpServlet {
 		}
 		else{
 			
-			Map<String, Map<String,String>> qna = new HashMap<String, Map<String,String>>();
+			Map<String, String> qna = new HashMap<String, String>();
 			
-			qna = qs.getQNAByProductId(Integer.parseInt(request.getParameter("id")));
+			qna = qs.getQNAByProductAndUser(Integer.parseInt(request.getParameter("id")), ((User)session.getAttribute("user")).getUsername());
 			
 		    String json = new Gson().toJson(qna);
 		    System.out.println(json);

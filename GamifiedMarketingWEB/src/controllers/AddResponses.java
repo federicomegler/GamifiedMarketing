@@ -2,9 +2,11 @@ package controllers;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.ejb.EJB;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -13,13 +15,19 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.cxf.transport.http.HTTPSession;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import entities.User;
+import exceptions.OffensiveWordException;
 import exceptions.ProductException;
 import services.AnswerService;
+import services.OffensiveWordService;
 import services.ProductService;
 import services.QuestionService;
 import services.StatisticalAnswerService;
+import services.UserService;
 
 /**
  * Servlet implementation class QuestionnaireResponse
@@ -35,6 +43,13 @@ public class AddResponses extends HttpServlet {
 	private QuestionService qs;
 	@EJB(name="service/ProductService")
 	private ProductService ps;
+	@EJB(name = "services/OffensiveWordService")
+	private OffensiveWordService os;
+	@EJB(name = "service/UserService")
+	private UserService us;
+	
+	private TemplateEngine templateEngine;
+	
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -42,6 +57,15 @@ public class AddResponses extends HttpServlet {
         super();
         // TODO Auto-generated constructor stub
     }
+    
+    public void init() throws ServletException {
+		ServletContext servletContext = getServletContext();
+		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
+		templateResolver.setTemplateMode(TemplateMode.HTML);
+		this.templateEngine = new TemplateEngine();
+		this.templateEngine.setTemplateResolver(templateResolver);
+		templateResolver.setSuffix(".html");
+	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -52,13 +76,51 @@ public class AddResponses extends HttpServlet {
 		HttpSession session= request.getSession();
 		String nrans=request.getParameter("nrQuestions");
 		int nr=Integer.parseInt(nrans);
-		String resp;
+		
+		List<String> answers = new ArrayList<String>();
+		List<Integer> prod_id = new ArrayList<Integer>();
+		List<String> users = new ArrayList<String>();
+		
 		for(int i=1;i<=nr;i++)
 		{
 			try {
 				if(qs.isValid(Integer.parseInt(request.getParameter("q"+Integer.toString(i)))))
 				{
-					resp=request.getParameter("Question"+Integer.toString(i));
+					answers.add(request.getParameter("Question" + Integer.toString(i)));
+					prod_id.add(Integer.parseInt(request.getParameter("q"+Integer.toString(i))));
+					users.add(((User) session.getAttribute("user")).getUsername());
+				}
+				else
+				{
+					throw new Exception("stai provando a rispondere ad una domanda non disponibile");
+				}
+			} catch (ProductException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		try {
+			as.insertAnswers(answers, prod_id, users, nr);
+		} catch (ProductException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (OffensiveWordException e) {
+			User user = us.banUser( ((User)session.getAttribute("user")).getUsername() );
+			session.setAttribute("user", user);
+			response.sendRedirect("Home");
+			e.printStackTrace();
+		}
+		/*
+		for(int i=1;i<=nr;i++)
+		{
+			try {
+				if(qs.isValid(Integer.parseInt(request.getParameter("q"+Integer.toString(i)))))
+				{
+					resp=request.getParameter("Question" + Integer.toString(i));
 					if(!resp.isBlank())
 					as.insertAnswer(request.getParameter("Question"+Integer.toString(i)), Integer.parseInt(request.getParameter("q"+Integer.toString(i))), ((User) session.getAttribute("user")).getUsername());
 				}
@@ -74,6 +136,7 @@ public class AddResponses extends HttpServlet {
 				e.printStackTrace();
 			}
 		}
+		*/
 		String expL=request.getParameter("expLevel");
 		int expLev=0;
 		
