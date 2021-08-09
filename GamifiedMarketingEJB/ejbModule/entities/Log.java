@@ -31,6 +31,14 @@ public class Log implements Serializable{
 	@JoinColumn(name = "product_log")
 	private Product product_log;
 	
+	public Product getProduct_log() {
+		return product_log;
+	}
+
+	public void setProduct_log(Product product_log) {
+		this.product_log = product_log;
+	}
+
 	public Date getDate() {
 		return date;
 	}

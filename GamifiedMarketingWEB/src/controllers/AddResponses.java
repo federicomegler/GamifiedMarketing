@@ -23,6 +23,7 @@ import entities.User;
 import exceptions.OffensiveWordException;
 import exceptions.ProductException;
 import services.AnswerService;
+import services.LogService;
 import services.OffensiveWordService;
 import services.ProductService;
 import services.QuestionService;
@@ -47,6 +48,8 @@ public class AddResponses extends HttpServlet {
 	private OffensiveWordService os;
 	@EJB(name = "service/UserService")
 	private UserService us;
+	@EJB(name = "services/LogService")
+	private LogService ls;
 	
 	private TemplateEngine templateEngine;
 	
@@ -78,7 +81,7 @@ public class AddResponses extends HttpServlet {
 		int nr=Integer.parseInt(nrans);
 		
 		List<String> answers = new ArrayList<String>();
-		List<Integer> prod_id = new ArrayList<Integer>();
+		List<Integer> prod_ids = new ArrayList<Integer>();
 		List<String> users = new ArrayList<String>();
 		
 		for(int i=1;i<=nr;i++)
@@ -87,11 +90,12 @@ public class AddResponses extends HttpServlet {
 				if(qs.isValid(Integer.parseInt(request.getParameter("q"+Integer.toString(i)))))
 				{
 					answers.add(request.getParameter("Question" + Integer.toString(i)));
-					prod_id.add(Integer.parseInt(request.getParameter("q"+Integer.toString(i))));
+					prod_ids.add(Integer.parseInt(request.getParameter("q"+Integer.toString(i))));
 					users.add(((User) session.getAttribute("user")).getUsername());
 				}
 				else
 				{
+					// TODO rispondere con errore non con eccezione
 					throw new Exception("stai provando a rispondere ad una domanda non disponibile");
 				}
 			} catch (ProductException e) {
@@ -104,7 +108,7 @@ public class AddResponses extends HttpServlet {
 		}
 		
 		try {
-			as.insertAnswers(answers, prod_id, users, nr);
+			as.insertAnswers(answers, prod_ids, users, nr);
 		} catch (ProductException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -114,29 +118,8 @@ public class AddResponses extends HttpServlet {
 			response.sendRedirect("Home");
 			e.printStackTrace();
 		}
-		/*
-		for(int i=1;i<=nr;i++)
-		{
-			try {
-				if(qs.isValid(Integer.parseInt(request.getParameter("q"+Integer.toString(i)))))
-				{
-					resp=request.getParameter("Question" + Integer.toString(i));
-					if(!resp.isBlank())
-					as.insertAnswer(request.getParameter("Question"+Integer.toString(i)), Integer.parseInt(request.getParameter("q"+Integer.toString(i))), ((User) session.getAttribute("user")).getUsername());
-				}
-				else
-				{
-					throw new Exception("stai provando a rispondere ad una domanda non disponibile");
-				}
-			} catch (ProductException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		*/
+		
+		
 		String expL=request.getParameter("expLevel");
 		int expLev=0;
 		
@@ -160,19 +143,14 @@ public class AddResponses extends HttpServlet {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		/*
-		System.out.println(request.getParameter("age"));
-		System.out.println(request.getParameter("genderRadio").charAt(0));
-		System.out.println(request.getParameter("expLevel"));
+		
+		
 		try {
-			System.out.println(ps.getProductOfTheDay().getId());
-			System.out.println(((User) session.getAttribute("user")).getUsername());
+			ls.insertLog(((User) session.getAttribute("user")).getUsername());
 		} catch (ProductException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}*/
-		
-		//TODO inserire nel log l'utente che ha commentato
+		}
 		
 	}
 
