@@ -20,6 +20,7 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 import entities.Product;
 import entities.User;
 import exceptions.ProductException;
+import services.LogService;
 import services.ProductService;
 import services.ReviewService;
 
@@ -34,6 +35,8 @@ public class Home extends HttpServlet {
 	private ProductService ps;
 	@EJB(name = "services/ReviewService")
 	private ReviewService rs;
+	@EJB(name = "services/LogService")
+	private LogService ls;
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -86,15 +89,10 @@ public class Home extends HttpServlet {
 				ctx.setVariable("image", prod.getImageData());
 				ctx.setVariable("noproductfound", 0);
 				ctx.setVariable("ean", prod.getEan());
+				ctx.setVariable("alreadylogged", ls.alreadyLogged(((User)session.getAttribute("user")).getUsername()));
 				path = "/WEB-INF/Home.html";
 				templateEngine.process(path, ctx, response.getWriter());
 			}
 		}
 	}
-
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
-	}
-
 }

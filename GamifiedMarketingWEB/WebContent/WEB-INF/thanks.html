@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Profile - [[${user.getUsername()}]]</title>
+    <title>Home</title>
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -17,27 +17,9 @@
 
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="css/error_banner.css" rel="stylesheet">
 <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
 </head>
-<!-- <body> -->
-<!-- 	<div class="navbar"> -->
-		
-<!-- 	  	<a href="Logout" class="logout">Logout</a> -->
-<!-- 	</div> -->
-<!-- 	<img alt="Product Of The Day" th:src="*{'data:image/png;base64,'+ image}"> -->
-<!-- 	This is the home page!!! -->
-	
-<!-- 	<div th:if="${admin == 1}"> -->
-<!-- 		You are the ADMIN!!! -->
-<!-- 		<form action="CreateProduct" enctype="multipart/form-data" method="POST"> -->
-<!-- 			<input name="imagename" type="text" placeholder="Product name"> -->
-<!-- 			<input type="file" name="image"> -->
-<!-- 			<input type="submit" value="Add Product"> -->
-<!-- 		</form> -->
-<!-- 	</div> -->
-	
-<!-- </body> -->
-
 <body id="page-top">
 
     <!-- Page Wrapper -->
@@ -63,12 +45,11 @@
                     <i class="fas fa-fw fa-home"></i>
                     <span>HomePage</span></a>
             </li>
+
             <li class="nav-item">
 	            	<a class="nav-link" href="GoToMyQuestionnaire"><i class="fab fa-fw fa-wpforms"></i>
                     <span>My Questionnaires</span></a>
 	        </li>
-
-            
 
             <!-- Heading: Admin section -->
         <th:block th:if="${user.getAdmin() == 1}">
@@ -174,67 +155,13 @@
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
 
-                    <div class="row">
-                        <div class="col-lg-6 mb-4">
-
-                            <!-- Illustrations -->
-                            <div class="card shadow mb-4">
-                                <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">User information</h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="text-center">
-                                        <p><strong>Username:  </strong> [[${user.getUsername()}]]</p><br>
-                                        <p><strong>Email:  </strong> [[${user.getEmail()}]]</p><br>
-                                        <p><strong>Points:  </strong> [[${user.getPoints()}]]</p><br>
-                                    </div>
-                                    <p></p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6 mb-4">
-                        
-                        
-                        
-                        <div class="card shadow mb-4">
-                                <!-- Card Header - Accordion -->
-                                <a href="#collapseCardChangePassword" class="d-block card-header py-3" data-toggle="collapse"
-                                    role="button" aria-expanded="true" aria-controls="collapseCardChangePassword">
-                                    <h6 class="m-0 font-weight-bold text-primary">Change password</h6>
-                                </a>
-                                <!-- Card Content - Collapse -->
-                                <div class="collapse show" id="collapseCardChangePassword">
-                                    <div class="card-body">
-                            <form class="user" action="ChangePassword" method="POST">
-                                <div class="form-group">
-                                        <input type="password" name="oldpassword" class="form-control form-control-user" id="OldPassword"
-                                            placeholder="Old Password" required>
-                                </div>
-                                <div class="form-group row">
-                                    <div class="col-sm-6 mb-3 mb-sm-0">
-                                        <input type="password" name="password" class="form-control form-control-user"
-                                            id="NewPassword" placeholder="New password" required>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <input type="password" name="confirmpassword" class="form-control form-control-user"
-                                            id="RepeatPassword" placeholder="Repeat New Password" required>
-                                    </div>
-                                </div>
-                                	<div class="text-center" th:if="${result == -1}"> 
-                            			<hr>
-						 				<p style="color: red;"> [[${resultmsg}]]</p>
-						 			</div>
-						 			<div class="text-center" th:if="${result == 1}"> 
-                            		<hr>
-						 			<p style="color: green;"> [[${resultmsg}]]</p>
-						 			</div>
-                                <input type="submit" class="btn btn-primary btn-user btn-block" value="Change password">
-                            </form>
-                                    </div>
-                                </div>
-                            </div>
-                    	</div>
+                    <div class="text-center">
+                        <h1>Thank you!</h1>
+                        <p class="lead text-gray-800 mb-5">You successfully inserted the questionnaire.</p>
+                        <a href="Home">&larr; Back to Home Page</a>
                     </div>
+                    
+                    
                 </div>
                 <!-- /.container-fluid -->
 
@@ -285,6 +212,8 @@
 
     <!-- Core plugin JavaScript-->
     <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
 
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>

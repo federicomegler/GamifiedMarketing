@@ -9,10 +9,15 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
+@NamedQueries({
+	@NamedQuery(name = "Log.alreadyLogged", query = "SELECT l FROM Log l WHERE l.user_log = :user AND l.date = CURRENT_DATE")
+})
 public class Log implements Serializable{
 	private static final long serialVersionUID = 1L;
 

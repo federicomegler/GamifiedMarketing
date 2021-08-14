@@ -32,6 +32,10 @@ $.get("GetMyProducts", function(responseJson) {    // Execute Ajax GET request o
 					quest.innerHTML = questions[i];
 					document.getElementById("question_space").appendChild(quest);
 					document.getElementById("question_space").appendChild(document.createElement('br'));
+					answer = document.createElement('p');
+					answer.innerHTML = map[questions[i]];
+					document.getElementById("question_space").appendChild(answer);
+					document.getElementById("question_space").appendChild(document.createElement('br'));
 				}
 				
 				btn.style = "dysplay:block;";

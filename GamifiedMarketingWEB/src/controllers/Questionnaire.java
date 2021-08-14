@@ -21,6 +21,7 @@ import entities.Product;
 import entities.Question;
 import entities.User;
 import exceptions.ProductException;
+import services.LogService;
 import services.ProductService;
 import services.QuestionService;
 
@@ -35,6 +36,9 @@ public class Questionnaire extends HttpServlet {
     private QuestionService qs;
 	@EJB(name="service/ProductService")
     private ProductService ps;
+	@EJB(name = "services/LogService")
+	private LogService ls;
+	
 	private TemplateEngine templateEngine;
     /**
      * @see HttpServlet#HttpServlet()
@@ -66,37 +70,34 @@ public class Questionnaire extends HttpServlet {
 			response.sendRedirect(path);
 		}
 		else {
-			try {
-				p = ps.getProductOfTheDay();
-			} catch (ProductException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			if(p == null) {
-				// TODO mettere reindirizzamento ad home con errore
-				response.getWriter().append("Served at: ").append("non ci sono prodotti del giorno");
+			
+			if(ls.alreadyLogged(  ((User)session.getAttribute("user")).getUsername()) || ((User)session.getAttribute("user")).getBan() == 1) {
+				session.setAttribute("user", (User)session.getAttribute("user"));
+				response.sendRedirect("Home");
 			}
 			else {
-				List<Question> questions = qs.getQuestions(p.getId());
-				
-				ctx.setVariable("questions", questions);
-				ctx.setVariable("nrQuestions", questions.size());
-				ctx.setVariable("user", (User)session.getAttribute("user"));
-				
-				path = "/WEB-INF/Wizard.html";
-				templateEngine.process(path, ctx, response.getWriter());
+				try {
+					p = ps.getProductOfTheDay();
+				} catch (ProductException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if(p == null) {
+					// TODO mettere reindirizzamento ad home con errore
+					response.getWriter().append("Served at: ").append("non ci sono prodotti del giorno");
+				}
+				else {
+					List<Question> questions = qs.getQuestions(p.getId());
+					
+					ctx.setVariable("questions", questions);
+					ctx.setVariable("nrQuestions", questions.size());
+					ctx.setVariable("user", (User)session.getAttribute("user"));
+					ctx.setVariable("server_error", 0);
+					path = "/WEB-INF/Wizard.html";
+					
+					templateEngine.process(path, ctx, response.getWriter());
+				}
 			}
-			
-			
 		}		
 	}
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
-	}
-
 }

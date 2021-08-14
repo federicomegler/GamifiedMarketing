@@ -19,6 +19,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
 
 import entities.Product;
@@ -31,13 +33,13 @@ public class QuestionService {
 	@PersistenceContext(unitName = "GamifiedMarketingEJB")
 	EntityManager em;
 	
-	public Map<String, Map<String,String>> getQNAByProductId(int id){
+	public Map<String, Map<String,String>> getQNAByProductId(int id) {
 		Map<String, Map<String,String>> qna = new HashMap<String, Map<String,String>>();
 		List<Question> questions = new ArrayList<Question>();
 		
 		Product product = em.find(Product.class, id);
 		
-		questions = em.createNamedQuery("Question.getQuestionsByProductId", Question.class).setParameter("product", product).getResultList();
+		questions = em.createNamedQuery("Question.getQuestionsByProductId", Question.class).setParameter("product", product).setHint(QueryHints.REFRESH, HintValues.TRUE).getResultList();
 		
 		
 		for(int i=0; i < questions.size(); ++i) {
@@ -60,7 +62,7 @@ public class QuestionService {
 		Map<String,String> qna = new HashMap<String, String>();
 		
 		List<Question> questions = new ArrayList<Question>();
-		questions = em.createNamedQuery("Question.getQuestionsByProductId", Question.class).setParameter("product", product).getResultList();
+		questions = em.createNamedQuery("Question.getQuestionsByProductId", Question.class).setParameter("product", product).setHint(QueryHints.REFRESH, HintValues.TRUE).getResultList();
 		
 		for(int i=0; i < questions.size(); ++i) {
 			List<Answer> answers = questions.get(i).getAnswers();

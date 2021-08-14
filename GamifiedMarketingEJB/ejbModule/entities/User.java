@@ -14,7 +14,7 @@ import javax.persistence.OneToMany;
 		@NamedQuery(name = "User.checkCredentials", query = "SELECT u FROM User u WHERE (u.username = :name or u.email = :name) and u.password = :password"),
 		@NamedQuery(name = "User.existCredentials", query="SELECT u FROM User u WHERE (u.username = :username or u.email = :email)"),
 		@NamedQuery(name = "User.getSalt", query="SELECT u.salt FROM User u WHERE (u.username = :name or u.email = :name)"),
-		@NamedQuery(name = "User.getLeaderboard", query = "SELECT u FROM User u ORDER BY u.points DESC")
+		@NamedQuery(name = "User.getLeaderboard", query = "SELECT DISTINCT(u) FROM Log l INNER JOIN l.user_log u WHERE l.date = CURRENT_DATE ORDER BY u.points DESC")
 })
 public class User implements Serializable{
 	private static final long serialVersionUID = 1L;

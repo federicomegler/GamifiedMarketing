@@ -8,6 +8,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
 
 import entities.Log;
 import entities.Product;
@@ -32,7 +33,26 @@ public class LogService {
 		log.setDate(new Date());
 		log.setUser_log(user);
 		log.setProduct_log(product);
-		em.persist(log);
+		
+		try {
+			em.persist(log);
+		}
+		catch (PersistenceException e) {
+			throw new RuntimeException("rollback");
+		}
+	}
+	
+	public Boolean alreadyLogged(String username) {
+		
+		User user = em.find(User.class, username);
+		
+		List<Log> l = em.createNamedQuery("Log.alreadyLogged", Log.class).setParameter("user", user).getResultList();
+		
+		if(l.isEmpty())
+			return false;
+		else
+			return true;
+		
 	}
 	
 }

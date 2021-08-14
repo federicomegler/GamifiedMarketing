@@ -22,7 +22,7 @@ import java.util.Base64;
 @Entity
 @NamedQueries({
 	@NamedQuery(name = "Product.getProductOfTheDay", query = "SELECT p FROM Product p WHERE p.date = CURRENT_DATE"),
-	@NamedQuery(name = "Product.getAllProducts", query = "SELECT p FROM Product p")
+	@NamedQuery(name = "Product.getAllProducts", query = "SELECT p FROM Product p WHERE p.date <= CURRENT_DATE")
 	})
 public class Product implements Serializable{
 	public List<Question> getQuestions() {

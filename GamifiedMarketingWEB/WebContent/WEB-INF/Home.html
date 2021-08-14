@@ -182,10 +182,12 @@
                                     </th:block>
                                        
                                     </div>
-                                    <th:block th:if="${noproductfound == 0}">
-                                    	<th:block th:if="${user.getBan() == 0}">
-                                    		<a href="Questionnaire" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-question text-white-50"></i> Go to questionnaire</a>
-                                    	</th:block>
+                                    <th:block th:if="${alreadylogged == false}">
+	                                    <th:block th:if="${noproductfound == 0}">
+	                                    	<th:block th:if="${user.getBan() == 0}">
+	                                    		<a href="Questionnaire" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-question text-white-50"></i> Go to questionnaire</a>
+	                                    	</th:block>
+	                                    </th:block>
                                     </th:block>
                                 </div>
                             </div>

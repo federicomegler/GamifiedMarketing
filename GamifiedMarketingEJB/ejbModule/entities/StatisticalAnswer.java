@@ -19,9 +19,9 @@ public class StatisticalAnswer implements Serializable{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	
-	private int age;
-	private char gender;
-	private int expertise_level;
+	private Integer age;
+	private Character gender;
+	private Integer expertise_level;
 	
 	@ManyToOne
 	@JoinColumn(name = "product")
@@ -32,22 +32,22 @@ public class StatisticalAnswer implements Serializable{
 	private User user_stat;
 	
 	
-	public int getAge() {
+	public Integer getAge() {
 		return age;
 	}
-	public void setAge(int age) {
+	public void setAge(Integer age) {
 		this.age = age;
 	}
-	public char getGender() {
+	public Character getGender() {
 		return gender;
 	}
-	public void setGender(char gender) {
+	public void setGender(Character gender) {
 		this.gender = gender;
 	}
-	public int getExpertise_level() {
+	public Integer getExpertise_level() {
 		return expertise_level;
 	}
-	public void setExpertise_level(int expertise_level) {
+	public void setExpertise_level(Integer expertise_level) {
 		this.expertise_level = expertise_level;
 	}
 	

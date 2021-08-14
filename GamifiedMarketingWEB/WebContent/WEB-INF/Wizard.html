@@ -17,6 +17,8 @@
 
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
+    
+    <link href="css/error_banner.css" rel="stylesheet">
 <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
 </head>
 <body id="page-top">
@@ -44,6 +46,10 @@
                     <i class="fas fa-fw fa-home"></i>
                     <span>HomePage</span></a>
             </li>
+            <li class="nav-item">
+	            	<a class="nav-link" href="GoToMyQuestionnaire"><i class="fab fa-fw fa-wpforms"></i>
+                    <span>My Questionnaires</span></a>
+	        </li>
 
             
 
@@ -147,6 +153,13 @@
 
                 </nav>
                 <!-- End of Topbar -->
+                
+                <th:block th:if="${server_error == 1}">
+					<div class="alert">
+                    	<span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
+                    	<strong>Server error!</strong> Unable to send questionnaire.
+                	</div>
+                </th:block>
 
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
@@ -165,13 +178,13 @@
                                
                                 
                                 
-                               <form class="user" id="questionnaireForm" name="questionnaireForm" action="AddResponses" method="POST" >
+                               <form class="user" id="questionnaireForm" name="questionnaireForm" action="AddResponses" method="GET" >
                                    <div id="part1">
                                    		
                                    		<div th:each="question, iterator: ${questions}" class="form-check">
                                    	   		<label th:for="${'Question'+iterator.count}" th:text="${question.content}"></label>
-    								  	 	<input type="text" class="form-control" th:id="${'Question'+iterator.count}" th:name="${'Question'+iterator.count}" placeholder="type here...">
-    								  	 	<input type="hidden" th:name="${'q'+iterator.count}" th:value="${question.id}">
+    								  	 	<input type="text" class="form-control" th:id="${'Question'+iterator.count}" th:name="${'Question'+iterator.count}" placeholder="type here..." required>
+    								  	 	<input type="hidden" th:name="${'q'+iterator.count}" th:value="${question.id}" required>
     								   </div>
     								   
     								   <div class="form-check">
@@ -182,7 +195,7 @@
                                    <div id="part2" style="display:none">
 	                                   <p>Select Gender:</p>
 	                                   <div class="form-check">
-										  <input class="form-check-input" type="radio" name="genderRadio" id="maleRadio" value="M" checked >
+										  <input class="form-check-input" type="radio" name="genderRadio" id="maleRadio" value="M">
 										  <label class="form-check-label" for="flexRadioDefault1">
 										   	 Male
 										  </label>
@@ -193,9 +206,16 @@
 										   	 Female
 										  </label>
 									   </div>
+									   <div class="form-check">
+										  <input class="form-check-input" type="radio" name="genderRadio" id="noneRadio" value=" " checked>
+										  <label class="form-check-label" for="flexRadioDefault1">
+										   	 NONE
+										  </label>
+									   </div>
 	                                   <div class="form-group">
-									    	<label for="expLevel">select your expertise level</label>
-										    <select class="form-control" id="expLevel" name="expLevel" required>
+									    	<label for="expLevel">Select your expertise level</label>
+										    <select class="form-control" id="expLevel" name="expLevel">
+										      <option></option>
 										      <option>Low</option>
 										      <option>Medium</option>
 										      <option>High</option>
@@ -203,7 +223,7 @@
 									  	</div>
 									  	<div class="form-group">
 									    	<label for="age">Age:</label>
-										    <input class="form-control" id="age" name="age" type=number min=16 max=90 required>
+										    <input class="form-control" id="age" name="age" type=number min=16 max=110>
 									  	</div>
 									  	<div align="center">
 									  	<button type="button" class="btn btn-primary" onclick="goPrev()">Back</button>

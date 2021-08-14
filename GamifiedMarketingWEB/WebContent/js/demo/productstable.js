@@ -13,7 +13,11 @@ $.get("GetProducts", function(responseJson) {    // Execute Ajax GET request on 
             "targets": -1,
             "data": null,
             "defaultContent": "<a class=\"btn btn-primary btn-circle\"> <i style=\"color:white\" class=\"fas fa-search\"></i> </a>"
-        	} ]
+        	},
+			{
+				"targets": 2,
+				"type": "date"
+			} ]
 		});
 		
 		$('#products tbody').on( 'click', 'a', function () {

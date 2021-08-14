@@ -14,11 +14,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.transport.http.HTTPSession;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
+import entities.Product;
 import entities.User;
 import exceptions.OffensiveWordException;
 import exceptions.ProductException;
@@ -75,91 +79,180 @@ public class AddResponses extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		String path = "";
+		HttpSession session = request.getSession();
 		
-		HttpSession session= request.getSession();
-		String nrans=request.getParameter("nrQuestions");
-		int nr=Integer.parseInt(nrans);
-		
-		List<String> answers = new ArrayList<String>();
-		List<Integer> prod_ids = new ArrayList<Integer>();
-		List<String> users = new ArrayList<String>();
-		
-		for(int i=1;i<=nr;i++)
-		{
-			try {
-				if(qs.isValid(Integer.parseInt(request.getParameter("q"+Integer.toString(i)))))
-				{
-					answers.add(request.getParameter("Question" + Integer.toString(i)));
-					prod_ids.add(Integer.parseInt(request.getParameter("q"+Integer.toString(i))));
-					users.add(((User) session.getAttribute("user")).getUsername());
-				}
-				else
-				{
-					// TODO rispondere con errore non con eccezione
-					throw new Exception("stai provando a rispondere ad una domanda non disponibile");
-				}
-			} catch (ProductException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		if(session.isNew() || session.getAttribute("user") == null) {
+			path = getServletContext().getContextPath() + "/index.html";
+			response.sendRedirect(path);
+		}
+		else {
+			if(ls.alreadyLogged(  ((User)session.getAttribute("user")).getUsername()) || ((User)session.getAttribute("user")).getBan() == 1 ) {
+				session.setAttribute("user", (User)session.getAttribute("user"));
+				response.sendRedirect("Home");
 			}
-		}
-		
-		try {
-			as.insertAnswers(answers, prod_ids, users, nr);
-		} catch (ProductException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (OffensiveWordException e) {
-			User user = us.banUser( ((User)session.getAttribute("user")).getUsername() );
-			session.setAttribute("user", user);
-			response.sendRedirect("Home");
-			e.printStackTrace();
-		}
-		
-		
-		String expL=request.getParameter("expLevel");
-		int expLev=0;
-		
-		switch (expL) {
-		
-			case "Low": expLev = 1;
-			case "Medium": expLev = 2;
-			case "High" : expLev = 3;
-			default: expLev = 1; // TODO print errore;
+			else {
+				final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
+				
+				if(request.getParameter("nrQuestions") == null) {
+					response.sendRedirect("Questionnaire");
+					return;
+				}
+				
+				int nr = Integer.parseInt(request.getParameter("nrQuestions"));
+				
+				List<String> answers = new ArrayList<String>();
+				List<Integer> prod_ids = new ArrayList<Integer>();
+				Product prod_day = null;
+				
+				try {
+					prod_day = ps.getProductOfTheDay();
+				} catch (ProductException e2) {
+					ctx.setVariable("questions", null);
+					ctx.setVariable("nrQuestions", 0);
+					ctx.setVariable("server_error", 1);
+					ctx.setVariable("user", (User)session.getAttribute("user"));
+					path = "/WEB-INF/Wizard.html";
+					templateEngine.process(path, ctx, response.getWriter());
+				}
+				
+				if(prod_day != null) {
+					
+					//controllo input e creazione delle liste
+					
+					for(int i=1;i<=nr;i++) {
+						//Ccrea liste da mandare ad AnswerService
+						if(request.getParameter("q" + Integer.toString(i)) == null || request.getParameter("Question" + Integer.toString(i)) == null) {
+							response.sendRedirect("Questionnaire");
+							return;
+						}
+						
+						if(qs.isValid(Integer.parseInt(request.getParameter("q"+Integer.toString(i))))) { //controllo che l'id sia valido
+							
+							
+							String ans = StringEscapeUtils.escapeHtml(request.getParameter("Question" + Integer.toString(i)));
+							
+							if(ans.isBlank()) {
+								//se una risposta è vuota
+								ctx.setVariable("questions", prod_day.getQuestions());
+								ctx.setVariable("nrQuestions", nr);
+								ctx.setVariable("server_error", 1);
+								ctx.setVariable("user", (User)session.getAttribute("user"));
+								path = "/WEB-INF/Wizard.html";
+								templateEngine.process(path, ctx, response.getWriter());
+								return;
+							}
+							else {
+								int prod_id = Integer.parseInt(request.getParameter("q"+Integer.toString(i)));
+								answers.add(ans);
+								prod_ids.add(prod_id);
+							}
+						}
+						else
+						{
+							ctx.setVariable("questions", prod_day.getQuestions());
+							ctx.setVariable("nrQuestions", nr);
+							ctx.setVariable("server_error", 1);
+							ctx.setVariable("user", (User)session.getAttribute("user"));
+							path = "/WEB-INF/Wizard.html";
+							templateEngine.process(path, ctx, response.getWriter());
+							return;
+						}
+						
+					}
+					
+					
+				}
+				
+				//estraggo e controllo input utente per statistiche
+				
+				if(request.getParameter("expLevel") == null || request.getParameter("age") == null || request.getParameter("genderRadio") == null) {
+					ctx.setVariable("questions", prod_day.getQuestions());
+					ctx.setVariable("nrQuestions", nr);
+					ctx.setVariable("server_error", 1);
+					ctx.setVariable("user", (User)session.getAttribute("user"));
+					path = "/WEB-INF/Wizard.html";
+					templateEngine.process(path, ctx, response.getWriter());
+				}
+				else {
+					String expL = request.getParameter("expLevel");
+					Integer expLev=0;
+					Character gender = ' '; 
+					Integer age = -1;
+					
+					
+					if(request.getParameter("age") != "" && StringUtils.isNumeric(request.getParameter("age"))) {
+						age = Integer.parseInt(request.getParameter("age"));
+					}
+					
+					
+					//in gender può esserci solo M, F o none (' ')
+					switch (request.getParameter("genderRadio")) {
+					case "M": gender = 'M';
+					case "F": gender = 'F';
+					default: gender = ' ';
+						
+					}
+					
+					switch (expL) {
+					
+						case "Low": expLev = 1;
+						case "Medium": expLev = 2;
+						case "High" : expLev = 3;
+						default: expLev = -1;
+						
+					}
+					
+					//if everything is ok insert answers
+					try {
+						as.insertAnswers(answers, prod_ids, ((User)session.getAttribute("user")).getUsername(), nr, age, gender, expLev );
+					}
+					catch (OffensiveWordException e) {
+						try {
+							ls.insertLog(((User)session.getAttribute("user")).getUsername() );
+							as.insertStatisticalAnswer(age, gender, expLev, (User)session.getAttribute("user"));
+						} catch (ProductException e1) {
+							System.out.println("exception");
+							ctx.setVariable("questions", prod_day.getQuestions());
+							ctx.setVariable("nrQuestions", nr);
+							ctx.setVariable("server_error", 1);
+							ctx.setVariable("user", (User)session.getAttribute("user"));
+							path = "/WEB-INF/Wizard.html";
+						}
+						User user = us.banUser( ((User)session.getAttribute("user")).getUsername() );
+						session.setAttribute("user", user);
+						response.sendRedirect("Home");
+					}
+					catch (ProductException e) {
+						e.printStackTrace();
+						System.out.println("prod exception");
+						ctx.setVariable("questions", prod_day.getQuestions());
+						ctx.setVariable("nrQuestions", nr);
+						ctx.setVariable("server_error", 1);
+						ctx.setVariable("user", (User)session.getAttribute("user"));
+						path = "/WEB-INF/Wizard.html";
+						templateEngine.process(path, ctx, response.getWriter());
+					} 
+					catch (Exception e) {
+						System.out.println("exception");
+						ctx.setVariable("questions", prod_day.getQuestions());
+						ctx.setVariable("nrQuestions", nr);
+						ctx.setVariable("server_error", 1);
+						ctx.setVariable("user", (User)session.getAttribute("user"));
+						path = "/WEB-INF/Wizard.html";
+					}
+					
+					ctx.setVariable("user", ((User)session.getAttribute("user")));
+					path = "/WEB-INF/thanks.html";
+					templateEngine.process(path, ctx, response.getWriter());
+				}
+				
+				
+			}
 			
 		}
 		
 		
-		try {
-			sas.insertStatisticalAnswer(Integer.parseInt(request.getParameter("age")), 
-					request.getParameter("genderRadio").charAt(0), 
-					expLev, 
-					ps.getProductOfTheDay().getId(), 
-					((User) session.getAttribute("user")).getUsername());
-		} catch (NumberFormatException | ProductException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		
-		try {
-			ls.insertLog(((User) session.getAttribute("user")).getUsername());
-		} catch (ProductException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
 	}
 
 }
