@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-
+import java.util.Date;
 
 import javax.ejb.EJB;
 import javax.servlet.ServletContext;
@@ -80,7 +80,7 @@ public class CreateProduct extends HttpServlet {
 		String questionNumber=request.getParameter("questionNumber");
 		int qn=Integer.parseInt(questionNumber);
 		
-		java.util.Date questionnaireDate= new java.util.Date();
+		Date questionnaireDate = new Date();
 		
 		try {
 			questionnaireDate = new SimpleDateFormat("yyyy-MM-dd").parse(request.getParameter("date"));

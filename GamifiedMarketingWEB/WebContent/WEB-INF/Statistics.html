@@ -158,6 +158,39 @@
                     <div class="row">
                         
                         
+                        <div class="col-xl-8 col-lg-7">
+
+                            <!-- Area Chart -->
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Area Chart</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-area"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+                                        <canvas id="logChart" width="938" height="640" class="chartjs-render-monitor" style="display: block; height: 320px; width: 469px;"></canvas>
+                                    </div>
+                                    <hr>
+                             		Logs in the last week.
+                                </div>
+                            </div>
+
+                            <!-- Bar Chart -->
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Bar Chart</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-bar"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+                                        <canvas id="myBarChart" width="938" height="640" class="chartjs-render-monitor" style="display: block; height: 320px; width: 469px;"></canvas>
+                                    </div>
+                                    <hr>
+                                    Styling for the bar chart can be found in the
+                                    <code>/js/demo/chart-bar-demo.js</code> file.
+                                </div>
+                            </div>
+
+                        </div>
+                        
                         
                     </div>
                 </div>
@@ -210,12 +243,12 @@
 
     <!-- Core plugin JavaScript-->
     <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
-    <script src="vendor/datatables/jquery.dataTables.min.js"></script>
-    <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    
+    <script src="vendor/chart.js/Chart.min.js"></script>
 
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>
-    <script src="js/demo/reviewtable.js"></script>
+    <script src="js/demo/statisticsScript.js"></script>
 
 </body>
 </html>

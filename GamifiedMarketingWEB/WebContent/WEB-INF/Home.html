@@ -158,6 +158,8 @@
                     	<strong>You're banned!</strong> Your account is limited.
                 	</div>
                 </th:block>
+                
+                
 
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
@@ -198,6 +200,20 @@
                             <h6 class="m-0 font-weight-bold text-primary">Product reviews</h6>
                         </div>
                         <div class="card-body">
+                      		<th:block th:if="${comment == 1}">
+                        		<div class="alert success">
+                    				<span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
+                    				<strong>Success!</strong> 
+                				</div>
+                        	</th:block>
+                        	<th:block th:if="${comment == 2}">
+                        		<div class="alert">
+                    				<span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
+                    				<strong>Error!</strong> Unable to send review.
+                				</div>
+                			</th:block>
+                      
+                      
                             <div class="table-responsive">
                                 <table class="table table-bordered" id="reviewtable" width="100%" cellspacing="0">
                                     <thead>

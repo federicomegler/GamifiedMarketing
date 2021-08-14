@@ -75,12 +75,14 @@ public class Home extends HttpServlet {
 			} catch (ProductException e) {
 				ctx.setVariable("user", ((User)session.getAttribute("user")));
 				ctx.setVariable("noproductfound", 1);
+				ctx.setVariable("comment", 0);
 				path = "/WEB-INF/Home.html";
 				templateEngine.process(path, ctx, response.getWriter());
 			}
 			if(prod == null) {
 				ctx.setVariable("user", ((User)session.getAttribute("user")));
 				ctx.setVariable("noproductfound", 1);
+				ctx.setVariable("comment", 0);
 				path = "/WEB-INF/Home.html";
 				templateEngine.process(path, ctx, response.getWriter());
 			}
@@ -90,6 +92,7 @@ public class Home extends HttpServlet {
 				ctx.setVariable("noproductfound", 0);
 				ctx.setVariable("ean", prod.getEan());
 				ctx.setVariable("alreadylogged", ls.alreadyLogged(((User)session.getAttribute("user")).getUsername()));
+				ctx.setVariable("comment", 0);
 				path = "/WEB-INF/Home.html";
 				templateEngine.process(path, ctx, response.getWriter());
 			}
