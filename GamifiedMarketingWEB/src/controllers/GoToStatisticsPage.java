@@ -1,7 +1,10 @@
 package controllers;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
+import javax.ejb.EJB;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,6 +19,7 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import entities.User;
+import services.StatsService;
 
 /**
  * Servlet implementation class GoToStatisticsPage
@@ -24,6 +28,8 @@ import entities.User;
 public class GoToStatisticsPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     private TemplateEngine templateEngine;
+    @EJB(name = "services/StatsService")
+    private StatsService ss;
 	
     /**
      * @see HttpServlet#HttpServlet()
@@ -56,6 +62,22 @@ public class GoToStatisticsPage extends HttpServlet {
 			ServletContext servletContext = getServletContext();
 			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 			ctx.setVariable("user", ((User)session.getAttribute("user")));
+			ctx.setVariable("avgAge", ss.getAvgAge());
+			Double avgExp = ss.getAvgEXP();
+			if(avgExp < 0.5) {
+				ctx.setVariable("avgExp", "Low");
+			}
+			else if(avgExp >= 0.5 && avgExp < 1.5) {
+				ctx.setVariable("avgExp", "Medium");
+			}
+			else {
+				ctx.setVariable("avgExp", "High");
+			}
+			
+			Map<String, List<Long>> map = ss.getSubmitStats();
+			System.out.println(map);
+			
+			ctx.setVariable("totalLogs", ss.getTotalLogs());
 			templateEngine.process(path, ctx, response.getWriter());
 		}
 	}
@@ -67,5 +89,4 @@ public class GoToStatisticsPage extends HttpServlet {
 		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
-
 }

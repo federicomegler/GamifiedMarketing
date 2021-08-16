@@ -4,11 +4,12 @@ Chart.defaults.global.defaultFontColor = '#858796';
 
 var n_people;
 var dates;
-
+var res;
 $.get("GetStats", function(response){
 	dates = Object.keys(response);
 	n_people = Object.values(response);
 	var ctx = document.getElementById("logChart");
+	res = response;
 var myLineChart = new Chart(ctx, {
   type: 'line',
   data: {
@@ -124,3 +125,153 @@ function number_format(number, decimals, dec_point, thousands_sep) {
   }
   return s.join(dec);
 }
+
+
+
+
+//pie chart
+
+// Pie Chart Example
+
+$.get("GetGenderStats", function (response){
+	var genders = Object.keys(response);
+	var count = Object.values(response);
+	
+	var pie = document.getElementById("GenderChart");
+	var myPieChart = new Chart(pie, {
+	  type: 'doughnut',
+	  data: {
+	    labels: genders,
+	    datasets: [{
+	      data: count,
+	      backgroundColor: ['#4e73df', '#ffb3ff', '#eeeeee'],
+	      hoverBackgroundColor: ['#2e59d9', '#ff99ff', '#dddddd'],
+	      hoverBorderColor: "rgba(234, 236, 244, 1)",
+	    }],
+	  },
+	  options: {
+	    maintainAspectRatio: false,
+	    tooltips: {
+	      backgroundColor: "rgb(255,255,255)",
+	      bodyFontColor: "#858796",
+	      borderColor: '#dddfeb',
+	      borderWidth: 1,
+	      xPadding: 15,
+	      yPadding: 15,
+	      displayColors: false,
+	      caretPadding: 10,
+	    },
+	    legend: {
+	      display: false
+	    },
+	    cutoutPercentage: 80,
+	  },
+	});
+	
+	
+});
+
+
+
+
+
+
+
+// Bar Chart Example
+var list
+
+$.get("GetSubmitStats", function (response){
+	var days = Object.keys(response);
+	list = Object.values(response);
+	
+	
+	var ctx = document.getElementById("SubmitChart");
+	var myBarChart = new Chart(ctx, {
+	  type: 'bar',
+	  data: {
+	    labels: days,
+	    datasets: [{
+	      label: "Submitted",
+	      backgroundColor: "#1cc88a",
+	      hoverBackgroundColor: "#13865c",
+	      borderColor: "#4e73df",
+	      data: [list[0][0], list[1][0], list[2][0], list[3][0], list[4][0], list[5][0], list[6][0]],
+	    },{
+	      label: "Deleted",
+	      backgroundColor: "#e74a3b",
+	      hoverBackgroundColor: "#cc2819",
+	      borderColor: "#4e73df",
+	      data: [list[0][1], list[1][1], list[2][1], list[3][1], list[4][1], list[5][1], list[6][1]],
+	    }],
+	  },
+	  options: {
+	    maintainAspectRatio: false,
+	    layout: {
+	      padding: {
+	        left: 10,
+	        right: 25,
+	        top: 25,
+	        bottom: 0
+	      }
+	    },
+	    scales: {
+	      xAxes: [{
+	        time: {
+	          unit: 'month'
+	        },
+	        gridLines: {
+	          display: false,
+	          drawBorder: false
+	        },
+	        ticks: {
+	          maxTicksLimit: 6
+	        },
+	        maxBarThickness: 25,
+	      }],
+	      yAxes: [{
+	        ticks: {
+	          maxTicksLimit: 5,
+	          padding: 10,
+	          // Include a dollar sign in the ticks
+	          callback: function(value, index, values) {
+	            return number_format(value);
+	          }
+	        },
+	        gridLines: {
+	          color: "rgb(234, 236, 244)",
+	          zeroLineColor: "rgb(234, 236, 244)",
+	          drawBorder: false,
+	          borderDash: [2],
+	          zeroLineBorderDash: [2]
+	        }
+	      }],
+	    },
+	    legend: {
+	      display: true
+	    },
+	    tooltips: {
+	      titleMarginBottom: 10,
+	      titleFontColor: '#6e707e',
+	      titleFontSize: 14,
+	      backgroundColor: "rgb(255,255,255)",
+	      bodyFontColor: "#858796",
+	      borderColor: '#dddfeb',
+	      borderWidth: 1,
+	      xPadding: 15,
+	      yPadding: 15,
+	      displayColors: false,
+	      caretPadding: 10,
+	      callbacks: {
+	        label: function(tooltipItem, chart) {
+	          var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+	          return datasetLabel + ": " + number_format(tooltipItem.yLabel);
+	        }
+	      }
+	    },
+	  }
+	});
+
+	
+});
+
+
