@@ -83,18 +83,22 @@ public class AddResponses extends HttpServlet {
 		HttpSession session = request.getSession();
 		
 		if(session.isNew() || session.getAttribute("user") == null) {
+			//non è loggato
 			path = getServletContext().getContextPath() + "/index.html";
 			response.sendRedirect(path);
 		}
 		else {
+			
 			if(ls.alreadyLogged(  ((User)session.getAttribute("user")).getUsername()) || ((User)session.getAttribute("user")).getBan() == 1 ) {
-				session.setAttribute("user", (User)session.getAttribute("user"));
+				//se ha gia aggiunto una risposta o è bloccato
 				response.sendRedirect("Home");
+				return;
 			}
 			else {
 				final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
 				
-				if(request.getParameter("nrQuestions") == null) {
+				if(request.getParameter("nrQuestions") == null || !StringUtils.isNumeric(request.getParameter("nrQuestions"))) {
+					//controllo che nr sia un numero e non nullo
 					response.sendRedirect("Questionnaire");
 					return;
 				}
@@ -121,8 +125,8 @@ public class AddResponses extends HttpServlet {
 					//controllo input e creazione delle liste
 					
 					for(int i=1;i<=nr;i++) {
-						//Ccrea liste da mandare ad AnswerService
-						if(request.getParameter("q" + Integer.toString(i)) == null || request.getParameter("Question" + Integer.toString(i)) == null) {
+						//Crea liste da mandare ad AnswerService
+						if(request.getParameter("q" + Integer.toString(i)) == null || request.getParameter("Question" + Integer.toString(i)) == null || !StringUtils.isNumeric(request.getParameter("q" + Integer.toString(i)))) {
 							response.sendRedirect("Questionnaire");
 							return;
 						}
@@ -163,6 +167,10 @@ public class AddResponses extends HttpServlet {
 					
 					
 				}
+				else {
+					response.sendRedirect("Home");
+					return;
+				}
 				
 				//estraggo e controllo input utente per statistiche
 				
@@ -183,25 +191,38 @@ public class AddResponses extends HttpServlet {
 					
 					if(request.getParameter("age") != "" && StringUtils.isNumeric(request.getParameter("age"))) {
 						age = Integer.parseInt(request.getParameter("age"));
+						if(age < 16 || age > 110) {
+							age = -1;
+						}
 					}
 					
 					
 					//in gender può esserci solo M, F o none (' ')
 					switch (request.getParameter("genderRadio")) {
-					case "M": gender = 'M';
-					case "F": gender = 'F';
-					default: gender = ' ';
+					case "M": {gender = 'M'; break;}
+					case "F": {gender = 'F'; break;}
+					default: {gender = ' '; break;}
 						
 					}
 					
 					switch (expL) {
-					
-						case "Low": expLev = 1;
-						case "Medium": expLev = 2;
-						case "High" : expLev = 3;
-						default: expLev = -1;
+						case "Low": {expLev = 1; break;}
+						case "Medium": {expLev = 2; break;}
+						case "High" : {expLev = 3; break;}
+						default: {expLev = -1; break;}
 						
 					}
+					
+					/*
+					System.out.println("\n\n---------------------\n\n");
+					System.out.println(age);
+					System.out.println(expLev);
+					System.out.println(gender);
+					System.out.println(request.getParameter("genderRadio"));
+					System.out.println(request.getParameter("age"));
+					System.out.println(request.getParameter("expLevel"));
+					System.out.println("\n\n---------------------\n\n");
+					*/
 					
 					//if everything is ok insert answers
 					try {
@@ -213,6 +234,11 @@ public class AddResponses extends HttpServlet {
 							as.insertStatisticalAnswer(age, gender, expLev, (User)session.getAttribute("user"));
 						} catch (ProductException e1) {
 							System.out.println("exception");
+							//L'utente va comunque bannato
+							User user = us.banUser( ((User)session.getAttribute("user")).getUsername() );
+							session.setAttribute("user", user);
+							response.sendRedirect("Home");
+							
 							ctx.setVariable("questions", prod_day.getQuestions());
 							ctx.setVariable("nrQuestions", nr);
 							ctx.setVariable("server_error", 1);
@@ -242,6 +268,7 @@ public class AddResponses extends HttpServlet {
 						path = "/WEB-INF/Wizard.html";
 					}
 					
+					//se tutto va a buon fine
 					ctx.setVariable("user", ((User)session.getAttribute("user")));
 					path = "/WEB-INF/thanks.html";
 					templateEngine.process(path, ctx, response.getWriter());

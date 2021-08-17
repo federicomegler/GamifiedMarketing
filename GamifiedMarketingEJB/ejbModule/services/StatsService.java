@@ -1,11 +1,13 @@
 package services;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import javax.ejb.Stateless;
@@ -22,8 +24,8 @@ public class StatsService {
 	@PersistenceContext(unitName = "GamifiedMarketingEJB")
 	EntityManager em;
 	
-	public Map<String, Integer> getLogsLast7Days() {
-		Map<String, Integer> logs = new HashedMap<String, Integer>();
+	public TreeMap<Date, Integer> getLogsLast7Days() {
+		TreeMap<Date, Integer> logs = new TreeMap<Date, Integer>();
 		Calendar cal = Calendar.getInstance();
 		Date date = new Date();
 		
@@ -35,7 +37,7 @@ public class StatsService {
 			List<Long> count = em.createQuery("SELECT COUNT(l) FROM Log l WHERE l.date = :date", Long.class).setParameter("date", cal.getTime()).setHint(QueryHints.REFRESH, HintValues.TRUE).getResultList();
 			System.out.println(cal.getTime());
 			System.out.println(count);
-			logs.put(new SimpleDateFormat("dd-MM-yyyy").format(cal.getTime()), count.get(0).intValue());
+			logs.put(cal.getTime(), count.get(0).intValue());
 		}
 		
 		return logs;
@@ -56,6 +58,7 @@ public class StatsService {
 		List<Long> tot = em.createQuery("SELECT COUNT(l) FROM Log l", Long.class).getResultList();
 		return tot.get(0);
 	}
+	
 	public Map<String, Long> getGenderDistribution() {
 		Map<String, Long> distribution = new HashMap<String, Long>();
 		Long male = em.createQuery("SELECT COUNT(a) FROM StatisticalAnswer a WHERE a.gender = 'M'", Long.class).getResultList().get(0);
@@ -68,8 +71,8 @@ public class StatsService {
 		return distribution;
 	}
 	
-	public Map<String, List<Long>> getSubmitStats() {
-		Map<String, List<Long>> logs = new HashedMap<String, List<Long>>();
+	public TreeMap<Date, List<Long>> getSubmitStats() {
+		TreeMap<Date, List<Long>> logs = new TreeMap<Date, List<Long>>();
 		Calendar cal = Calendar.getInstance();
 		Date date = new Date();
 		
@@ -79,24 +82,16 @@ public class StatsService {
 			cal.setTime(date);
 			cal.add(Calendar.DAY_OF_YEAR,-i);
 			cal.getTime();
-			List<Long> count = em.createQuery("SELECT COUNT(DISTINCT(a.user_answer)) FROM Answer a INNER JOIN a.question q INNER JOIN q.product p WHERE p.date = :date", Long.class)
-					.setParameter("date", cal.getTime()).setHint(QueryHints.REFRESH, HintValues.TRUE).getResultList();
+			List<Long> count = new ArrayList<Long>();
+			count.add(em.createQuery("SELECT COUNT(DISTINCT(a.user_answer)) FROM Answer a INNER JOIN a.question q INNER JOIN q.product p WHERE p.date = :date", Long.class)
+					.setParameter("date", cal.getTime()).setHint(QueryHints.REFRESH, HintValues.TRUE).getResultList().get(0));
+			count.add(em.createQuery("SELECT COUNT(DISTINCT(l.user_log)) FROM Log l INNER JOIN l.product_log p WHERE p.date = :date AND l.user_log NOT IN (SELECT a.user_answer FROM Answer a INNER JOIN a.question q WHERE q.product = p)", Long.class)
+					.setParameter("date", cal.getTime()).setHint(QueryHints.REFRESH, HintValues.TRUE).getResultList().get(0));
 			System.out.println(cal.getTime());
 			System.out.println(count);
-			logs.put(new SimpleDateFormat("dd-MM-yyyy").format(cal.getTime()), count);
+			logs.put(cal.getTime(), count);
 		}
 		
-		date = new Date();
-		for(int i=0; i<7; ++i) {
-			cal.setTime(date);
-			cal.add(Calendar.DAY_OF_YEAR,-i);
-			cal.getTime();
-			List<Long> count = em.createQuery("SELECT COUNT(DISTINCT(l.user_log)) FROM Log l INNER JOIN l.product_log p WHERE p.date = :date AND l.user_log NOT IN (SELECT a.user_answer FROM Answer a INNER JOIN a.question q WHERE q.product = p)", Long.class)
-					.setParameter("date", cal.getTime()).setHint(QueryHints.REFRESH, HintValues.TRUE).getResultList();
-			System.out.println(cal.getTime());
-			System.out.println(count);
-			logs.get(new SimpleDateFormat("dd-MM-yyyy").format(cal.getTime())).add(count.get(0));
-		}
 		return logs;
 	}
 }

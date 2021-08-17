@@ -1,6 +1,7 @@
 package controllers;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedMap;
@@ -47,13 +48,12 @@ public class GetStats extends HttpServlet {
 		}
 		else{
 			
-			Map<String, Integer> logs = new HashMap<String, Integer>();
+			TreeMap<Date, Integer> logs = new TreeMap<Date, Integer>();
 			
 			logs = ss.getLogsLast7Days();
-			TreeMap<String, Integer> sorted_map = new TreeMap<String, Integer>(logs);
 			
 			
-		    String json = new Gson().toJson(sorted_map);
+		    String json = new Gson().toJson(logs);
 		    System.out.println(json);
 		    response.setContentType("application/json");
 		    response.setCharacterEncoding("UTF-8");

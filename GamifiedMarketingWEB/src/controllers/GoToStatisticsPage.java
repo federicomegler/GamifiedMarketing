@@ -74,9 +74,6 @@ public class GoToStatisticsPage extends HttpServlet {
 				ctx.setVariable("avgExp", "High");
 			}
 			
-			Map<String, List<Long>> map = ss.getSubmitStats();
-			System.out.println(map);
-			
 			ctx.setVariable("totalLogs", ss.getTotalLogs());
 			templateEngine.process(path, ctx, response.getWriter());
 		}

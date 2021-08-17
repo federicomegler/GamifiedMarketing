@@ -13,7 +13,13 @@ $.get("GetStats", function(response){
 var myLineChart = new Chart(ctx, {
   type: 'line',
   data: {
-    labels: dates,
+    labels: [dates[0].substring(4,11) + dates[0].substring(25,29),
+				dates[1].substring(4,11) + dates[1].substring(25,29),
+				dates[2].substring(4,11) + dates[2].substring(25,29),
+				dates[3].substring(4,11) + dates[3].substring(25,29),
+				dates[4].substring(4,11) + dates[4].substring(25,29),
+				dates[5].substring(4,11) + dates[5].substring(25,29),
+				dates[6].substring(4,11) + dates[6].substring(25,29)],
     datasets: [{
       label: "N. people",
       lineTension: 0.3,
@@ -179,9 +185,10 @@ $.get("GetGenderStats", function (response){
 
 // Bar Chart Example
 var list
+var days
 
 $.get("GetSubmitStats", function (response){
-	var days = Object.keys(response);
+	days = Object.keys(response);
 	list = Object.values(response);
 	
 	
@@ -189,7 +196,13 @@ $.get("GetSubmitStats", function (response){
 	var myBarChart = new Chart(ctx, {
 	  type: 'bar',
 	  data: {
-	    labels: days,
+	    labels: [days[0].substring(4,11) + days[0].substring(25,29),
+				days[1].substring(4,11) + days[1].substring(25,29),
+				days[2].substring(4,11) + days[2].substring(25,29),
+				days[3].substring(4,11) + days[3].substring(25,29),
+				days[4].substring(4,11) + days[4].substring(25,29),
+				days[5].substring(4,11) + days[5].substring(25,29),
+				days[6].substring(4,11) + days[6].substring(25,29)],
 	    datasets: [{
 	      label: "Submitted",
 	      backgroundColor: "#1cc88a",
@@ -217,7 +230,7 @@ $.get("GetSubmitStats", function (response){
 	    scales: {
 	      xAxes: [{
 	        time: {
-	          unit: 'month'
+	          unit: 'date'
 	        },
 	        gridLines: {
 	          display: false,

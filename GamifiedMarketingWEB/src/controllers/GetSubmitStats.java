@@ -1,9 +1,11 @@
 package controllers;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
@@ -46,9 +48,10 @@ public class GetSubmitStats extends HttpServlet {
 		}
 		else{
 			
-			Map<String, List<Long>> submit = new HashMap<String, List<Long>>();
+			TreeMap<Date, List<Long>> submit = new TreeMap<Date, List<Long>>();
 			
 			submit = ss.getSubmitStats();
+			
 			
 		    String json = new Gson().toJson(submit);
 		    System.out.println(json);
