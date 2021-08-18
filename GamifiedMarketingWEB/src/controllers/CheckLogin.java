@@ -55,41 +55,52 @@ public class CheckLogin extends HttpServlet {
 		String path = "";
 		User user = null;
 		
-		try {
-			String salt = us.getSalt(request.getParameter("username"));
-			if(salt != null) {
-				String password = LoginUtils.get_SHA_512_Password(request.getParameter("password"), salt);
-				user = us.checkCredentials(request.getParameter("username"), password);
-			}
-		} catch (CredentialException e) {
-			final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
-			path = "/index.html";
-			response.getWriter().print("<script> alert('" + e.getMessage() + "') </script>");
-			templateEngine.process(path, ctx, response.getWriter());
-		} catch (NoSuchAlgorithmException e) {
-			final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
-			path = "/index.html";
-			response.getWriter().print("<script> alert('server error! Try again') </script>");
-			templateEngine.process(path, ctx, response.getWriter());
-		}
-		catch(NonUniqueResultException e){
-			final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
-			path = "/index.html";
-			response.getWriter().print("<script> alert('" + e.getMessage() + "') </script>");
-			templateEngine.process(path, ctx, response.getWriter());
-		}
+		System.out.println("username="+request.getParameter("username"));
 		
-		
-		if(user == null) {
+		//controllo degli input
+		if(request.getParameter("username") == null || request.getParameter("password") == null || request.getParameter("username") == "" || request.getParameter("password") == "") {
 			final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
 			path = "/index.html";
-			response.getWriter().print("<script> alert('Wrong username or password') </script>");
+			response.getWriter().print("<script> alert('" + "Insert username and password." + "') </script>");
 			templateEngine.process(path, ctx, response.getWriter());
 		}
 		else {
-			request.getSession().setAttribute("user", user);
-			path = getServletContext().getContextPath() + "/Home";
-			response.sendRedirect(path);
+			try {
+				String salt = us.getSalt(request.getParameter("username"));
+				if(salt != null) {
+					String password = LoginUtils.get_SHA_512_Password(request.getParameter("password"), salt);
+					user = us.checkCredentials(request.getParameter("username"), password);
+				}
+			} catch (CredentialException e) {
+				final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
+				path = "/index.html";
+				response.getWriter().print("<script> alert('" + e.getMessage() + "') </script>");
+				templateEngine.process(path, ctx, response.getWriter());
+			} catch (NoSuchAlgorithmException e) {
+				final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
+				path = "/index.html";
+				response.getWriter().print("<script> alert('server error! Try again') </script>");
+				templateEngine.process(path, ctx, response.getWriter());
+			}
+			catch(NonUniqueResultException e){
+				final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
+				path = "/index.html";
+				response.getWriter().print("<script> alert('" + e.getMessage() + "') </script>");
+				templateEngine.process(path, ctx, response.getWriter());
+			}
+			
+			
+			if(user == null) {
+				final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
+				path = "/index.html";
+				response.getWriter().print("<script> alert('Wrong username or password') </script>");
+				templateEngine.process(path, ctx, response.getWriter());
+			}
+			else {
+				request.getSession().setAttribute("user", user);
+				path = getServletContext().getContextPath() + "/Home";
+				response.sendRedirect(path);
+			}
 		}
 	}
 }

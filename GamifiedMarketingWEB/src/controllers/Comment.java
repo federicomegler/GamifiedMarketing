@@ -58,14 +58,6 @@ public class Comment extends HttpServlet {
 	}
 
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doPost(request, response);
-	}
-
-	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -80,7 +72,7 @@ public class Comment extends HttpServlet {
 		else {
 			String comment = request.getParameter("review");
 			String ean = request.getParameter("ean");
-			String username = ((User)request.getSession().getAttribute("user")).getUsername();
+			String username = ((User)session.getAttribute("user")).getUsername();
 			
 			Product prod = null;
 			try {

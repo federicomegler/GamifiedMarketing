@@ -67,7 +67,7 @@ public class ChangePassword extends HttpServlet {
 		else{
 			User user = null;
 			final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
-			if(((String)request.getParameter("password")).length() < 8 || !((String)request.getParameter("password")).equals(((String)request.getParameter("confirmpassword")))) {
+			if(request.getParameter("password") == null || request.getParameter("oldpassword") == null || request.getParameter("confirmpassword") == null) {
 				ctx.setVariable("result", -1);
 				ctx.setVariable("resultmsg", "New passwords do not match!");
 				ctx.setVariable("user", (User)session.getAttribute("user"));
@@ -75,49 +75,59 @@ public class ChangePassword extends HttpServlet {
 				templateEngine.process(path, ctx, response.getWriter());
 			}
 			else {
-			String oldpassword = (String)request.getParameter("oldpassword");
-			
-			try {
-				user = us.checkCredentials(((User)session.getAttribute("user")).getUsername(), LoginUtils.get_SHA_512_Password(oldpassword, ((User)session.getAttribute("user")).getSalt()));
-				System.out.println(user);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			if(user == null) {
-				ctx.setVariable("result", -1);
-				ctx.setVariable("user", (User)session.getAttribute("user"));
-				ctx.setVariable("resultmsg", "Wrong old password!");
-				String path = "/WEB-INF/Profile.html";
-				templateEngine.process(path, ctx, response.getWriter());
-			}
-			else {
-				String newpassword = null;
-				try {
-					newpassword = LoginUtils.get_SHA_512_Password((String)request.getParameter("password"), user.getSalt());
-				} catch (NoSuchAlgorithmException e) {
-					e.printStackTrace();
-				}
-				
-				
-				user = us.updatePassword(newpassword, user.getUsername());
-				
-				if(user != null && newpassword != null) {
-					session.setAttribute("user", user);
-					ctx.setVariable("result", 1);
+				if(((String)request.getParameter("password")).length() < 8 || !((String)request.getParameter("password")).equals(((String)request.getParameter("confirmpassword")))) {
+					ctx.setVariable("result", -1);
+					ctx.setVariable("resultmsg", "New passwords do not match!");
 					ctx.setVariable("user", (User)session.getAttribute("user"));
-					ctx.setVariable("resultmsg", "Success!");
 					String path = "/WEB-INF/Profile.html";
 					templateEngine.process(path, ctx, response.getWriter());
 				}
 				else {
+				String oldpassword = (String)request.getParameter("oldpassword");
+				
+				try {
+					user = us.checkCredentials(((User)session.getAttribute("user")).getUsername(), LoginUtils.get_SHA_512_Password(oldpassword, ((User)session.getAttribute("user")).getSalt()));
+					System.out.println(user);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				if(user == null) {
 					ctx.setVariable("result", -1);
 					ctx.setVariable("user", (User)session.getAttribute("user"));
-					ctx.setVariable("resultmsg", "Server error! Try again.");
+					ctx.setVariable("resultmsg", "Wrong old password!");
 					String path = "/WEB-INF/Profile.html";
 					templateEngine.process(path, ctx, response.getWriter());
 				}
+				else {
+					String newpassword = null;
+					try {
+						newpassword = LoginUtils.get_SHA_512_Password((String)request.getParameter("password"), user.getSalt());
+					} catch (NoSuchAlgorithmException e) {
+						e.printStackTrace();
+					}
+					
+					
+					user = us.updatePassword(newpassword, user.getUsername());
+					
+					if(user != null && newpassword != null) {
+						session.setAttribute("user", user);
+						ctx.setVariable("result", 1);
+						ctx.setVariable("user", (User)session.getAttribute("user"));
+						ctx.setVariable("resultmsg", "Success!");
+						String path = "/WEB-INF/Profile.html";
+						templateEngine.process(path, ctx, response.getWriter());
+					}
+					else {
+						ctx.setVariable("result", -1);
+						ctx.setVariable("user", (User)session.getAttribute("user"));
+						ctx.setVariable("resultmsg", "Server error! Try again.");
+						String path = "/WEB-INF/Profile.html";
+						templateEngine.process(path, ctx, response.getWriter());
+					}
+				}
 			}
-		}
+			}
+			
 		}
 		
 	}

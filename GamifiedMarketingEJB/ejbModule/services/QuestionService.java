@@ -129,7 +129,7 @@ public class QuestionService {
 			for(int j=0; j<answers.size(); ++j) {
 				if(answers.get(j).getUser().getUsername().equals(username)) {
 					try {
-						em.remove(questions.get(i));
+						em.remove(answers.get(j));
 					}
 					catch(PersistenceException e) {
 						throw new QuestionException("Unable to remove question");
