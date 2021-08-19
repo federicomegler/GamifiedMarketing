@@ -79,12 +79,18 @@ public class Questionnaire extends HttpServlet {
 				try {
 					p = ps.getProductOfTheDay();
 				} catch (ProductException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					ctx.setVariable("user", ((User)session.getAttribute("user")));
+					ctx.setVariable("noproductfound", 1);
+					ctx.setVariable("comment", 0);
+					path = "/WEB-INF/Home.html";
+					templateEngine.process(path, ctx, response.getWriter());
 				}
 				if(p == null) {
-					// TODO mettere reindirizzamento ad home con errore
-					response.getWriter().append("Served at: ").append("non ci sono prodotti del giorno");
+					ctx.setVariable("user", ((User)session.getAttribute("user")));
+					ctx.setVariable("noproductfound", 1);
+					ctx.setVariable("comment", 0);
+					path = "/WEB-INF/Home.html";
+					templateEngine.process(path, ctx, response.getWriter());
 				}
 				else {
 					List<Question> questions = qs.getQuestions(p.getId());
