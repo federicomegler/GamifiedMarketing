@@ -34,7 +34,6 @@ public class GetSubmitStats extends HttpServlet {
      */
     public GetSubmitStats() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
 	/**

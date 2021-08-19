@@ -54,9 +54,14 @@ public class GoToDeletionPage extends HttpServlet {
 			response.sendRedirect(path);
 		}
 		else {
-			ctx.setVariable("user", ((User)session.getAttribute("user")));
-			ctx.setVariable("delete_error", 0);
-			templateEngine.process(path, ctx, response.getWriter());
+			if(((User)session.getAttribute("user")).getAdmin() == 0) {
+				response.sendRedirect("Home");
+			}
+			else {
+				ctx.setVariable("user", ((User)session.getAttribute("user")));
+				ctx.setVariable("delete_error", 0);
+				templateEngine.process(path, ctx, response.getWriter());
+			}
 		}
 	}
 

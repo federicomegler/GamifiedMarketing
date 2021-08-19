@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.google.gson.Gson;
 
 import entities.Answer;
@@ -47,17 +49,36 @@ public class GetQNA extends HttpServlet {
 			response.sendRedirect(path + "/index.html");
 		}
 		else{
-			
-			Map<String, Map<String,String>> qna = new HashMap<String, Map<String,String>>();
-			
-			qna = qs.getQNAByProductId(Integer.parseInt(request.getParameter("id")));
-			
-		    String json = new Gson().toJson(qna);
-		    System.out.println(json);
-		    response.setContentType("application/json");
-		    response.setCharacterEncoding("UTF-8");
-		    response.getWriter().write(json);
+			if(((User)session.getAttribute("user")).getAdmin() == 0) {
+				String json = new Gson().toJson("error");
+			    System.out.println(json);
+			    response.setContentType("application/json");
+			    response.setCharacterEncoding("UTF-8");
+			    response.getWriter().write(json);
 			}
+			else {
+				String id = request.getParameter("id");
+				
+				if(id == null || id.isBlank() || !StringUtils.isNumeric(id)) {
+					String json = new Gson().toJson("error");
+				    System.out.println(json);
+				    response.setContentType("application/json");
+				    response.setCharacterEncoding("UTF-8");
+				    response.getWriter().write(json);
+				}
+				else {
+					Map<String, Map<String,String>> qna = new HashMap<String, Map<String,String>>();
+					
+					qna = qs.getQNAByProductId(Integer.parseInt(id));
+					
+				    String json = new Gson().toJson(qna);
+				    System.out.println(json);
+				    response.setContentType("application/json");
+				    response.setCharacterEncoding("UTF-8");
+				    response.getWriter().write(json);
+				}
+			}
+		}
 	}
 
 	/**

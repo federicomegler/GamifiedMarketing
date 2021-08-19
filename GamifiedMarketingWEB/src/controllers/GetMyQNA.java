@@ -48,7 +48,11 @@ public class GetMyQNA extends HttpServlet {
 		else{
 			String id = request.getParameter("id");
 			if(id == null || id.isBlank() || !StringUtils.isNumeric(id)) {
-				response.sendRedirect("Home");
+				String json = new Gson().toJson("error");
+			    System.out.println(json);
+			    response.setContentType("application/json");
+			    response.setCharacterEncoding("UTF-8");
+			    response.getWriter().write(json);
 			}
 			else {
 				Map<String, String> qna = new HashMap<String, String>();

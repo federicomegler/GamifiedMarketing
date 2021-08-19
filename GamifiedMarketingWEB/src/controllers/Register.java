@@ -113,6 +113,7 @@ public class Register extends HttpServlet {
 				if(user == null) {
 					String path = "/WEB-INF/Register.html";
 					ctx.setVariable("error", 1);
+					ctx.setVariable("errormsg", "Server error! Try again");
 					templateEngine.process(path, ctx, response.getWriter());
 				}
 				else {

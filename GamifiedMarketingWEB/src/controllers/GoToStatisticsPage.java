@@ -58,24 +58,34 @@ public class GoToStatisticsPage extends HttpServlet {
 			response.sendRedirect(path + "/index.html");
 		}
 		else{
-			String path = "/WEB-INF/Statistics.html";
-			ServletContext servletContext = getServletContext();
-			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-			ctx.setVariable("user", ((User)session.getAttribute("user")));
-			ctx.setVariable("avgAge", ss.getAvgAge());
-			Double avgExp = ss.getAvgEXP();
-			if(avgExp < 0.5) {
-				ctx.setVariable("avgExp", "Low");
-			}
-			else if(avgExp >= 0.5 && avgExp < 1.5) {
-				ctx.setVariable("avgExp", "Medium");
+			if(((User)session.getAttribute("user")).getAdmin() == 0) {
+				response.sendRedirect("Home");
 			}
 			else {
-				ctx.setVariable("avgExp", "High");
+				String path = "/WEB-INF/Statistics.html";
+				final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
+				
+				ctx.setVariable("user", ((User)session.getAttribute("user")));
+				ctx.setVariable("avgAge", ss.getAvgAge());
+				
+				Double avgExp = ss.getAvgEXP();
+				
+				
+				if(avgExp < 0.5) {
+					ctx.setVariable("avgExp", "Low");
+				}
+				else if(avgExp >= 0.5 && avgExp < 1.5) {
+					ctx.setVariable("avgExp", "Medium");
+				}
+				else {
+					ctx.setVariable("avgExp", "High");
+				}
+				
+				Long totalLogs = ss.getTotalLogs();
+				
+				ctx.setVariable("totalLogs", totalLogs);
+				templateEngine.process(path, ctx, response.getWriter());
 			}
-			
-			ctx.setVariable("totalLogs", ss.getTotalLogs());
-			templateEngine.process(path, ctx, response.getWriter());
 		}
 	}
 

@@ -54,10 +54,12 @@ public class GetProducts extends HttpServlet {
 				try {
 					products = ps.getAllProducts();
 				} catch (ProductException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					String json = new Gson().toJson("error");
+				    response.setContentType("application/json");
+				    response.setCharacterEncoding("UTF-8");
+				    response.getWriter().write(json);
 				}
-				List<List<String>> table = new ArrayList<>();
+				List<List<String>> table = new ArrayList<List<String>>();
 			    
 				for(int i=0; i<products.size(); ++i) {
 					List<String> elements = new ArrayList<String>();

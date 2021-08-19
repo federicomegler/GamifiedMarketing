@@ -47,18 +47,26 @@ public class GetStats extends HttpServlet {
 			response.sendRedirect(path + "/index.html");
 		}
 		else{
-			
-			TreeMap<Date, Integer> logs = new TreeMap<Date, Integer>();
-			
-			logs = ss.getLogsLast7Days();
-			
-			
-		    String json = new Gson().toJson(logs);
-		    System.out.println(json);
-		    response.setContentType("application/json");
-		    response.setCharacterEncoding("UTF-8");
-		    response.getWriter().write(json);
+			if(((User)session.getAttribute("user")).getAdmin() == 0) {
+				String json = new Gson().toJson("error");
+			    System.out.println(json);
+			    response.setContentType("application/json");
+			    response.setCharacterEncoding("UTF-8");
+			    response.getWriter().write(json);
 			}
+			else {
+				TreeMap<Date, Integer> logs = new TreeMap<Date, Integer>();
+				
+				logs = ss.getLogsLast7Days();
+				
+				
+			    String json = new Gson().toJson(logs);
+			    System.out.println(json);
+			    response.setContentType("application/json");
+			    response.setCharacterEncoding("UTF-8");
+			    response.getWriter().write(json);
+			}
+		}
 	}
 
 	/**

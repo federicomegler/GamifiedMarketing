@@ -3,7 +3,11 @@
  */
 var map;
 $.get("GetProducts", function(responseJson) {    // Execute Ajax GET request on URL of "someservlet" and execute the following function with Ajax response JSON...
-        data = responseJson;
+        if(responseJson == "error"){
+			alert("Unable to load products! Server error.")
+		}
+		else{
+			data = responseJson;
 		console.log(data);
 		var table = $('#products').DataTable({
 			data: data,
@@ -64,6 +68,10 @@ $.get("GetProducts", function(responseJson) {    // Execute Ajax GET request on 
 		});
 		
     } );
+	
+	
+	}
+		
 		
 });
 
