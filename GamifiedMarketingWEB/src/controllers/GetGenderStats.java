@@ -15,6 +15,7 @@ import javax.servlet.http.HttpSession;
 
 import com.google.gson.Gson;
 
+import entities.User;
 import services.StatsService;
 
 /**
@@ -45,17 +46,22 @@ public class GetGenderStats extends HttpServlet {
 			response.sendRedirect(path + "/index.html");
 		}
 		else{
-			
-			Map<String, Long> genders = new HashMap<String, Long>();
-			
-			genders = ss.getGenderDistribution();
-			
-		    String json = new Gson().toJson(genders);
-		    System.out.println(json);
-		    response.setContentType("application/json");
-		    response.setCharacterEncoding("UTF-8");
-		    response.getWriter().write(json);
+			if(((User)session.getAttribute("user")).getAdmin() == 0) {
+				response.sendRedirect("Home");
 			}
+			else {
+				Map<String, Long> genders = new HashMap<String, Long>();
+				
+				genders = ss.getGenderDistribution();
+				
+			    String json = new Gson().toJson(genders);
+			    System.out.println(json);
+			    response.setContentType("application/json");
+			    response.setCharacterEncoding("UTF-8");
+			    response.getWriter().write(json);
+			}
+			
+		}
 	}
 
 	/**

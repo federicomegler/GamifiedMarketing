@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.google.gson.Gson;
 
 import entities.Product;
@@ -49,42 +51,52 @@ public class GetInfoUserProduct extends HttpServlet {
 			response.sendRedirect(path + "/index.html");
 		}
 		else{
-			List<String> usersSubmit = null;
-			List<String> usersCancelled = null;
-			
-			usersSubmit = ps.getUserSubmit(Integer.parseInt(request.getParameter("id")));
-			
-			
-			Map<String, List<List<String>>> tables = new HashMap<String, List<List<String>>>();
-			
-			List<List<String>> tableSubmit = new ArrayList<List<String>>();
-		    
-			for(int i=0; i<usersSubmit.size(); ++i) {
-				List<String> elements = new ArrayList<String>();
-				elements.add(usersSubmit.get(i));
-				tableSubmit.add(elements);
+			if(((User)session.getAttribute("user")).getAdmin() == 0) {
+				response.sendRedirect("Home");
 			}
-			tables.put("submit", tableSubmit);
-			
-			usersCancelled = ps.getUserCancelled(Integer.parseInt(request.getParameter("id")), usersSubmit);
-			List<List<String>> tableCancelled = new ArrayList<List<String>>();
-			
-			for(int i=0; i<usersCancelled.size(); ++i) {
-				List<String> elements = new ArrayList<String>();
-				elements.add(usersCancelled.get(i));
-				tableCancelled.add(elements);
+			else {
+				List<String> usersSubmit = null;
+				List<String> usersCancelled = null;
+				
+				String id = request.getParameter("id");
+				if(id == null || id.isBlank() || !StringUtils.isNumeric(id)) {
+					response.sendRedirect("Home");;
+				}
+				else {
+					usersSubmit = ps.getUserSubmit(Integer.parseInt(id));
+					
+					//creo una mappa con chiave la tabella target e contenuto la lista di valori da inserire.
+					Map<String, List<List<String>>> tables = new HashMap<String, List<List<String>>>();
+					
+					List<List<String>> tableSubmit = new ArrayList<List<String>>();
+				    
+					for(int i=0; i<usersSubmit.size(); ++i) {
+						List<String> elements = new ArrayList<String>();
+						elements.add(usersSubmit.get(i));
+						tableSubmit.add(elements);
+					}
+					tables.put("submit", tableSubmit);
+					
+					usersCancelled = ps.getUserCancelled(Integer.parseInt(id), usersSubmit);
+					List<List<String>> tableCancelled = new ArrayList<List<String>>();
+					
+					for(int i=0; i<usersCancelled.size(); ++i) {
+						List<String> elements = new ArrayList<String>();
+						elements.add(usersCancelled.get(i));
+						tableCancelled.add(elements);
+					}
+					
+					tables.put("cancelled", tableCancelled);
+					
+					
+					
+				    String json = new Gson().toJson(tables);
+				    response.setContentType("application/json");
+				    response.setCharacterEncoding("UTF-8");
+				    response.getWriter().write(json);
+				}	
 			}
-			
-			tables.put("cancelled", tableCancelled);
-			
-			
-			
-		    String json = new Gson().toJson(tables);
-		    response.setContentType("application/json");
-		    response.setCharacterEncoding("UTF-8");
-		    response.getWriter().write(json);
 		}
-		
 	}
 
 	/**

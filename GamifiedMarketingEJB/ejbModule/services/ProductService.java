@@ -23,6 +23,15 @@ public class ProductService {
 	@PersistenceContext(unitName = "GamifiedMarketingEJB")
 	EntityManager em;
 	
+	public Boolean alreadyInserted(Date date) {
+		List<Product> products = new ArrayList<Product>();
+		products = em.createQuery("SELECT p FROM Product p WHERE p.date = :date", Product.class).setParameter("date", date).getResultList();
+		if(products.isEmpty()) {
+			return false;
+		}
+		return true;
+	}
+	
 	public Product getProductOfTheDay() throws ProductException{
 		List<Product> products = null;
 		try {
@@ -41,22 +50,33 @@ public class ProductService {
 			return products.get(0);
 	}
 	
-	public int insertNewProduct(String name, byte[] image, String ean, java.util.Date date) throws ProductException {
+	public void insertNewProduct(String name, byte[] image, String ean, Date date, List<String> questions) throws ProductException {
 		
 		try {
 			Product product = new Product();
+			List<Question> questionList = new ArrayList<Question>();
 			
 			product.setName(name);
 			product.setDate(date);
 			product.setImage(image);
 			product.setEan(ean);
+			
+			for(int i=0; i<questions.size(); ++i) {
+				Question question = new Question();
+				question.setContent(questions.get(i));
+				question.setProductQuestion(product);
+				questionList.add(question);
+			}
+			
+			product.setQuestions(questionList);
+			
 			em.persist(product);
 			em.flush();
-			return product.getId();
 		}
 		catch(PersistenceException e) {
-			throw new ProductException("Unable to get the product of the day");
+			throw new ProductException("Unable to insert the product of the day");
 		}
+		
 		
 	}
 	

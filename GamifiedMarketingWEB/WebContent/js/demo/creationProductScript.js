@@ -1,34 +1,57 @@
 var x=1;
 
 
+window.onload = function(){
+	var today = new Date();
+	var dd = today.getDate();
+	var mm = today.getMonth()+1; //January is 0!
+	var yyyy = today.getFullYear();
+ 	if(dd < 10){
+ 	       dd = '0' + dd;
+ 	   } 
+ 	   if(mm < 10){
+ 	       mm = '0'+ mm;
+ 	   } 
+
+	today = yyyy+'-'+mm+'-'+dd;
+	document.getElementById("date").setAttribute("min", today);
+}
+
+
 var addQuestion= function()
 {
-	var form= document.getElementById("productForm");
-	var newInput=document.createElement("input");
-	newInput.type="text";
+	var form = document.getElementById("productForm");
+	var div = document.createElement("div");
+	div.classList.add("form-group");
+	div.id = "formdiv" + x;
+	var newInput = document.createElement("input");
+	newInput.type = "text";
 	newInput.classList.add("form-control")
 	newInput.classList.add("form-control-user")
-	newInput.placeholder="Question"+x
-	newInput.id="Question"+x;
-	newInput.name="Question"+x;
+	newInput.placeholder = "Question" + x
+	newInput.id = "Question" + x;
+	newInput.name = "Question" + x;
+	newInput.required;
 	
-	
-	form.appendChild(newInput);
-	x=x+1;
+	div.appendChild(newInput);
+	form.appendChild(div);
+	x = x + 1;
 }
 
 var removeQuestion= function()
 {
-	if(x>1)
+	if(x > 1)
 	{
-		var elem= document.getElementById("Question"+(x-1));
+		var elem = document.getElementById("Question" + (x-1));
 		elem.remove();
-		x=x-1;
+		var div = document.getElementById("formdiv" + (x-1));
+		div.remove();
+		x = x - 1;
 	}
 
 }
 
-var submitForm= function()
+var submitForm = function()
 {
 	var form= document.getElementById("productForm");
 	var newInput =document.createElement("input")

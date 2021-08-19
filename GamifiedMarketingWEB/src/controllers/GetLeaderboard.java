@@ -44,7 +44,7 @@ public class GetLeaderboard extends HttpServlet {
 		}
 		else{
 			List<User> users = us.getLeaderboard();
-			List<List<String>> table = new ArrayList<>();
+			List<List<String>> table = new ArrayList<List<String>>();
 		    
 			for(int i=0; i<users.size(); ++i) {
 				List<String> elements = new ArrayList<String>();

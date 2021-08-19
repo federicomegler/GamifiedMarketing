@@ -51,7 +51,7 @@ public class GetMyProducts extends HttpServlet {
 			
 			products = ps.getUserProducts(((User)session.getAttribute("user")).getUsername());
 			
-			List<List<String>> table = new ArrayList<>();
+			List<List<String>> table = new ArrayList<List<String>>();
 		    
 			for(int i=0; i<products.size(); ++i) {
 				List<String> elements = new ArrayList<String>();

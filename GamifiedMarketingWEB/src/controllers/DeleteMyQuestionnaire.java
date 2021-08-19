@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -61,23 +62,33 @@ public class DeleteMyQuestionnaire extends HttpServlet {
 			response.sendRedirect(path);
 		}
 		else {
-			int product_id = Integer.parseInt((String)request.getParameter("id"));
-			
-			try {
-				qs.deleteMyQuestionnaire(product_id, ((User)session.getAttribute("user")).getUsername());
-			} catch (QuestionException e) {
+			String id = (String)request.getParameter("id");
+			if(id == null || id.isBlank() || !StringUtils.isNumeric(id)) {
 				path = "/WEB-INF/MyQuestionnaire.html";
 				ctx.setVariable("user", ((User)session.getAttribute("user")));
 				ctx.setVariable("delete_error", 1);
 				ctx.setVariable("success", 0);
 				templateEngine.process(path, ctx, response.getWriter());
 			}
-			
-			path = "/WEB-INF/MyQuestionnaire.html";
-			ctx.setVariable("user", ((User)session.getAttribute("user")));
-			ctx.setVariable("delete_error", 0);
-			ctx.setVariable("success", 1);
-			templateEngine.process(path, ctx, response.getWriter());
+			else {
+				int product_id = Integer.parseInt(id);
+				
+				try {
+					qs.deleteMyQuestionnaire(product_id, ((User)session.getAttribute("user")).getUsername());
+				} catch (QuestionException e) {
+					path = "/WEB-INF/MyQuestionnaire.html";
+					ctx.setVariable("user", ((User)session.getAttribute("user")));
+					ctx.setVariable("delete_error", 1);
+					ctx.setVariable("success", 0);
+					templateEngine.process(path, ctx, response.getWriter());
+				}
+				
+				path = "/WEB-INF/MyQuestionnaire.html";
+				ctx.setVariable("user", ((User)session.getAttribute("user")));
+				ctx.setVariable("delete_error", 0);
+				ctx.setVariable("success", 1);
+				templateEngine.process(path, ctx, response.getWriter());
+			}
 		}
 	}
 

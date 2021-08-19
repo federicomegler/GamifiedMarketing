@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -48,7 +49,7 @@ public class Product implements Serializable{
 	@Temporal(TemporalType.DATE)
 	Date date;
 	
-	@OneToMany(mappedBy = "product")
+	@OneToMany(mappedBy = "product", cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE})
 	private List<Question> questions;
 	
 	@OneToMany(mappedBy = "product")

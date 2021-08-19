@@ -4,27 +4,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-
 import entities.Answer;
 import entities.Product;
 import entities.Question;
-import entities.User;
-
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
-
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
-
-import entities.Product;
-import entities.Question;
 import exceptions.ProductException;
 import exceptions.QuestionException;
 

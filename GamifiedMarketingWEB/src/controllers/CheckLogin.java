@@ -1,8 +1,6 @@
 package controllers;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import javax.ejb.EJB;
@@ -58,7 +56,7 @@ public class CheckLogin extends HttpServlet {
 		System.out.println("username="+request.getParameter("username"));
 		
 		//controllo degli input
-		if(request.getParameter("username") == null || request.getParameter("password") == null || request.getParameter("username") == "" || request.getParameter("password") == "") {
+		if(request.getParameter("username") == null || request.getParameter("password") == null || request.getParameter("username").isBlank() || request.getParameter("password").isBlank()) {
 			final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
 			path = "/index.html";
 			response.getWriter().print("<script> alert('" + "Insert username and password." + "') </script>");

@@ -80,7 +80,7 @@ public class Comment extends HttpServlet {
 			} catch (ProductException e) {
 				ctx.setVariable("user", ((User)session.getAttribute("user")));
 				ctx.setVariable("noproductfound", 1);
-				ctx.setVariable("comment", 0);
+				ctx.setVariable("comment_err", 2);
 				path = "/WEB-INF/Home.html";
 				templateEngine.process(path, ctx, response.getWriter());
 			}
@@ -88,18 +88,18 @@ public class Comment extends HttpServlet {
 			if(prod == null) {
 				ctx.setVariable("user", ((User)session.getAttribute("user")));
 				ctx.setVariable("noproductfound", 1);
-				ctx.setVariable("comment", 0);
+				ctx.setVariable("comment_err", 2);
 				path = "/WEB-INF/Home.html";
 				templateEngine.process(path, ctx, response.getWriter());
 			}
 			else {
-				if(comment == null || ean == null) {
+				if(comment == null || ean == null || !ean.equals(prod.getEan()) || comment.isBlank()) {
 					ctx.setVariable("user", ((User)session.getAttribute("user")));
 					ctx.setVariable("image", prod.getImageData());
 					ctx.setVariable("noproductfound", 0);
 					ctx.setVariable("ean", prod.getEan());
 					ctx.setVariable("alreadylogged", ls.alreadyLogged(((User)session.getAttribute("user")).getUsername()));
-					ctx.setVariable("comment", 2);
+					ctx.setVariable("comment_err", 2);
 					path = "/WEB-INF/Home.html";
 					templateEngine.process(path, ctx, response.getWriter());
 				}
@@ -112,7 +112,7 @@ public class Comment extends HttpServlet {
 						ctx.setVariable("noproductfound", 0);
 						ctx.setVariable("ean", prod.getEan());
 						ctx.setVariable("alreadylogged", ls.alreadyLogged(((User)session.getAttribute("user")).getUsername()));
-						ctx.setVariable("comment", 2);
+						ctx.setVariable("comment_err", 2);
 						path = "/WEB-INF/Home.html";
 						templateEngine.process(path, ctx, response.getWriter());
 					}
@@ -121,7 +121,7 @@ public class Comment extends HttpServlet {
 					ctx.setVariable("noproductfound", 0);
 					ctx.setVariable("ean", prod.getEan());
 					ctx.setVariable("alreadylogged", ls.alreadyLogged(((User)session.getAttribute("user")).getUsername()));
-					ctx.setVariable("comment", 1);
+					ctx.setVariable("comment_err", 1);
 					path = "/WEB-INF/Home.html";
 					templateEngine.process(path, ctx, response.getWriter());
 				}

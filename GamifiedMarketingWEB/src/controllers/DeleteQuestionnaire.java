@@ -3,7 +3,6 @@ package controllers;
 import java.io.IOException;
 
 import javax.ejb.EJB;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -57,28 +57,45 @@ public class DeleteQuestionnaire extends HttpServlet {
 		HttpSession session = request.getSession();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		
-		if(session.isNew() || session.getAttribute("user") == null || ((User) session.getAttribute("user")).getAdmin() == 0) {
+		if(session.isNew() || session.getAttribute("user") == null) {
 			path = getServletContext().getContextPath() + "/index.html";
 			response.sendRedirect(path);
 		}
 		else {
-			int product_id = Integer.parseInt((String)request.getParameter("id"));
-			
-			try {
-				qs.deleteQuestionnaire(product_id);
-			} catch (QuestionException e) {
-				path = "/WEB-INF/deleteQuestionnaire.html";
-				ctx.setVariable("user", ((User)session.getAttribute("user")));
-				ctx.setVariable("delete_error", 1);
-				ctx.setVariable("success", 0);
-				templateEngine.process(path, ctx, response.getWriter());
+			//servlet riservata agli admin
+			if(((User) session.getAttribute("user")).getAdmin() == 0) {
+				response.sendRedirect("Home");
 			}
-			
-			path = "/WEB-INF/deleteQuestionnaire.html";
-			ctx.setVariable("user", ((User)session.getAttribute("user")));
-			ctx.setVariable("delete_error", 0);
-			ctx.setVariable("success", 1);
-			templateEngine.process(path, ctx, response.getWriter());
+			else {
+				//controllo che l'id non sia nullo e che sia intero
+				String id = (String)request.getParameter("id");
+				if(id == null || id.isBlank() || !StringUtils.isNumeric(id)) {
+					path = "/WEB-INF/deleteQuestionnaire.html";
+					ctx.setVariable("user", ((User)session.getAttribute("user")));
+					ctx.setVariable("delete_error", 1);
+					ctx.setVariable("success", 0);
+					templateEngine.process(path, ctx, response.getWriter());
+				}
+				else {
+					int product_id = Integer.parseInt(id);
+					
+					try {
+						qs.deleteQuestionnaire(product_id);
+					} catch (QuestionException e) {
+						path = "/WEB-INF/deleteQuestionnaire.html";
+						ctx.setVariable("user", ((User)session.getAttribute("user")));
+						ctx.setVariable("delete_error", 1);
+						ctx.setVariable("success", 0);
+						templateEngine.process(path, ctx, response.getWriter());
+					}
+					
+					path = "/WEB-INF/deleteQuestionnaire.html";
+					ctx.setVariable("user", ((User)session.getAttribute("user")));
+					ctx.setVariable("delete_error", 0);
+					ctx.setVariable("success", 1);
+					templateEngine.process(path, ctx, response.getWriter());
+				}
+			}
 		}
 	}
 

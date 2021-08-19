@@ -46,28 +46,33 @@ public class GetProducts extends HttpServlet {
 			response.sendRedirect(path + "/index.html");
 		}
 		else{
-			List<Product> products = null;
-			try {
-				products = ps.getAllProducts();
-			} catch (ProductException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			if(((User)session.getAttribute("user")).getAdmin() == 0) {
+				response.sendRedirect("Home");
 			}
-			List<List<String>> table = new ArrayList<>();
-		    
-			for(int i=0; i<products.size(); ++i) {
-				List<String> elements = new ArrayList<String>();
-				elements.add(Integer.toString(products.get(i).getId()));
-				elements.add(products.get(i).getName());
-				elements.add(new SimpleDateFormat("dd-MM-yyyy").format(products.get(i).getDate()));
-				elements.add(products.get(i).getEan());
-				table.add(elements);
+			else {
+				List<Product> products = null;
+				try {
+					products = ps.getAllProducts();
+				} catch (ProductException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				List<List<String>> table = new ArrayList<>();
+			    
+				for(int i=0; i<products.size(); ++i) {
+					List<String> elements = new ArrayList<String>();
+					elements.add(Integer.toString(products.get(i).getId()));
+					elements.add(products.get(i).getName());
+					elements.add(new SimpleDateFormat("dd-MM-yyyy").format(products.get(i).getDate()));
+					elements.add(products.get(i).getEan());
+					table.add(elements);
+				}
+				
+			    String json = new Gson().toJson(table);
+			    response.setContentType("application/json");
+			    response.setCharacterEncoding("UTF-8");
+			    response.getWriter().write(json);
 			}
-			
-		    String json = new Gson().toJson(table);
-		    response.setContentType("application/json");
-		    response.setCharacterEncoding("UTF-8");
-		    response.getWriter().write(json);
 		}
 	}
 
