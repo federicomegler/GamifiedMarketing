@@ -16,6 +16,7 @@ import javax.servlet.http.HttpSession;
 import com.google.gson.Gson;
 
 import entities.User;
+import exceptions.StatisticsException;
 import services.StatsService;
 
 /**
@@ -50,15 +51,34 @@ public class GetGenderStats extends HttpServlet {
 				response.sendRedirect("Home");
 			}
 			else {
-				Map<String, Long> genders = new HashMap<String, Long>();
+				if(((User)session.getAttribute("user")).getAdmin() == 0) {
+					String json = new Gson().toJson("error");
+				    System.out.println(json);
+				    response.setContentType("application/json");
+				    response.setCharacterEncoding("UTF-8");
+				    response.getWriter().write(json);
+				}
+				else {
+					Map<String, Long> genders = new HashMap<String, Long>();
 				
-				genders = ss.getGenderDistribution();
+					try {
+						genders = ss.getGenderDistribution();
+					} catch (StatisticsException e) {
+						String json = new Gson().toJson("error");
+					    System.out.println(json);
+					    response.setContentType("application/json");
+					    response.setCharacterEncoding("UTF-8");
+					    response.getWriter().write(json);
+					    return;
+					}
 				
-			    String json = new Gson().toJson(genders);
-			    System.out.println(json);
-			    response.setContentType("application/json");
-			    response.setCharacterEncoding("UTF-8");
-			    response.getWriter().write(json);
+					String json = new Gson().toJson(genders);
+					System.out.println(json);
+					response.setContentType("application/json");
+					response.setCharacterEncoding("UTF-8");
+					response.getWriter().write(json);
+				}
+				
 			}
 			
 		}

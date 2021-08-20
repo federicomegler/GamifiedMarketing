@@ -78,6 +78,7 @@ public class Home extends HttpServlet {
 				ctx.setVariable("comment", 0);
 				path = "/WEB-INF/Home.html";
 				templateEngine.process(path, ctx, response.getWriter());
+				return;
 			}
 			if(prod == null) {
 				ctx.setVariable("user", ((User)session.getAttribute("user")));

@@ -84,6 +84,7 @@ public class Questionnaire extends HttpServlet {
 					ctx.setVariable("comment", 0);
 					path = "/WEB-INF/Home.html";
 					templateEngine.process(path, ctx, response.getWriter());
+					return;
 				}
 				if(p == null) {
 					ctx.setVariable("user", ((User)session.getAttribute("user")));

@@ -16,6 +16,7 @@ import com.google.gson.Gson;
 
 import entities.Review;
 import entities.User;
+import exceptions.StatisticsException;
 import services.UserService;
 
 /**
@@ -43,7 +44,16 @@ public class GetLeaderboard extends HttpServlet {
 			response.sendRedirect(path + "/index.html");
 		}
 		else{
-			List<User> users = us.getLeaderboard();
+			List<User> users = null;
+			try {
+				users = us.getLeaderboard();
+			} catch (StatisticsException e) {
+				String json = new Gson().toJson("error");
+			    response.setContentType("application/json");
+			    response.setCharacterEncoding("UTF-8");
+			    response.getWriter().write(json);
+			    return;
+			}
 			List<List<String>> table = new ArrayList<List<String>>();
 		    
 			for(int i=0; i<users.size(); ++i) {

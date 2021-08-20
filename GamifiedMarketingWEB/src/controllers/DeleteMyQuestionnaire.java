@@ -81,6 +81,7 @@ public class DeleteMyQuestionnaire extends HttpServlet {
 					ctx.setVariable("delete_error", 1);
 					ctx.setVariable("success", 0);
 					templateEngine.process(path, ctx, response.getWriter());
+					return;
 				}
 				
 				path = "/WEB-INF/MyQuestionnaire.html";

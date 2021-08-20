@@ -19,6 +19,7 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import entities.User;
+import exceptions.StatisticsException;
 import services.StatsService;
 
 /**
@@ -64,11 +65,22 @@ public class GoToStatisticsPage extends HttpServlet {
 			else {
 				String path = "/WEB-INF/Statistics.html";
 				final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
-				
-				ctx.setVariable("user", ((User)session.getAttribute("user")));
-				ctx.setVariable("avgAge", ss.getAvgAge());
-				
-				Double avgExp = ss.getAvgEXP();
+				Double avgExp = null;
+				Double avgAge = null;
+				Long totalLogs = null;
+				try {
+					avgExp = ss.getAvgEXP();
+					avgAge = ss.getAvgAge();
+					totalLogs = ss.getTotalLogs();
+				}
+				catch(StatisticsException e) {
+					ctx.setVariable("user", ((User)session.getAttribute("user")));
+					ctx.setVariable("avgAge", "Failed to load");
+					ctx.setVariable("avgExp", "Failed to load");
+					ctx.setVariable("totalLogs", "Failed to load");
+					templateEngine.process(path, ctx, response.getWriter());
+					return;
+				}
 				
 				
 				if(avgExp < 0.5) {
@@ -81,8 +93,10 @@ public class GoToStatisticsPage extends HttpServlet {
 					ctx.setVariable("avgExp", "High");
 				}
 				
-				Long totalLogs = ss.getTotalLogs();
 				
+				
+				ctx.setVariable("user", ((User)session.getAttribute("user")));
+				ctx.setVariable("avgAge", avgAge);
 				ctx.setVariable("totalLogs", totalLogs);
 				templateEngine.process(path, ctx, response.getWriter());
 			}

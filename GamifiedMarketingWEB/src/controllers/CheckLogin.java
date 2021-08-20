@@ -19,6 +19,7 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import entities.User;
+import exceptions.CredentialsException;
 import services.UserService;
 import utils.LoginUtils;
 
@@ -74,17 +75,26 @@ public class CheckLogin extends HttpServlet {
 				path = "/index.html";
 				response.getWriter().print("<script> alert('" + e.getMessage() + "') </script>");
 				templateEngine.process(path, ctx, response.getWriter());
+				return;
 			} catch (NoSuchAlgorithmException e) {
 				final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
 				path = "/index.html";
 				response.getWriter().print("<script> alert('server error! Try again') </script>");
 				templateEngine.process(path, ctx, response.getWriter());
+				return;
 			}
 			catch(NonUniqueResultException e){
 				final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
 				path = "/index.html";
 				response.getWriter().print("<script> alert('" + e.getMessage() + "') </script>");
 				templateEngine.process(path, ctx, response.getWriter());
+				return;
+			} catch (CredentialsException e) {
+				final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
+				path = "/index.html";
+				response.getWriter().print("<script> alert('" + e.getMessage() + "') </script>");
+				templateEngine.process(path, ctx, response.getWriter());
+				return;
 			}
 			
 			

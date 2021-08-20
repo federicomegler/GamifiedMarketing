@@ -42,7 +42,11 @@ $.get("GetProducts", function(responseJson) {    // Execute Ajax GET request on 
 		});
 		
 		$.get("GetQNA", {"id" : id}, function(response){
-			map = response;
+			if(response == "error"){
+				alert("Server error! Unable to load QnA.")
+			}
+			else{
+				map = response;
 			questions = Object.keys(map);
 			document.getElementById("question_space").innerHTML = "";
 			for(let i in questions){
@@ -65,6 +69,8 @@ $.get("GetProducts", function(responseJson) {    // Execute Ajax GET request on 
 				}
 			}
 			console.log(response);
+			}
+			
 		});
 		
     } );

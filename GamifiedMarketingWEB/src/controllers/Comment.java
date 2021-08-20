@@ -83,6 +83,7 @@ public class Comment extends HttpServlet {
 				ctx.setVariable("comment_err", 2);
 				path = "/WEB-INF/Home.html";
 				templateEngine.process(path, ctx, response.getWriter());
+				return;
 			}
 			
 			if(prod == null) {
@@ -115,6 +116,7 @@ public class Comment extends HttpServlet {
 						ctx.setVariable("comment_err", 2);
 						path = "/WEB-INF/Home.html";
 						templateEngine.process(path, ctx, response.getWriter());
+						return;
 					}
 					ctx.setVariable("user", ((User)session.getAttribute("user")));
 					ctx.setVariable("image", prod.getImageData());

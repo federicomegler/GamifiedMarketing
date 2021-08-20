@@ -15,6 +15,7 @@ import org.eclipse.persistence.config.QueryHints;
 import entities.User;
 import exceptions.CredentialsException;
 import exceptions.RegistrationException;
+import exceptions.StatisticsException;
 
 @Stateless
 public class UserService {
@@ -52,8 +53,15 @@ public class UserService {
 		
 	}
 	
-	public String getSalt(String name) {
-		List<String> salts = em.createNamedQuery("User.getSalt", String.class).setParameter("name", name).getResultList();
+	public String getSalt(String name) throws CredentialsException {
+		List<String> salts = null;
+		try {
+			salts = em.createNamedQuery("User.getSalt", String.class).setParameter("name", name).getResultList();
+		}
+		catch(PersistenceException e) {
+			throw new CredentialsException("Unable to get salt! Server error");
+		}
+		
 		if(!salts.isEmpty()) {
 			return salts.get(0);
 		}
@@ -75,22 +83,43 @@ public class UserService {
 		return true;
 	}
 	
-	public List<User> getLeaderboard(){
-		List<User> users = em.createNamedQuery("User.getLeaderboard", User.class).setHint(QueryHints.REFRESH, HintValues.TRUE).getResultList();
+	public List<User> getLeaderboard() throws StatisticsException{
+		List<User> users = null;
+		try {
+			users = em.createNamedQuery("User.getLeaderboard", User.class).setHint(QueryHints.REFRESH, HintValues.TRUE).getResultList();
+		}
+		catch(PersistenceException e) {
+			throw new StatisticsException("Unable to load leaderboard");
+		}
+		
 		return users;
 	}
 	
-	public User updatePassword(String password, String username) {
-		User user = em.find(User.class, username);
+	public User updatePassword(String password, String username) throws CredentialException {
+		
+		User user = null;
+		try {
+		user = em.find(User.class, username);
 		user.setPassword(password);
 		em.merge(user);
+		}
+		catch(PersistenceException e) {
+			throw new CredentialException("Unable to change password! Server error");
+		}
 		return user;
 	}
 	
-	public User banUser(String username) {
-		User user = em.find(User.class, username);
-		user.setBan(1);
-		em.merge(user);
+	public User banUser(String username) throws CredentialException {
+		User user = null;
+		try {
+			user = em.find(User.class, username);
+			user.setBan(1);
+			em.merge(user);
+		}
+		catch(PersistenceException e) {
+			throw new CredentialException("Unable to ban user! Server error");
+		}
+		
 		return user;
 	}
 }

@@ -18,6 +18,7 @@ import javax.servlet.http.HttpSession;
 import com.google.gson.Gson;
 
 import entities.User;
+import exceptions.StatisticsException;
 import services.StatsService;
 
 /**
@@ -57,7 +58,16 @@ public class GetStats extends HttpServlet {
 			else {
 				TreeMap<Date, Integer> logs = new TreeMap<Date, Integer>();
 				
-				logs = ss.getLogsLast7Days();
+				try {
+					logs = ss.getLogsLast7Days();
+				} catch (StatisticsException e) {
+					String json = new Gson().toJson("error");
+				    System.out.println(json);
+				    response.setContentType("application/json");
+				    response.setCharacterEncoding("UTF-8");
+				    response.getWriter().write(json);
+				    return;
+				}
 				
 				
 			    String json = new Gson().toJson(logs);

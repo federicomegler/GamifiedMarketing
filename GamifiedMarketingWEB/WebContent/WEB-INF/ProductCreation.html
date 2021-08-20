@@ -17,6 +17,7 @@
 
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="css/error_banner.css" rel="stylesheet">
 <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
 </head>
 <body id="page-top">
@@ -151,6 +152,13 @@
 
                 </nav>
                 <!-- End of Topbar -->
+                
+                <th:block th:if="${error != null}">
+                	<div class="alert">
+                    	<span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
+                    	<strong>Server error!</strong> [[${error}]]
+                	</div>
+                </th:block>
 
                 <!-- Begin Page Content -->
                 <div class="container-fluid">

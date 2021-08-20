@@ -6,7 +6,11 @@ var n_people;
 var dates;
 var res;
 $.get("GetStats", function(response){
-	dates = Object.keys(response);
+	if(response = "error"){
+		alert("Server error! Unable to load statistics!");
+	}
+	else{
+		dates = Object.keys(response);
 	n_people = Object.values(response);
 	var ctx = document.getElementById("logChart");
 	res = response;
@@ -103,6 +107,8 @@ var myLineChart = new Chart(ctx, {
     }
   }
 });
+	}
+	
 });
 
 
@@ -140,7 +146,11 @@ function number_format(number, decimals, dec_point, thousands_sep) {
 // Pie Chart Example
 
 $.get("GetGenderStats", function (response){
-	var genders = Object.keys(response);
+	if(response == "error"){
+		alert("Server error! Unable to load statistics!");
+	}
+	else{
+		var genders = Object.keys(response);
 	var count = Object.values(response);
 	
 	var pie = document.getElementById("GenderChart");
@@ -173,6 +183,8 @@ $.get("GetGenderStats", function (response){
 	    cutoutPercentage: 80,
 	  },
 	});
+	}
+	
 	
 	
 });
@@ -188,7 +200,11 @@ var list
 var days
 
 $.get("GetSubmitStats", function (response){
-	days = Object.keys(response);
+	if(response == "error"){
+		alert("Server error! Unable to load statistics!");
+	}
+	else{
+		days = Object.keys(response);
 	list = Object.values(response);
 	
 	
@@ -283,7 +299,7 @@ $.get("GetSubmitStats", function (response){
 	    },
 	  }
 	});
-
+	}
 	
 });
 

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.EJB;
+import javax.security.auth.login.CredentialException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -26,10 +27,8 @@ import exceptions.OffensiveWordException;
 import exceptions.ProductException;
 import services.AnswerService;
 import services.LogService;
-import services.OffensiveWordService;
 import services.ProductService;
 import services.QuestionService;
-import services.StatisticalAnswerService;
 import services.UserService;
 
 /**
@@ -37,17 +36,13 @@ import services.UserService;
  */
 @WebServlet("/AddResponses")
 public class AddResponses extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-	@EJB(name="service/StatisticalAnswerService")
-    private StatisticalAnswerService sas;   
+	private static final long serialVersionUID = 1L;  
 	@EJB(name="service/AnswerService")
 	private AnswerService as;
 	@EJB(name="service/QuestionService")
 	private QuestionService qs;
 	@EJB(name="service/ProductService")
 	private ProductService ps;
-	@EJB(name = "services/OffensiveWordService")
-	private OffensiveWordService os;
 	@EJB(name = "service/UserService")
 	private UserService us;
 	@EJB(name = "services/LogService")
@@ -116,6 +111,7 @@ public class AddResponses extends HttpServlet {
 					ctx.setVariable("user", (User)session.getAttribute("user"));
 					path = "/WEB-INF/Wizard.html";
 					templateEngine.process(path, ctx, response.getWriter());
+					return;
 				}
 				
 				if(prod_day != null) {
@@ -227,25 +223,41 @@ public class AddResponses extends HttpServlet {
 						as.insertAnswers(answers, prod_ids, ((User)session.getAttribute("user")).getUsername(), nr, age, gender, expLev );
 					}
 					catch (OffensiveWordException e) {
+						//eccezione lanciata poiché il trigger ha individuato una parola offensiva
 						try {
 							ls.insertLog(((User)session.getAttribute("user")).getUsername() );
 							as.insertStatisticalAnswer(age, gender, expLev, (User)session.getAttribute("user"));
 						} catch (ProductException e1) {
 							System.out.println("exception");
 							//L'utente va comunque bannato
-							User user = us.banUser( ((User)session.getAttribute("user")).getUsername() );
-							session.setAttribute("user", user);
-							response.sendRedirect("Home");
+							User user = null;
+							try {
+								user = us.banUser( ((User)session.getAttribute("user")).getUsername() );
+							} catch (CredentialException e2) {
+								response.sendRedirect("Home");
+								return;
+							}
 							
+							session.setAttribute("user", user);
 							ctx.setVariable("questions", prod_day.getQuestions());
 							ctx.setVariable("nrQuestions", nr);
 							ctx.setVariable("server_error", 1);
 							ctx.setVariable("user", (User)session.getAttribute("user"));
 							path = "/WEB-INF/Wizard.html";
+							templateEngine.process(path, ctx, response.getWriter());
+							return;
 						}
-						User user = us.banUser( ((User)session.getAttribute("user")).getUsername() );
+						
+						User user = null;
+						try {
+							user = us.banUser( ((User)session.getAttribute("user")).getUsername() );
+						} catch (CredentialException e1) {
+							response.sendRedirect("Home");
+							return;
+						}
 						session.setAttribute("user", user);
 						response.sendRedirect("Home");
+						return;
 					}
 					catch (ProductException e) {
 						e.printStackTrace();
@@ -256,6 +268,7 @@ public class AddResponses extends HttpServlet {
 						ctx.setVariable("user", (User)session.getAttribute("user"));
 						path = "/WEB-INF/Wizard.html";
 						templateEngine.process(path, ctx, response.getWriter());
+						return;
 					} 
 					catch (Exception e) {
 						System.out.println("exception");
@@ -264,6 +277,8 @@ public class AddResponses extends HttpServlet {
 						ctx.setVariable("server_error", 1);
 						ctx.setVariable("user", (User)session.getAttribute("user"));
 						path = "/WEB-INF/Wizard.html";
+						templateEngine.process(path, ctx, response.getWriter());
+						return;
 					}
 					
 					//se tutto va a buon fine

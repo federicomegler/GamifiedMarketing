@@ -27,6 +27,7 @@ public class LogService {
 		Log log = new Log();
 		
 		User user = em.find(User.class, username);
+		
 		Product product = ps.getProductOfTheDay();
 		
 		

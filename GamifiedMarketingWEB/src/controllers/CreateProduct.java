@@ -126,6 +126,7 @@ public class CreateProduct extends HttpServlet {
 							ctx.setVariable("user", ((User)session.getAttribute("user")));
 							ctx.setVariable("error", "Invalid date format.");
 							templateEngine.process(path, ctx, response.getWriter());
+							return;
 						}
 						
 						Calendar now = Calendar.getInstance();
@@ -135,10 +136,17 @@ public class CreateProduct extends HttpServlet {
 						now.set(Calendar.MILLISECOND,0);
 						
 						//controllo data
-						if(questionnaireDate.before(now.getTime()) || ps.alreadyInserted(questionnaireDate)) {
+						if(questionnaireDate.before(now.getTime())) {
 							path = "/WEB-INF/ProductCreation.html";
 							ctx.setVariable("user", ((User)session.getAttribute("user")));
 							ctx.setVariable("error", "You cannot add a product on a date earlier than today.");
+							templateEngine.process(path, ctx, response.getWriter());
+							return;
+						}
+						if(ps.alreadyInserted(questionnaireDate)) {
+							path = "/WEB-INF/ProductCreation.html";
+							ctx.setVariable("user", ((User)session.getAttribute("user")));
+							ctx.setVariable("error", "A product already exists for that date.");
 							templateEngine.process(path, ctx, response.getWriter());
 							return;
 						}
@@ -177,6 +185,7 @@ public class CreateProduct extends HttpServlet {
 								ctx.setVariable("user", session.getAttribute("user"));
 								path = "WEB-INF/Home.html";
 								templateEngine.process(path, ctx, response.getWriter());
+								return;
 							}
 							response.sendRedirect("Home");
 						}

@@ -17,6 +17,8 @@ import javax.servlet.http.HttpSession;
 
 import com.google.gson.Gson;
 
+import entities.User;
+import exceptions.StatisticsException;
 import services.StatsService;
 
 /**
@@ -46,18 +48,35 @@ public class GetSubmitStats extends HttpServlet {
 			response.sendRedirect(path + "/index.html");
 		}
 		else{
-			
-			TreeMap<Date, List<Long>> submit = new TreeMap<Date, List<Long>>();
-			
-			submit = ss.getSubmitStats();
-			
-			
-		    String json = new Gson().toJson(submit);
-		    System.out.println(json);
-		    response.setContentType("application/json");
-		    response.setCharacterEncoding("UTF-8");
-		    response.getWriter().write(json);
+			if(((User)session.getAttribute("user")).getAdmin() == 0) {
+				String json = new Gson().toJson("error");
+			    System.out.println(json);
+			    response.setContentType("application/json");
+			    response.setCharacterEncoding("UTF-8");
+			    response.getWriter().write(json);
 			}
+			else {
+				TreeMap<Date, List<Long>> submit = new TreeMap<Date, List<Long>>();
+				
+				try {
+					submit = ss.getSubmitStats();
+				} catch (StatisticsException e) {
+					String json = new Gson().toJson("error");
+				    System.out.println(json);
+				    response.setContentType("application/json");
+				    response.setCharacterEncoding("UTF-8");
+				    response.getWriter().write(json);
+				    return;
+				}
+				
+				
+			    String json = new Gson().toJson(submit);
+			    System.out.println(json);
+			    response.setContentType("application/json");
+			    response.setCharacterEncoding("UTF-8");
+			    response.getWriter().write(json);
+			}	
+		}
 	}
 
 	/**

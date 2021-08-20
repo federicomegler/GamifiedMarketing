@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
 import javax.ejb.EJB;
+import javax.security.auth.login.CredentialException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -89,7 +90,12 @@ public class ChangePassword extends HttpServlet {
 					user = us.checkCredentials(((User)session.getAttribute("user")).getUsername(), LoginUtils.get_SHA_512_Password(oldpassword, ((User)session.getAttribute("user")).getSalt()));
 					System.out.println(user);
 				} catch (Exception e) {
-					e.printStackTrace();
+					ctx.setVariable("result", -1);
+					ctx.setVariable("resultmsg", "Server error!");
+					ctx.setVariable("user", (User)session.getAttribute("user"));
+					String path = "/WEB-INF/Profile.html";
+					templateEngine.process(path, ctx, response.getWriter());
+					return;
 				}
 				if(user == null) {
 					ctx.setVariable("result", -1);
@@ -103,11 +109,25 @@ public class ChangePassword extends HttpServlet {
 					try {
 						newpassword = LoginUtils.get_SHA_512_Password((String)request.getParameter("password"), user.getSalt());
 					} catch (NoSuchAlgorithmException e) {
-						e.printStackTrace();
+						ctx.setVariable("result", -1);
+						ctx.setVariable("resultmsg", "Server error!");
+						ctx.setVariable("user", (User)session.getAttribute("user"));
+						String path = "/WEB-INF/Profile.html";
+						templateEngine.process(path, ctx, response.getWriter());
+						return;
 					}
 					
 					
-					user = us.updatePassword(newpassword, user.getUsername());
+					try {
+						user = us.updatePassword(newpassword, user.getUsername());
+					} catch (CredentialException e) {
+						ctx.setVariable("result", -1);
+						ctx.setVariable("user", (User)session.getAttribute("user"));
+						ctx.setVariable("resultmsg", e.getMessage());
+						String path = "/WEB-INF/Profile.html";
+						templateEngine.process(path, ctx, response.getWriter());
+						return;
+					}
 					
 					if(user != null && newpassword != null) {
 						session.setAttribute("user", user);
