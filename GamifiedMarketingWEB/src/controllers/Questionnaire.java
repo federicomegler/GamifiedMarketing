@@ -21,6 +21,7 @@ import entities.Product;
 import entities.Question;
 import entities.User;
 import exceptions.ProductException;
+import exceptions.QuestionException;
 import services.LogService;
 import services.ProductService;
 import services.QuestionService;
@@ -94,7 +95,21 @@ public class Questionnaire extends HttpServlet {
 					templateEngine.process(path, ctx, response.getWriter());
 				}
 				else {
-					List<Question> questions = qs.getQuestions(p.getId());
+					List<Question> questions = null;
+					
+					
+					try {
+						questions = qs.getQuestions(p.getId());
+					} catch (QuestionException | ProductException e) {
+						ctx.setVariable("user", ((User)session.getAttribute("user")));
+						ctx.setVariable("noproductfound", 1);
+						ctx.setVariable("comment", 0);
+						ctx.setVariable("server_error", 1);
+						path = "/WEB-INF/Home.html";
+						templateEngine.process(path, ctx, response.getWriter());
+						return;
+					}
+					
 					
 					ctx.setVariable("questions", questions);
 					ctx.setVariable("nrQuestions", questions.size());

@@ -21,13 +21,24 @@ public class QuestionService {
 	@PersistenceContext(unitName = "GamifiedMarketingEJB")
 	EntityManager em;
 	
-	public Map<String, Map<String,String>> getQNAByProductId(int id) {
+	public Map<String, Map<String,String>> getQNAByProductId(int id) throws ProductException, QuestionException {
 		Map<String, Map<String,String>> qna = new HashMap<String, Map<String,String>>();
 		List<Question> questions = new ArrayList<Question>();
 		
-		Product product = em.find(Product.class, id);
+		Product product = null;
+		try{
+			product = em.find(Product.class, id);
+		}
+		catch(PersistenceException e) {
+			throw new ProductException("Unable to find product");
+		}
 		
-		questions = em.createNamedQuery("Question.getQuestionsByProductId", Question.class).setParameter("product", product).setHint(QueryHints.REFRESH, HintValues.TRUE).getResultList();
+		try{
+			questions = em.createNamedQuery("Question.getQuestionsByProductId", Question.class).setParameter("product", product).setHint(QueryHints.REFRESH, HintValues.TRUE).getResultList();
+		}
+		catch(PersistenceException e) {
+			throw new QuestionException("Unable to get questions");
+		}
 		
 		
 		for(int i=0; i < questions.size(); ++i) {
@@ -45,12 +56,24 @@ public class QuestionService {
 	}
 	
 	
-	public Map<String, String> getQNAByProductAndUser(int id, String username) {
-		Product product = em.find(Product.class, id);
+	public Map<String, String> getQNAByProductAndUser(int id, String username) throws ProductException, QuestionException {
+		Product product = null;
+		
+		try{
+			product = em.find(Product.class, id);
+		}
+		catch(PersistenceException e) {
+			throw new ProductException("Unable to find product");
+		}
 		Map<String,String> qna = new HashMap<String, String>();
 		
 		List<Question> questions = new ArrayList<Question>();
-		questions = em.createNamedQuery("Question.getQuestionsByProductId", Question.class).setParameter("product", product).setHint(QueryHints.REFRESH, HintValues.TRUE).getResultList();
+		try{
+			questions = em.createNamedQuery("Question.getQuestionsByProductId", Question.class).setParameter("product", product).setHint(QueryHints.REFRESH, HintValues.TRUE).getResultList();
+		}
+		catch(PersistenceException e) {
+			throw new QuestionException("Unable to get questions");
+		}
 		
 		for(int i=0; i < questions.size(); ++i) {
 			List<Answer> answers = questions.get(i).getAnswers();
@@ -67,36 +90,42 @@ public class QuestionService {
 	}
 	
 	
-	public List<Question> getQuestions(int prodID) {
+	public List<Question> getQuestions(int prodID) throws QuestionException, ProductException {
 		List<Question> questions= new ArrayList<Question>();
-		Product product = em.find(Product.class, prodID);
-		questions = em.createNamedQuery("Question.getQuestionsByProductId", Question.class).setParameter("product", product).getResultList();
+		Product product = null;
+		try{
+			product = em.find(Product.class, prodID);
+		}
+		catch (PersistenceException e) {
+			throw new ProductException("Unable to find product");
+		}
+		
+		try{
+			questions = em.createNamedQuery("Question.getQuestionsByProductId", Question.class).setParameter("product", product).getResultList();
+		}
+		catch(PersistenceException e) {
+			throw new QuestionException("Unable to get questions");
+		}
 		return questions;
 	}
 	
-	public void insertQuestionOfProduct(String content, int productID ) throws ProductException {
-		try {
-			Question q = new Question();
-			Product p=em.find(Product.class, productID);
-			q.setContent(content);
-			q.setProductQuestion(p);
-			em.persist(q);
+	
+	public Boolean isValid(int questionID) throws QuestionException {
+		List<Question> result = null;
+		try{
+			result = em.createQuery("SELECT q from Question q where q.product in (select p from Product p where p.date=CURRENT_DATE) and q.id=:questionID",Question.class).setParameter("questionID", questionID).getResultList();
 		}
 		catch(PersistenceException e) {
-			throw new ProductException("Unable to get the product of the day");
+			throw new QuestionException("Unable to get question");
 		}
-	}
-	
-	
-	public Boolean isValid(int questionID) {
-		List<Question> result=em.createQuery("SELECT q from Question q where q.product in (select p from Product p where p.date=CURRENT_DATE) and q.id=:questionID",Question.class).setParameter("questionID", questionID).getResultList();
+		
 		if(result.isEmpty()) {
 			return false;
 		}
 		return true;
 	}
 	
-	public void deleteQuestionnaire(int prod_id) throws QuestionException {
+	public void deleteQuestionnaire(int prod_id) throws QuestionException, ProductException {
 		List<Question> questions =  getQuestions(prod_id);
 		for(int i=0; i<questions.size(); ++i) {
 			try {
@@ -110,7 +139,7 @@ public class QuestionService {
 		return;
 	}
 	
-	public void deleteMyQuestionnaire(int prod_id, String username) throws QuestionException {
+	public void deleteMyQuestionnaire(int prod_id, String username) throws QuestionException, ProductException {
 		List<Question> questions =  getQuestions(prod_id);
 		for(int i=0; i<questions.size(); ++i) {
 			List<Answer> answers = questions.get(i).getAnswers();

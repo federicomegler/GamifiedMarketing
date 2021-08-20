@@ -25,6 +25,7 @@ import entities.Product;
 import entities.User;
 import exceptions.OffensiveWordException;
 import exceptions.ProductException;
+import exceptions.QuestionException;
 import services.AnswerService;
 import services.LogService;
 import services.ProductService;
@@ -103,7 +104,9 @@ public class AddResponses extends HttpServlet {
 				Product prod_day = null;
 				
 				try {
+					//ottengo il prodotto del giorno
 					prod_day = ps.getProductOfTheDay();
+					
 				} catch (ProductException e2) {
 					ctx.setVariable("questions", null);
 					ctx.setVariable("nrQuestions", 0);
@@ -125,13 +128,32 @@ public class AddResponses extends HttpServlet {
 							return;
 						}
 						
-						if(qs.isValid(Integer.parseInt(request.getParameter("q"+Integer.toString(i))))) { //controllo che l'id sia valido
-							
-							
-							String ans = StringEscapeUtils.escapeHtml(request.getParameter("Question" + Integer.toString(i)));
-							
-							if(ans.isBlank()) {
-								//se una risposta è vuota
+						
+						
+						try {
+							if(qs.isValid(Integer.parseInt(request.getParameter("q"+Integer.toString(i))))) { //controllo che l'id sia valido
+								
+								
+								String ans = StringEscapeUtils.escapeHtml(request.getParameter("Question" + Integer.toString(i)));
+								
+								if(ans.isBlank()) {
+									//se una risposta è vuota
+									ctx.setVariable("questions", prod_day.getQuestions());
+									ctx.setVariable("nrQuestions", nr);
+									ctx.setVariable("server_error", 1);
+									ctx.setVariable("user", (User)session.getAttribute("user"));
+									path = "/WEB-INF/Wizard.html";
+									templateEngine.process(path, ctx, response.getWriter());
+									return;
+								}
+								else {
+									int prod_id = Integer.parseInt(request.getParameter("q"+Integer.toString(i)));
+									answers.add(ans);
+									prod_ids.add(prod_id);
+								}
+							}
+							else
+							{
 								ctx.setVariable("questions", prod_day.getQuestions());
 								ctx.setVariable("nrQuestions", nr);
 								ctx.setVariable("server_error", 1);
@@ -140,14 +162,23 @@ public class AddResponses extends HttpServlet {
 								templateEngine.process(path, ctx, response.getWriter());
 								return;
 							}
-							else {
-								int prod_id = Integer.parseInt(request.getParameter("q"+Integer.toString(i)));
-								answers.add(ans);
-								prod_ids.add(prod_id);
-							}
-						}
-						else
-						{
+						} catch (NumberFormatException e) {
+							ctx.setVariable("questions", prod_day.getQuestions());
+							ctx.setVariable("nrQuestions", nr);
+							ctx.setVariable("server_error", 1);
+							ctx.setVariable("user", (User)session.getAttribute("user"));
+							path = "/WEB-INF/Wizard.html";
+							templateEngine.process(path, ctx, response.getWriter());
+							return;
+						} catch (QuestionException e) {
+							ctx.setVariable("questions", prod_day.getQuestions());
+							ctx.setVariable("nrQuestions", nr);
+							ctx.setVariable("server_error", 1);
+							ctx.setVariable("user", (User)session.getAttribute("user"));
+							path = "/WEB-INF/Wizard.html";
+							templateEngine.process(path, ctx, response.getWriter());
+							return;
+						} catch (IOException e) {
 							ctx.setVariable("questions", prod_day.getQuestions());
 							ctx.setVariable("nrQuestions", nr);
 							ctx.setVariable("server_error", 1);

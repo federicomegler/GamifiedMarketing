@@ -18,6 +18,7 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import entities.User;
+import exceptions.ProductException;
 import exceptions.QuestionException;
 import services.QuestionService;
 
@@ -76,6 +77,13 @@ public class DeleteMyQuestionnaire extends HttpServlet {
 				try {
 					qs.deleteMyQuestionnaire(product_id, ((User)session.getAttribute("user")).getUsername());
 				} catch (QuestionException e) {
+					path = "/WEB-INF/MyQuestionnaire.html";
+					ctx.setVariable("user", ((User)session.getAttribute("user")));
+					ctx.setVariable("delete_error", 1);
+					ctx.setVariable("success", 0);
+					templateEngine.process(path, ctx, response.getWriter());
+					return;
+				} catch (ProductException e) {
 					path = "/WEB-INF/MyQuestionnaire.html";
 					ctx.setVariable("user", ((User)session.getAttribute("user")));
 					ctx.setVariable("delete_error", 1);

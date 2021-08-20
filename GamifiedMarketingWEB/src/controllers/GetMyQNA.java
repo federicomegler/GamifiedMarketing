@@ -17,6 +17,8 @@ import org.apache.commons.lang.StringUtils;
 import com.google.gson.Gson;
 
 import entities.User;
+import exceptions.ProductException;
+import exceptions.QuestionException;
 import services.QuestionService;
 
 /**
@@ -57,7 +59,16 @@ public class GetMyQNA extends HttpServlet {
 			else {
 				Map<String, String> qna = new HashMap<String, String>();
 				
-				qna = qs.getQNAByProductAndUser(Integer.parseInt(id), ((User)session.getAttribute("user")).getUsername());
+				try {
+					qna = qs.getQNAByProductAndUser(Integer.parseInt(id), ((User)session.getAttribute("user")).getUsername());
+				} catch (NumberFormatException | ProductException | QuestionException e) {
+					String json = new Gson().toJson("error");
+				    System.out.println(json);
+				    response.setContentType("application/json");
+				    response.setCharacterEncoding("UTF-8");
+				    response.getWriter().write(json);
+				    return;
+				}
 				
 			    String json = new Gson().toJson(qna);
 			    System.out.println(json);
