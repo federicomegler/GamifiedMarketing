@@ -6,7 +6,7 @@ var n_people;
 var dates;
 var res;
 $.get("GetStats", function(response){
-	if(response = "error"){
+	if(response == "error"){
 		alert("Server error! Unable to load statistics!");
 	}
 	else{

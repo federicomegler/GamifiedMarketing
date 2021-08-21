@@ -63,7 +63,15 @@ public class GetInfoUserProduct extends HttpServlet {
 					response.sendRedirect("Home");;
 				}
 				else {
-					usersSubmit = ps.getUserSubmit(Integer.parseInt(id));
+					try {
+						usersSubmit = ps.getUserSubmit(Integer.parseInt(id));
+					} catch (NumberFormatException | ProductException e) {
+						String json = new Gson().toJson("error");
+					    response.setContentType("application/json");
+					    response.setCharacterEncoding("UTF-8");
+					    response.getWriter().write(json);
+					    return;
+					}
 					
 					//creo una mappa con chiave la tabella target e contenuto la lista di valori da inserire.
 					Map<String, List<List<String>>> tables = new HashMap<String, List<List<String>>>();
@@ -77,7 +85,15 @@ public class GetInfoUserProduct extends HttpServlet {
 					}
 					tables.put("submit", tableSubmit);
 					
-					usersCancelled = ps.getUserCancelled(Integer.parseInt(id), usersSubmit);
+					try {
+						usersCancelled = ps.getUserCancelled(Integer.parseInt(id), usersSubmit);
+					} catch (NumberFormatException | ProductException e) {
+						String json = new Gson().toJson("error");
+					    response.setContentType("application/json");
+					    response.setCharacterEncoding("UTF-8");
+					    response.getWriter().write(json);
+					    return;
+					}
 					List<List<String>> tableCancelled = new ArrayList<List<String>>();
 					
 					for(int i=0; i<usersCancelled.size(); ++i) {

@@ -35,10 +35,10 @@ public class User implements Serializable{
 	@OneToMany(mappedBy = "user_stat")
 	private List<StatisticalAnswer> statistical_answers;
 	
-	@OneToMany(mappedBy = "user_review")
+	@OneToMany(mappedBy = "user_review", orphanRemoval = true)
 	private List<Review> reviews;
 	
-	@OneToMany(mappedBy = "user_log")
+	@OneToMany(mappedBy = "user_log", orphanRemoval = true)
 	private List<Log> logs;
 	
 	public User() {}

@@ -18,6 +18,8 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import entities.Product;
 import entities.User;
+import exceptions.CredentialsException;
+import exceptions.LogException;
 import exceptions.ProductException;
 import exceptions.ReviewException;
 import services.LogService;
@@ -94,20 +96,8 @@ public class Comment extends HttpServlet {
 				templateEngine.process(path, ctx, response.getWriter());
 			}
 			else {
-				if(comment == null || ean == null || !ean.equals(prod.getEan()) || comment.isBlank()) {
-					ctx.setVariable("user", ((User)session.getAttribute("user")));
-					ctx.setVariable("image", prod.getImageData());
-					ctx.setVariable("noproductfound", 0);
-					ctx.setVariable("ean", prod.getEan());
-					ctx.setVariable("alreadylogged", ls.alreadyLogged(((User)session.getAttribute("user")).getUsername()));
-					ctx.setVariable("comment_err", 2);
-					path = "/WEB-INF/Home.html";
-					templateEngine.process(path, ctx, response.getWriter());
-				}
-				else {
-					try {
-						rs.createComment(comment, username, ean);
-					} catch (ReviewException e) {
+				try {
+					if(comment == null || ean == null || !ean.equals(prod.getEan()) || comment.isBlank()) {
 						ctx.setVariable("user", ((User)session.getAttribute("user")));
 						ctx.setVariable("image", prod.getImageData());
 						ctx.setVariable("noproductfound", 0);
@@ -116,16 +106,40 @@ public class Comment extends HttpServlet {
 						ctx.setVariable("comment_err", 2);
 						path = "/WEB-INF/Home.html";
 						templateEngine.process(path, ctx, response.getWriter());
-						return;
 					}
+					else {
+						try {
+							rs.createComment(comment, username, ean);
+						} catch (ReviewException e) {
+							ctx.setVariable("user", ((User)session.getAttribute("user")));
+							ctx.setVariable("image", prod.getImageData());
+							ctx.setVariable("noproductfound", 0);
+							ctx.setVariable("ean", prod.getEan());
+							ctx.setVariable("alreadylogged", ls.alreadyLogged(((User)session.getAttribute("user")).getUsername()));
+							ctx.setVariable("comment_err", 2);
+							path = "/WEB-INF/Home.html";
+							templateEngine.process(path, ctx, response.getWriter());
+							return;
+						}
+						ctx.setVariable("user", ((User)session.getAttribute("user")));
+						ctx.setVariable("image", prod.getImageData());
+						ctx.setVariable("noproductfound", 0);
+						ctx.setVariable("ean", prod.getEan());
+						ctx.setVariable("alreadylogged", ls.alreadyLogged(((User)session.getAttribute("user")).getUsername()));
+						ctx.setVariable("comment_err", 1);
+						path = "/WEB-INF/Home.html";
+						templateEngine.process(path, ctx, response.getWriter());
+					}
+				}
+				catch(CredentialsException | LogException e) {
 					ctx.setVariable("user", ((User)session.getAttribute("user")));
 					ctx.setVariable("image", prod.getImageData());
 					ctx.setVariable("noproductfound", 0);
 					ctx.setVariable("ean", prod.getEan());
-					ctx.setVariable("alreadylogged", ls.alreadyLogged(((User)session.getAttribute("user")).getUsername()));
-					ctx.setVariable("comment_err", 1);
+					ctx.setVariable("alreadylogged", true);
 					path = "/WEB-INF/Home.html";
 					templateEngine.process(path, ctx, response.getWriter());
+					return;
 				}
 			}
 			

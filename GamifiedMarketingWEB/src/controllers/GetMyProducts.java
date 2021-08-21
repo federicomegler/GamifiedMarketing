@@ -17,6 +17,7 @@ import com.google.gson.Gson;
 
 import entities.Product;
 import entities.User;
+import exceptions.CredentialsException;
 import exceptions.ProductException;
 import services.ProductService;
 
@@ -49,7 +50,17 @@ public class GetMyProducts extends HttpServlet {
 		else{
 			List<Product> products = null;
 			
-			products = ps.getUserProducts(((User)session.getAttribute("user")).getUsername());
+			
+			try {
+				products = ps.getUserProducts(((User)session.getAttribute("user")).getUsername());
+			} catch (CredentialsException | ProductException e) {
+				String json = new Gson().toJson("error");
+			    response.setContentType("application/json");
+			    response.setCharacterEncoding("UTF-8");
+			    response.getWriter().write(json);
+			    return;
+			}
+			
 			
 			List<List<String>> table = new ArrayList<List<String>>();
 		    

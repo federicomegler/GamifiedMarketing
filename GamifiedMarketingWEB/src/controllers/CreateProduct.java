@@ -143,10 +143,18 @@ public class CreateProduct extends HttpServlet {
 							templateEngine.process(path, ctx, response.getWriter());
 							return;
 						}
-						if(ps.alreadyInserted(questionnaireDate)) {
+						try {
+							if(ps.alreadyInserted(questionnaireDate)) {
+								path = "/WEB-INF/ProductCreation.html";
+								ctx.setVariable("user", ((User)session.getAttribute("user")));
+								ctx.setVariable("error", "A product already exists for that date.");
+								templateEngine.process(path, ctx, response.getWriter());
+								return;
+							}
+						} catch (ProductException | IOException e1) {
 							path = "/WEB-INF/ProductCreation.html";
 							ctx.setVariable("user", ((User)session.getAttribute("user")));
-							ctx.setVariable("error", "A product already exists for that date.");
+							ctx.setVariable("error", "Unable to insert product! Database error.");
 							templateEngine.process(path, ctx, response.getWriter());
 							return;
 						}

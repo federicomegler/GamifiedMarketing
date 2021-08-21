@@ -19,6 +19,8 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import entities.Product;
 import entities.User;
+import exceptions.CredentialsException;
+import exceptions.LogException;
 import exceptions.ProductException;
 import services.LogService;
 import services.ProductService;
@@ -92,7 +94,11 @@ public class Home extends HttpServlet {
 				ctx.setVariable("image", prod.getImageData());
 				ctx.setVariable("noproductfound", 0);
 				ctx.setVariable("ean", prod.getEan());
-				ctx.setVariable("alreadylogged", ls.alreadyLogged(((User)session.getAttribute("user")).getUsername()));
+				try {
+					ctx.setVariable("alreadylogged", ls.alreadyLogged(((User)session.getAttribute("user")).getUsername()));
+				} catch (CredentialsException | LogException e) {
+					ctx.setVariable("alreadylogged", true);
+				}
 				ctx.setVariable("comment", 0);
 				path = "/WEB-INF/Home.html";
 				templateEngine.process(path, ctx, response.getWriter());

@@ -10,9 +10,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 
+
 import entities.Log;
 import entities.Product;
 import entities.User;
+import exceptions.CredentialsException;
+import exceptions.LogException;
 import exceptions.ProductException;
 
 @Stateless
@@ -43,11 +46,23 @@ public class LogService {
 		}
 	}
 	
-	public Boolean alreadyLogged(String username) {
+	public Boolean alreadyLogged(String username) throws CredentialsException, LogException {
 		
-		User user = em.find(User.class, username);
+		User user = null;
+		try{
+			user = em.find(User.class, username);
+		}
+		catch(PersistenceException e) {
+			throw new CredentialsException("Unable to get user");
+		}
 		
-		List<Log> l = em.createNamedQuery("Log.alreadyLogged", Log.class).setParameter("user", user).getResultList();
+		List<Log> l = null;
+		try{
+			l = em.createNamedQuery("Log.alreadyLogged", Log.class).setParameter("user", user).getResultList();
+		}
+		catch(PersistenceException e) {
+			throw new LogException("Unable to get log");
+		}
 		
 		if(l.isEmpty())
 			return false;

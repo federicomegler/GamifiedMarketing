@@ -4,7 +4,8 @@
 var map;
 $.get("GetProducts", function(responseJson) {    // Execute Ajax GET request on URL of "someservlet" and execute the following function with Ajax response JSON...
         if(responseJson == "error"){
-			alert("Unable to load products! Server error.")
+			alert("Unable to load products! Server error.");
+			var table = $('#products').DataTable();
 		}
 		else{
 			data = responseJson;

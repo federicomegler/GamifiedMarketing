@@ -49,10 +49,10 @@ public class Product implements Serializable{
 	@Temporal(TemporalType.DATE)
 	Date date;
 	
-	@OneToMany(mappedBy = "product", cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE})
+	@OneToMany(mappedBy = "product", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
 	private List<Question> questions;
 	
-	@OneToMany(mappedBy = "product")
+	@OneToMany(mappedBy = "product", orphanRemoval = true)
 	private List<StatisticalAnswer> statistical_answers;
 	
 	private String ean;

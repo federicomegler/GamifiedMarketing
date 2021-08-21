@@ -31,7 +31,7 @@ public class Question implements Serializable{
 	@JoinColumn(name = "product_question")
 	private Product product;
 	
-	@OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE)
+	@OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE, orphanRemoval = true)
 	private List<Answer> answers;
 
 	public List<Answer> getAnswers() {

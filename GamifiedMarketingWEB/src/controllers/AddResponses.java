@@ -23,6 +23,9 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import entities.Product;
 import entities.User;
+import exceptions.AnswerException;
+import exceptions.CredentialsException;
+import exceptions.LogException;
 import exceptions.OffensiveWordException;
 import exceptions.ProductException;
 import exceptions.QuestionException;
@@ -75,7 +78,7 @@ public class AddResponses extends HttpServlet {
 		// TODO Auto-generated method stub
 		String path = "";
 		HttpSession session = request.getSession();
-		
+		final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
 		if(session.isNew() || session.getAttribute("user") == null) {
 			//non è loggato
 			path = getServletContext().getContextPath() + "/index.html";
@@ -83,61 +86,80 @@ public class AddResponses extends HttpServlet {
 		}
 		else {
 			
-			if(ls.alreadyLogged(  ((User)session.getAttribute("user")).getUsername()) || ((User)session.getAttribute("user")).getBan() == 1 ) {
-				//se ha gia aggiunto una risposta o è bloccato
-				response.sendRedirect("Home");
-				return;
-			}
-			else {
-				final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
+			try {
 				
-				if(request.getParameter("nrQuestions") == null || !StringUtils.isNumeric(request.getParameter("nrQuestions"))) {
-					//controllo che nr sia un numero e non nullo
-					response.sendRedirect("Questionnaire");
+				
+				if(ls.alreadyLogged(  ((User)session.getAttribute("user")).getUsername()) || ((User)session.getAttribute("user")).getBan() == 1 ) {
+					//se ha gia aggiunto una risposta o è bloccato
+					response.sendRedirect("Home");
 					return;
 				}
-				
-				int nr = Integer.parseInt(request.getParameter("nrQuestions"));
-				
-				List<String> answers = new ArrayList<String>();
-				List<Integer> prod_ids = new ArrayList<Integer>();
-				Product prod_day = null;
-				
-				try {
-					//ottengo il prodotto del giorno
-					prod_day = ps.getProductOfTheDay();
+				else {
 					
-				} catch (ProductException e2) {
-					ctx.setVariable("questions", null);
-					ctx.setVariable("nrQuestions", 0);
-					ctx.setVariable("server_error", 1);
-					ctx.setVariable("user", (User)session.getAttribute("user"));
-					path = "/WEB-INF/Wizard.html";
-					templateEngine.process(path, ctx, response.getWriter());
-					return;
-				}
-				
-				if(prod_day != null) {
 					
-					//controllo input e creazione delle liste
+					if(request.getParameter("nrQuestions") == null || !StringUtils.isNumeric(request.getParameter("nrQuestions"))) {
+						//controllo che nr sia un numero e non nullo
+						response.sendRedirect("Questionnaire");
+						return;
+					}
 					
-					for(int i=1;i<=nr;i++) {
-						//Crea liste da mandare ad AnswerService
-						if(request.getParameter("q" + Integer.toString(i)) == null || request.getParameter("Question" + Integer.toString(i)) == null || !StringUtils.isNumeric(request.getParameter("q" + Integer.toString(i)))) {
-							response.sendRedirect("Questionnaire");
-							return;
-						}
+					int nr = Integer.parseInt(request.getParameter("nrQuestions"));
+					
+					List<String> answers = new ArrayList<String>();
+					List<Integer> prod_ids = new ArrayList<Integer>();
+					Product prod_day = null;
+					
+					try {
+						//ottengo il prodotto del giorno
+						prod_day = ps.getProductOfTheDay();
 						
+					} catch (ProductException e2) {
+						ctx.setVariable("questions", null);
+						ctx.setVariable("nrQuestions", 0);
+						ctx.setVariable("server_error", 1);
+						ctx.setVariable("user", (User)session.getAttribute("user"));
+						path = "/WEB-INF/Wizard.html";
+						templateEngine.process(path, ctx, response.getWriter());
+						return;
+					}
+					
+					if(prod_day != null) {
 						
+						//controllo input e creazione delle liste
 						
-						try {
-							if(qs.isValid(Integer.parseInt(request.getParameter("q"+Integer.toString(i))))) { //controllo che l'id sia valido
-								
-								
-								String ans = StringEscapeUtils.escapeHtml(request.getParameter("Question" + Integer.toString(i)));
-								
-								if(ans.isBlank()) {
-									//se una risposta è vuota
+						for(int i=1;i<=nr;i++) {
+							//Crea liste da mandare ad AnswerService
+							if(request.getParameter("q" + Integer.toString(i)) == null || request.getParameter("Question" + Integer.toString(i)) == null || !StringUtils.isNumeric(request.getParameter("q" + Integer.toString(i)))) {
+								response.sendRedirect("Questionnaire");
+								return;
+							}
+							
+							
+							
+							try {
+								if(qs.isValid(Integer.parseInt(request.getParameter("q"+Integer.toString(i))))) { //controllo che l'id sia valido
+									
+									
+									String ans = StringEscapeUtils.escapeHtml(request.getParameter("Question" + Integer.toString(i)));
+									
+									if(ans.isBlank()) {
+										//se una risposta è vuota
+										ctx.setVariable("questions", prod_day.getQuestions());
+										ctx.setVariable("nrQuestions", nr);
+										ctx.setVariable("server_error", 1);
+										ctx.setVariable("user", (User)session.getAttribute("user"));
+										path = "/WEB-INF/Wizard.html";
+										templateEngine.process(path, ctx, response.getWriter());
+										return;
+									}
+									else {
+										int prod_id = Integer.parseInt(request.getParameter("q"+Integer.toString(i)));
+										answers.add(ans);
+										prod_ids.add(prod_id);
+									}
+								}
+								else
+								{
 									ctx.setVariable("questions", prod_day.getQuestions());
 									ctx.setVariable("nrQuestions", nr);
 									ctx.setVariable("server_error", 1);
@@ -146,14 +168,23 @@ public class AddResponses extends HttpServlet {
 									templateEngine.process(path, ctx, response.getWriter());
 									return;
 								}
-								else {
-									int prod_id = Integer.parseInt(request.getParameter("q"+Integer.toString(i)));
-									answers.add(ans);
-									prod_ids.add(prod_id);
-								}
-							}
-							else
-							{
+							} catch (NumberFormatException e) {
+								ctx.setVariable("questions", prod_day.getQuestions());
+								ctx.setVariable("nrQuestions", nr);
+								ctx.setVariable("server_error", 1);
+								ctx.setVariable("user", (User)session.getAttribute("user"));
+								path = "/WEB-INF/Wizard.html";
+								templateEngine.process(path, ctx, response.getWriter());
+								return;
+							} catch (QuestionException e) {
+								ctx.setVariable("questions", prod_day.getQuestions());
+								ctx.setVariable("nrQuestions", nr);
+								ctx.setVariable("server_error", 1);
+								ctx.setVariable("user", (User)session.getAttribute("user"));
+								path = "/WEB-INF/Wizard.html";
+								templateEngine.process(path, ctx, response.getWriter());
+								return;
+							} catch (IOException e) {
 								ctx.setVariable("questions", prod_day.getQuestions());
 								ctx.setVariable("nrQuestions", nr);
 								ctx.setVariable("server_error", 1);
@@ -162,163 +193,127 @@ public class AddResponses extends HttpServlet {
 								templateEngine.process(path, ctx, response.getWriter());
 								return;
 							}
-						} catch (NumberFormatException e) {
-							ctx.setVariable("questions", prod_day.getQuestions());
-							ctx.setVariable("nrQuestions", nr);
-							ctx.setVariable("server_error", 1);
-							ctx.setVariable("user", (User)session.getAttribute("user"));
-							path = "/WEB-INF/Wizard.html";
-							templateEngine.process(path, ctx, response.getWriter());
-							return;
-						} catch (QuestionException e) {
-							ctx.setVariable("questions", prod_day.getQuestions());
-							ctx.setVariable("nrQuestions", nr);
-							ctx.setVariable("server_error", 1);
-							ctx.setVariable("user", (User)session.getAttribute("user"));
-							path = "/WEB-INF/Wizard.html";
-							templateEngine.process(path, ctx, response.getWriter());
-							return;
-						} catch (IOException e) {
-							ctx.setVariable("questions", prod_day.getQuestions());
-							ctx.setVariable("nrQuestions", nr);
-							ctx.setVariable("server_error", 1);
-							ctx.setVariable("user", (User)session.getAttribute("user"));
-							path = "/WEB-INF/Wizard.html";
-							templateEngine.process(path, ctx, response.getWriter());
-							return;
-						}
-						
-					}
-					
-					
-				}
-				else {
-					response.sendRedirect("Home");
-					return;
-				}
-				
-				//estraggo e controllo input utente per statistiche
-				
-				if(request.getParameter("expLevel") == null || request.getParameter("age") == null || request.getParameter("genderRadio") == null) {
-					ctx.setVariable("questions", prod_day.getQuestions());
-					ctx.setVariable("nrQuestions", nr);
-					ctx.setVariable("server_error", 1);
-					ctx.setVariable("user", (User)session.getAttribute("user"));
-					path = "/WEB-INF/Wizard.html";
-					templateEngine.process(path, ctx, response.getWriter());
-				}
-				else {
-					String expL = request.getParameter("expLevel");
-					Integer expLev=0;
-					Character gender = ' '; 
-					Integer age = -1;
-					
-					
-					if(request.getParameter("age") != "" && StringUtils.isNumeric(request.getParameter("age"))) {
-						age = Integer.parseInt(request.getParameter("age"));
-						if(age < 16 || age > 110) {
-							age = -1;
-						}
-					}
-					
-					
-					//in gender può esserci solo M, F o none (' ')
-					switch (request.getParameter("genderRadio")) {
-					case "M": {gender = 'M'; break;}
-					case "F": {gender = 'F'; break;}
-					default: {gender = ' '; break;}
-						
-					}
-					
-					switch (expL) {
-						case "Low": {expLev = 1; break;}
-						case "Medium": {expLev = 2; break;}
-						case "High" : {expLev = 3; break;}
-						default: {expLev = -1; break;}
-						
-					}
-					
-					/*
-					System.out.println("\n\n---------------------\n\n");
-					System.out.println(age);
-					System.out.println(expLev);
-					System.out.println(gender);
-					System.out.println(request.getParameter("genderRadio"));
-					System.out.println(request.getParameter("age"));
-					System.out.println(request.getParameter("expLevel"));
-					System.out.println("\n\n---------------------\n\n");
-					*/
-					
-					//if everything is ok insert answers
-					try {
-						as.insertAnswers(answers, prod_ids, ((User)session.getAttribute("user")).getUsername(), nr, age, gender, expLev );
-					}
-					catch (OffensiveWordException e) {
-						//eccezione lanciata poiché il trigger ha individuato una parola offensiva
-						try {
-							ls.insertLog(((User)session.getAttribute("user")).getUsername() );
-							as.insertStatisticalAnswer(age, gender, expLev, (User)session.getAttribute("user"));
-						} catch (ProductException e1) {
-							System.out.println("exception");
-							//L'utente va comunque bannato
-							User user = null;
-							try {
-								user = us.banUser( ((User)session.getAttribute("user")).getUsername() );
-							} catch (CredentialException e2) {
-								response.sendRedirect("Home");
-								return;
-							}
 							
-							session.setAttribute("user", user);
-							ctx.setVariable("questions", prod_day.getQuestions());
-							ctx.setVariable("nrQuestions", nr);
-							ctx.setVariable("server_error", 1);
-							ctx.setVariable("user", (User)session.getAttribute("user"));
-							path = "/WEB-INF/Wizard.html";
-							templateEngine.process(path, ctx, response.getWriter());
-							return;
 						}
 						
-						User user = null;
-						try {
-							user = us.banUser( ((User)session.getAttribute("user")).getUsername() );
-						} catch (CredentialException e1) {
-							response.sendRedirect("Home");
-							return;
-						}
-						session.setAttribute("user", user);
+						
+					}
+					else {
 						response.sendRedirect("Home");
 						return;
 					}
-					catch (ProductException e) {
-						e.printStackTrace();
-						System.out.println("prod exception");
+					
+					//estraggo e controllo input utente per statistiche
+					
+					if(request.getParameter("expLevel") == null || request.getParameter("age") == null || request.getParameter("genderRadio") == null) {
 						ctx.setVariable("questions", prod_day.getQuestions());
 						ctx.setVariable("nrQuestions", nr);
 						ctx.setVariable("server_error", 1);
 						ctx.setVariable("user", (User)session.getAttribute("user"));
 						path = "/WEB-INF/Wizard.html";
 						templateEngine.process(path, ctx, response.getWriter());
-						return;
-					} 
-					catch (Exception e) {
-						System.out.println("exception");
-						ctx.setVariable("questions", prod_day.getQuestions());
-						ctx.setVariable("nrQuestions", nr);
-						ctx.setVariable("server_error", 1);
-						ctx.setVariable("user", (User)session.getAttribute("user"));
-						path = "/WEB-INF/Wizard.html";
+					}
+					else {
+						String expL = request.getParameter("expLevel");
+						Integer expLev=0;
+						Character gender = ' '; 
+						Integer age = -1;
+						
+						
+						if(request.getParameter("age") != "" && StringUtils.isNumeric(request.getParameter("age"))) {
+							age = Integer.parseInt(request.getParameter("age"));
+							if(age < 16 || age > 110) {
+								age = -1;
+							}
+						}
+						
+						
+						//in gender può esserci solo M, F o none (' ')
+						switch (request.getParameter("genderRadio")) {
+						case "M": {gender = 'M'; break;}
+						case "F": {gender = 'F'; break;}
+						default: {gender = ' '; break;}
+							
+						}
+						
+						switch (expL) {
+							case "Low": {expLev = 1; break;}
+							case "Medium": {expLev = 2; break;}
+							case "High" : {expLev = 3; break;}
+							default: {expLev = -1; break;}
+							
+						}
+						
+						
+						//if everything is ok insert answers
+						try {
+							as.insertAnswers(answers, prod_ids, ((User)session.getAttribute("user")).getUsername(), nr, age, gender, expLev );
+						}
+						catch (OffensiveWordException e) {
+							//eccezione lanciata poiché il trigger ha individuato una parola offensiva
+							try {
+								ls.insertLog(((User)session.getAttribute("user")).getUsername() );
+								as.insertStatisticalAnswer(age, gender, expLev, (User)session.getAttribute("user"));
+							} catch (ProductException | AnswerException e1) {
+								System.out.println("exception");
+								//L'utente va comunque bannato
+								User user = null;
+								try {
+									user = us.banUser( ((User)session.getAttribute("user")).getUsername() );
+								} catch (CredentialException e2) {
+									response.sendRedirect("Home");
+									return;
+								}
+								
+								session.setAttribute("user", user);
+								ctx.setVariable("questions", prod_day.getQuestions());
+								ctx.setVariable("nrQuestions", nr);
+								ctx.setVariable("server_error", 1);
+								ctx.setVariable("user", (User)session.getAttribute("user"));
+								path = "/WEB-INF/Wizard.html";
+								templateEngine.process(path, ctx, response.getWriter());
+								return;
+							}
+							
+							User user = null;
+							try {
+								user = us.banUser( ((User)session.getAttribute("user")).getUsername() );
+							} catch (CredentialException e1) {
+								response.sendRedirect("Home");
+								return;
+							}
+							session.setAttribute("user", user);
+							response.sendRedirect("Home");
+							return;
+						}
+						catch (ProductException | AnswerException e) {
+							e.printStackTrace();
+							System.out.println("prod exception");
+							ctx.setVariable("questions", prod_day.getQuestions());
+							ctx.setVariable("nrQuestions", nr);
+							ctx.setVariable("server_error", 1);
+							ctx.setVariable("user", (User)session.getAttribute("user"));
+							path = "/WEB-INF/Wizard.html";
+							templateEngine.process(path, ctx, response.getWriter());
+							return;
+						} 
+						
+						//se tutto va a buon fine
+						ctx.setVariable("user", ((User)session.getAttribute("user")));
+						path = "/WEB-INF/thanks.html";
 						templateEngine.process(path, ctx, response.getWriter());
-						return;
 					}
 					
-					//se tutto va a buon fine
-					ctx.setVariable("user", ((User)session.getAttribute("user")));
-					path = "/WEB-INF/thanks.html";
-					templateEngine.process(path, ctx, response.getWriter());
+					
 				}
-				
-				
+			} catch (NumberFormatException | CredentialsException | LogException | IOException e) {
+				ctx.setVariable("questions", null);
+				ctx.setVariable("nrQuestions", 0);
+				ctx.setVariable("server_error", 1);
+				ctx.setVariable("user", (User)session.getAttribute("user"));
+				path = "/WEB-INF/Wizard.html";
+				templateEngine.process(path, ctx, response.getWriter());
+				return;
 			}
 			
 		}

@@ -20,6 +20,8 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 import entities.Product;
 import entities.Question;
 import entities.User;
+import exceptions.CredentialsException;
+import exceptions.LogException;
 import exceptions.ProductException;
 import exceptions.QuestionException;
 import services.LogService;
@@ -72,53 +74,63 @@ public class Questionnaire extends HttpServlet {
 		}
 		else {
 			
-			if(ls.alreadyLogged(  ((User)session.getAttribute("user")).getUsername()) || ((User)session.getAttribute("user")).getBan() == 1) {
-				session.setAttribute("user", (User)session.getAttribute("user"));
-				response.sendRedirect("Home");
-			}
-			else {
-				try {
-					p = ps.getProductOfTheDay();
-				} catch (ProductException e) {
-					ctx.setVariable("user", ((User)session.getAttribute("user")));
-					ctx.setVariable("noproductfound", 1);
-					ctx.setVariable("comment", 0);
-					path = "/WEB-INF/Home.html";
-					templateEngine.process(path, ctx, response.getWriter());
-					return;
-				}
-				if(p == null) {
-					ctx.setVariable("user", ((User)session.getAttribute("user")));
-					ctx.setVariable("noproductfound", 1);
-					ctx.setVariable("comment", 0);
-					path = "/WEB-INF/Home.html";
-					templateEngine.process(path, ctx, response.getWriter());
+			try {
+				if(ls.alreadyLogged(  ((User)session.getAttribute("user")).getUsername()) || ((User)session.getAttribute("user")).getBan() == 1) {
+					session.setAttribute("user", (User)session.getAttribute("user"));
+					response.sendRedirect("Home");
 				}
 				else {
-					List<Question> questions = null;
-					
-					
 					try {
-						questions = qs.getQuestions(p.getId());
-					} catch (QuestionException | ProductException e) {
+						p = ps.getProductOfTheDay();
+					} catch (ProductException e) {
 						ctx.setVariable("user", ((User)session.getAttribute("user")));
 						ctx.setVariable("noproductfound", 1);
 						ctx.setVariable("comment", 0);
-						ctx.setVariable("server_error", 1);
 						path = "/WEB-INF/Home.html";
 						templateEngine.process(path, ctx, response.getWriter());
 						return;
 					}
-					
-					
-					ctx.setVariable("questions", questions);
-					ctx.setVariable("nrQuestions", questions.size());
-					ctx.setVariable("user", (User)session.getAttribute("user"));
-					ctx.setVariable("server_error", 0);
-					path = "/WEB-INF/Wizard.html";
-					
-					templateEngine.process(path, ctx, response.getWriter());
+					if(p == null) {
+						ctx.setVariable("user", ((User)session.getAttribute("user")));
+						ctx.setVariable("noproductfound", 1);
+						ctx.setVariable("comment", 0);
+						path = "/WEB-INF/Home.html";
+						templateEngine.process(path, ctx, response.getWriter());
+					}
+					else {
+						List<Question> questions = null;
+						
+						
+						try {
+							questions = qs.getQuestions(p.getId());
+						} catch (QuestionException | ProductException e) {
+							ctx.setVariable("user", ((User)session.getAttribute("user")));
+							ctx.setVariable("noproductfound", 1);
+							ctx.setVariable("comment", 0);
+							ctx.setVariable("server_error", 1);
+							path = "/WEB-INF/Home.html";
+							templateEngine.process(path, ctx, response.getWriter());
+							return;
+						}
+						
+						
+						ctx.setVariable("questions", questions);
+						ctx.setVariable("nrQuestions", questions.size());
+						ctx.setVariable("user", (User)session.getAttribute("user"));
+						ctx.setVariable("server_error", 0);
+						path = "/WEB-INF/Wizard.html";
+						
+						templateEngine.process(path, ctx, response.getWriter());
+					}
 				}
+			} catch (CredentialsException | LogException | IOException e) {
+				ctx.setVariable("user", ((User)session.getAttribute("user")));
+				ctx.setVariable("noproductfound", 1);
+				ctx.setVariable("comment", 0);
+				ctx.setVariable("server_error", 1);
+				path = "/WEB-INF/Home.html";
+				templateEngine.process(path, ctx, response.getWriter());
+				return;
 			}
 		}		
 	}

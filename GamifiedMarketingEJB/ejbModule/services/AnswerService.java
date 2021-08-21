@@ -18,6 +18,7 @@ import entities.Product;
 import entities.Question;
 import entities.StatisticalAnswer;
 import entities.User;
+import exceptions.AnswerException;
 import exceptions.OffensiveWordException;
 import exceptions.ProductException;
 
@@ -33,27 +34,26 @@ public class AnswerService {
 	private LogService ls;
 	
 	
-	public void insertAnswer(String content, int questionID, String username ) throws ProductException
-	{
+	public void insertAnswer(String content, int questionID, String username ) throws AnswerException {
 		try {
 			Answer a = new Answer();
-			Question q=em.find(Question.class, questionID);
-			User u= em.find(User.class, username);
+			Question q = em.find(Question.class, questionID);
+			User u = em.find(User.class, username);
 			a.setContent(content);
 			a.setQuestion(q);
 			a.setUser(u);
 			em.persist(a);
 		}
 		catch(PersistenceException e) {
-			throw new ProductException("Unable to get the product of the day");
+			throw new AnswerException("Unable to insert answer");
 		}
 	}
 	
 	
-	public void insertStatisticalAnswer(int age, char gender, int expertiseLevel, User u) throws ProductException {
+	public void insertStatisticalAnswer(int age, char gender, int expertiseLevel, User u) throws ProductException, AnswerException {
 		
 		Product p = ps.getProductOfTheDay();
-		StatisticalAnswer sa=new StatisticalAnswer();
+		StatisticalAnswer sa = new StatisticalAnswer();
 		if(age != -1) {
 			sa.setAge(age);
 		}
@@ -66,13 +66,26 @@ public class AnswerService {
 		
 		sa.setProduct(p);
 		sa.setUser(u);
-		em.persist(sa);
+		try{
+			em.persist(sa);
+		}
+		catch (PersistenceException e) {
+			throw new AnswerException("Unable to insert statistical answer");
+		}
 		
 	}
 	
-	public void insertAnswers(List<String> content, List<Integer> questionID, String username, int num_quest, int age, char gender, int expertiseLevel) throws ProductException, OffensiveWordException {
+	public void insertAnswers(List<String> content, List<Integer> questionID, String username, int num_quest, int age, char gender, int expertiseLevel) throws ProductException, OffensiveWordException, AnswerException {
 		
-		User u = em.find(User.class, username);
+		User u = null;
+		try{
+			u = em.find(User.class, username);
+		}
+		catch(PersistenceException e) {
+			throw new AnswerException("Unable to insert answer");
+		}
+		
+		
 		for(int i=0; i<num_quest; ++i) {
 			try {
 				Answer a = new Answer();
