@@ -20,8 +20,10 @@ $.get("GetProducts", function(responseJson) {    // Execute Ajax GET request on 
             "defaultContent": "<a class=\"btn btn-primary btn-circle\"> <i style=\"color:white\" class=\"fas fa-search\"></i> </a>"
         	},
 			{
-				"targets": 2,
-				"type": "date"
+				targets: 2,
+				type: "datetime",
+				def: function () { return Date(); },
+				wireFormat: "dd-mm-yy",
 			} ]
 		});
 		

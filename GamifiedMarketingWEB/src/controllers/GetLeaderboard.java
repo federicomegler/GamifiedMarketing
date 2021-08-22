@@ -14,7 +14,6 @@ import javax.servlet.http.HttpSession;
 
 import com.google.gson.Gson;
 
-import entities.Review;
 import entities.User;
 import exceptions.StatisticsException;
 import services.UserService;

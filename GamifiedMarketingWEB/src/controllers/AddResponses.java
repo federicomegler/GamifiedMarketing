@@ -80,7 +80,6 @@ public class AddResponses extends HttpServlet {
 		HttpSession session = request.getSession();
 		final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
 		if(session.isNew() || session.getAttribute("user") == null) {
-			//non è loggato
 			path = getServletContext().getContextPath() + "/index.html";
 			response.sendRedirect(path);
 		}
@@ -168,23 +167,7 @@ public class AddResponses extends HttpServlet {
 									templateEngine.process(path, ctx, response.getWriter());
 									return;
 								}
-							} catch (NumberFormatException e) {
-								ctx.setVariable("questions", prod_day.getQuestions());
-								ctx.setVariable("nrQuestions", nr);
-								ctx.setVariable("server_error", 1);
-								ctx.setVariable("user", (User)session.getAttribute("user"));
-								path = "/WEB-INF/Wizard.html";
-								templateEngine.process(path, ctx, response.getWriter());
-								return;
-							} catch (QuestionException e) {
-								ctx.setVariable("questions", prod_day.getQuestions());
-								ctx.setVariable("nrQuestions", nr);
-								ctx.setVariable("server_error", 1);
-								ctx.setVariable("user", (User)session.getAttribute("user"));
-								path = "/WEB-INF/Wizard.html";
-								templateEngine.process(path, ctx, response.getWriter());
-								return;
-							} catch (IOException e) {
+							} catch (NumberFormatException | QuestionException | IOException e) {
 								ctx.setVariable("questions", prod_day.getQuestions());
 								ctx.setVariable("nrQuestions", nr);
 								ctx.setVariable("server_error", 1);
@@ -235,7 +218,7 @@ public class AddResponses extends HttpServlet {
 						default: {gender = ' '; break;}
 							
 						}
-						
+						//in expLevel può esserci solo Low , Medium e High
 						switch (expL) {
 							case "Low": {expLev = 1; break;}
 							case "Medium": {expLev = 2; break;}

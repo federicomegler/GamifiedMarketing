@@ -13,8 +13,10 @@ $.get("GetProducts", function(responseJson) {    // Execute Ajax GET request on 
 			
         	},
 			{
-				"targets": 2,
-				"type": "date"
+				targets: 2,
+				type: "datetime",
+				def: function () { return Date(); },
+				wireFormat: "dd-mm-yy",
 			} ]
 		});
 		

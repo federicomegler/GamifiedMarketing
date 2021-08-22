@@ -113,7 +113,7 @@ public class QuestionService {
 	public Boolean isValid(int questionID) throws QuestionException {
 		List<Question> result = null;
 		try{
-			result = em.createQuery("SELECT q from Question q where q.product in (select p from Product p where p.date=CURRENT_DATE) and q.id=:questionID",Question.class).setParameter("questionID", questionID).getResultList();
+			result = em.createQuery("SELECT q FROM Question q WHERE q.product in (SELECT p FROM Product p WHERE p.date=CURRENT_DATE) AND q.id=:questionID",Question.class).setParameter("questionID", questionID).getResultList();
 		}
 		catch(PersistenceException e) {
 			throw new QuestionException("Unable to get question");

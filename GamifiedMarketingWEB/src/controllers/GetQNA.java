@@ -1,9 +1,7 @@
 package controllers;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.ejb.EJB;
@@ -18,8 +16,6 @@ import org.apache.commons.lang.StringUtils;
 
 import com.google.gson.Gson;
 
-import entities.Answer;
-import entities.Question;
 import entities.User;
 import exceptions.ProductException;
 import exceptions.QuestionException;

@@ -18,10 +18,8 @@ import org.apache.commons.lang.StringUtils;
 
 import com.google.gson.Gson;
 
-import entities.Product;
 import entities.User;
 import exceptions.ProductException;
-import services.LogService;
 import services.ProductService;
 
 /**

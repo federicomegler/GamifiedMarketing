@@ -9,7 +9,13 @@ $.get("GetMyProducts", function(responseJson) {    // Execute Ajax GET request o
             "targets": -1,
             "data": null,
             "defaultContent": "<a class=\"btn btn-primary btn-circle\"> <i style=\"color:white\" class=\"fas fa-search\"></i> </a>"
-        	} ]
+        	},
+			{
+				targets: 2,
+				type: "datetime",
+				def: function () { return Date(); },
+				wireFormat: "dd-mm-yy",
+			} ]
 		});
 		
 		$('#products tbody').on( 'click', 'a', function () {
