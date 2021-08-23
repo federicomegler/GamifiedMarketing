@@ -5,7 +5,6 @@ import java.security.NoSuchAlgorithmException;
 
 import javax.ejb.EJB;
 import javax.persistence.NonUniqueResultException;
-import javax.security.auth.login.CredentialException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -70,7 +69,7 @@ public class CheckLogin extends HttpServlet {
 					String password = LoginUtils.get_SHA_512_Password(request.getParameter("password"), salt);
 					user = us.checkCredentials(request.getParameter("username"), password);
 				}
-			} catch (CredentialException e) {
+			} catch (CredentialsException e) {
 				final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
 				path = "/index.html";
 				response.getWriter().print("<script> alert('" + e.getMessage() + "') </script>");
@@ -84,12 +83,6 @@ public class CheckLogin extends HttpServlet {
 				return;
 			}
 			catch(NonUniqueResultException e){
-				final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
-				path = "/index.html";
-				response.getWriter().print("<script> alert('" + e.getMessage() + "') </script>");
-				templateEngine.process(path, ctx, response.getWriter());
-				return;
-			} catch (CredentialsException e) {
 				final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
 				path = "/index.html";
 				response.getWriter().print("<script> alert('" + e.getMessage() + "') </script>");

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.EJB;
-import javax.security.auth.login.CredentialException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -59,7 +58,6 @@ public class AddResponses extends HttpServlet {
      */
     public AddResponses() {
         super();
-        // TODO Auto-generated constructor stub
     }
     
     public void init() throws ServletException {
@@ -243,7 +241,7 @@ public class AddResponses extends HttpServlet {
 								User user = null;
 								try {
 									user = us.banUser( ((User)session.getAttribute("user")).getUsername() );
-								} catch (CredentialException e2) {
+								} catch (CredentialsException e2) {
 									response.sendRedirect("Home");
 									return;
 								}
@@ -261,7 +259,7 @@ public class AddResponses extends HttpServlet {
 							User user = null;
 							try {
 								user = us.banUser( ((User)session.getAttribute("user")).getUsername() );
-							} catch (CredentialException e1) {
+							} catch (CredentialsException e1) {
 								response.sendRedirect("Home");
 								return;
 							}

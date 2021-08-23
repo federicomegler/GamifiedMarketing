@@ -139,6 +139,23 @@ public class QuestionService {
 		return;
 	}
 	
+	public Boolean isOldQuestionnaire(Integer prodId) throws ProductException {
+		List<Product> products = null;
+		
+		try{
+			products = em.createQuery("SELECT p FROM Product p WHERE p.id = :ID AND p.date < CURRENT_DATE", Product.class).setParameter("ID", prodId).getResultList();
+		}
+		catch(PersistenceException e) {
+			throw new ProductException("Unable to get product");
+		}
+		if(products.isEmpty()) {
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
+	
 	public void deleteMyQuestionnaire(int prod_id, String username) throws QuestionException, ProductException {
 		List<Question> questions =  getQuestions(prod_id);
 		for(int i=0; i<questions.size(); ++i) {

@@ -158,6 +158,12 @@
                     	<strong>Error!</strong> Unable to delete questionnaire.
                 	</div>
                 </th:block>
+                <th:block th:if="${delete_error == 2}">
+					<div class="alert warning">
+                    	<span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
+                    	<strong>Error!</strong> You can only remove old questionnaires.
+                	</div>
+                </th:block>
                 <th:block th:if="${success == 1}">
 					<div class="alert success">
                     	<span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 

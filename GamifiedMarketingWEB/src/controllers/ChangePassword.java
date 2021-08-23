@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
 import javax.ejb.EJB;
-import javax.security.auth.login.CredentialException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -19,6 +18,7 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import entities.User;
+import exceptions.CredentialsException;
 import services.UserService;
 import utils.LoginUtils;
 
@@ -120,7 +120,7 @@ public class ChangePassword extends HttpServlet {
 					
 					try {
 						user = us.updatePassword(newpassword, user.getUsername());
-					} catch (CredentialException e) {
+					} catch (CredentialsException e) {
 						ctx.setVariable("result", -1);
 						ctx.setVariable("user", (User)session.getAttribute("user"));
 						ctx.setVariable("resultmsg", e.getMessage());

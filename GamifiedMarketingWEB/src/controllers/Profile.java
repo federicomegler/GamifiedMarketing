@@ -2,6 +2,7 @@ package controllers;
 
 import java.io.IOException;
 
+import javax.ejb.EJB;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,6 +17,8 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import entities.User;
+import exceptions.CredentialsException;
+import services.UserService;
 
 /**
  * Servlet implementation class Profile
@@ -24,6 +27,8 @@ import entities.User;
 public class Profile extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     private TemplateEngine templateEngine;
+    @EJB(name = "services/UserService")
+    private UserService us;
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -53,7 +58,13 @@ public class Profile extends HttpServlet {
 		else{
 			String path = "";
 			final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
-			ctx.setVariable("user", ((User)session.getAttribute("user")));
+			User user = (User)session.getAttribute("user");
+			try {
+				user = us.refreshUser(user);
+			} catch (CredentialsException e) {
+				ctx.setVariable("error", e.getMessage());
+			}
+			ctx.setVariable("user", user);
 			path = "/WEB-INF/Profile.html";
 			templateEngine.process(path, ctx, response.getWriter());
 		}

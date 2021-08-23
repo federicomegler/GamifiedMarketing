@@ -7,7 +7,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
-import javax.security.auth.login.CredentialException;
 
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
@@ -24,13 +23,13 @@ public class UserService {
 
 	public UserService() {}
 	
-	public User checkCredentials(String name, String password) throws CredentialException, NonUniqueResultException{
+	public User checkCredentials(String name, String password) throws CredentialsException, NonUniqueResultException{
 		List<User> users = null;
 		
 		try {
 			users = em.createNamedQuery("User.checkCredentials", User.class).setParameter("name", name).setParameter("password", password).getResultList();
 		} catch (PersistenceException e) {
-			throw new CredentialException("Failed to login");
+			throw new CredentialsException("Failed to login");
 		}
 		if(users.isEmpty()) {
 			return null;
@@ -95,7 +94,7 @@ public class UserService {
 		return users;
 	}
 	
-	public User updatePassword(String password, String username) throws CredentialException {
+	public User updatePassword(String password, String username) throws CredentialsException {
 		
 		User user = null;
 		try {
@@ -104,12 +103,12 @@ public class UserService {
 		em.merge(user);
 		}
 		catch(PersistenceException e) {
-			throw new CredentialException("Unable to change password! Server error");
+			throw new CredentialsException("Unable to change password! Server error");
 		}
 		return user;
 	}
 	
-	public User banUser(String username) throws CredentialException {
+	public User banUser(String username) throws CredentialsException {
 		User user = null;
 		try {
 			user = em.find(User.class, username);
@@ -117,9 +116,19 @@ public class UserService {
 			em.merge(user);
 		}
 		catch(PersistenceException e) {
-			throw new CredentialException("Unable to ban user! Server error");
+			throw new CredentialsException("Unable to ban user! Server error");
 		}
 		
+		return user;
+	}
+	
+	public User refreshUser(User user) throws CredentialsException {
+		try {
+			user = em.find(User.class, user.getUsername());
+		}
+		catch(PersistenceException e) {
+			throw new CredentialsException("Unable to refresh user");
+		}
 		return user;
 	}
 }

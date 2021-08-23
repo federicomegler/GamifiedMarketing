@@ -57,6 +57,7 @@ $.get("GetProducts", function(responseJson) {    // Execute Ajax GET request on 
 				quest.innerHTML = questions[i];
 				quest.style = "color:black;"
 				document.getElementById("question_space").appendChild(quest);
+				document.getElementById("question_space").appendChild(document.createElement('br'));
 				users = Object.keys(map[questions[i]]);
 				
 				for(let j in users){

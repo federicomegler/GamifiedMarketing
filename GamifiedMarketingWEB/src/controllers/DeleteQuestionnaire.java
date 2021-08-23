@@ -81,7 +81,18 @@ public class DeleteQuestionnaire extends HttpServlet {
 					int product_id = Integer.parseInt(id);
 					
 					try {
+						//controllo che il questionario che sto cancellando sia vecchio
+						if(!qs.isOldQuestionnaire(product_id)) {
+							path = "/WEB-INF/deleteQuestionnaire.html";
+							ctx.setVariable("user", ((User)session.getAttribute("user")));
+							ctx.setVariable("delete_error", 2);
+							ctx.setVariable("success", 0);
+							templateEngine.process(path, ctx, response.getWriter());
+							return;
+						}
+						
 						qs.deleteQuestionnaire(product_id);
+					
 					} catch (QuestionException e) {
 						path = "/WEB-INF/deleteQuestionnaire.html";
 						ctx.setVariable("user", ((User)session.getAttribute("user")));
