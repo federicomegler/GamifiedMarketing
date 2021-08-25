@@ -11,99 +11,99 @@ $.get("GetStats", function(response){
 	}
 	else{
 		dates = Object.keys(response);
-	n_people = Object.values(response);
-	var ctx = document.getElementById("logChart");
-	res = response;
-var myLineChart = new Chart(ctx, {
-  type: 'line',
-  data: {
-    labels: [dates[0].substring(4,11) + dates[0].substring(25,29),
-				dates[1].substring(4,11) + dates[1].substring(25,29),
-				dates[2].substring(4,11) + dates[2].substring(25,29),
-				dates[3].substring(4,11) + dates[3].substring(25,29),
-				dates[4].substring(4,11) + dates[4].substring(25,29),
-				dates[5].substring(4,11) + dates[5].substring(25,29),
-				dates[6].substring(4,11) + dates[6].substring(25,29)],
-    datasets: [{
-      label: "N. people",
-      lineTension: 0.3,
-      backgroundColor: "rgba(78, 115, 223, 0.05)",
-      borderColor: "rgba(78, 115, 223, 1)",
-      pointRadius: 3,
-      pointBackgroundColor: "rgba(78, 115, 223, 1)",
-      pointBorderColor: "rgba(78, 115, 223, 1)",
-      pointHoverRadius: 3,
-      pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
-      pointHoverBorderColor: "rgba(78, 115, 223, 1)",
-      pointHitRadius: 10,
-      pointBorderWidth: 2,
-      data: n_people,
-    }],
-  },
-  options: {
-    maintainAspectRatio: false,
-    layout: {
-      padding: {
-        left: 10,
-        right: 25,
-        top: 25,
-        bottom: 0
-      }
-    },
-    scales: {
-      xAxes: [{
-        time: {
-          unit: 'date'
-        },
-        gridLines: {
-          display: false,
-          drawBorder: false
-        },
-        ticks: {
-          maxTicksLimit: 12
-        }
-      }],
-      yAxes: [{
-        ticks: {
-          maxTicksLimit: 5,
-          padding: 10,
-          // Include a dollar sign in the ticks
-          callback: function(value, index, values) {
-            return '' + number_format(value);
-          }
-        },
-        gridLines: {
-          color: "rgb(234, 236, 244)",
-          zeroLineColor: "rgb(234, 236, 244)",
-          drawBorder: false,
-          borderDash: [2],
-          zeroLineBorderDash: [2]
-        }
-      }],
-    },
-    legend: {
-      display: false
-    },
-    tooltips: {
-      backgroundColor: "rgb(255,255,255)",
-      bodyFontColor: "#858796",
-      titleMarginBottom: 10,
-      titleFontColor: '#6e707e',
-      titleFontSize: 14,
-      borderColor: '#dddfeb',
-      borderWidth: 1,
-      xPadding: 15,
-      yPadding: 15,
-      displayColors: false,
-      intersect: false,
-      mode: 'index',
-      caretPadding: 10,
-      callbacks: {
-        label: function(tooltipItem, chart) {
-          var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
-          return datasetLabel + ': ' + number_format(tooltipItem.yLabel);
-        }
-      }
+		n_people = Object.values(response);
+		var ctx = document.getElementById("logChart");
+		res = response;
+		var myLineChart = new Chart(ctx, {
+  			type: 'line',
+  			data: {
+		    labels: [dates[0].substring(4,11) + dates[0].substring(25,29),
+						dates[1].substring(4,11) + dates[1].substring(25,29),
+						dates[2].substring(4,11) + dates[2].substring(25,29),
+						dates[3].substring(4,11) + dates[3].substring(25,29),
+						dates[4].substring(4,11) + dates[4].substring(25,29),
+						dates[5].substring(4,11) + dates[5].substring(25,29),
+						dates[6].substring(4,11) + dates[6].substring(25,29)],
+		    datasets: [{
+		      label: "N. people",
+		      lineTension: 0.3,
+		      backgroundColor: "rgba(78, 115, 223, 0.05)",
+		      borderColor: "rgba(78, 115, 223, 1)",
+		      pointRadius: 3,
+		      pointBackgroundColor: "rgba(78, 115, 223, 1)",
+		      pointBorderColor: "rgba(78, 115, 223, 1)",
+		      pointHoverRadius: 3,
+		      pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+		      pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+		      pointHitRadius: 10,
+		      pointBorderWidth: 2,
+		      data: n_people,
+		    }],
+		  },
+		  options: {
+		    maintainAspectRatio: false,
+		    layout: {
+		      padding: {
+		        left: 10,
+		        right: 25,
+		        top: 25,
+		        bottom: 0
+		      }
+		    },
+		    scales: {
+		      xAxes: [{
+		        time: {
+		          unit: 'date'
+		        },
+		        gridLines: {
+		          display: false,
+		          drawBorder: false
+		        },
+		        ticks: {
+		          maxTicksLimit: 12
+		        }
+		      }],
+		      yAxes: [{
+		        ticks: {
+		          maxTicksLimit: 5,
+		          padding: 10,
+		          // Include a dollar sign in the ticks
+		          callback: function(value, index, values) {
+		            return '' + number_format(value);
+		          }
+		        },
+		        gridLines: {
+		          color: "rgb(234, 236, 244)",
+		          zeroLineColor: "rgb(234, 236, 244)",
+		          drawBorder: false,
+		          borderDash: [2],
+		          zeroLineBorderDash: [2]
+		        }
+		      }],
+		    },
+		    legend: {
+		      display: false
+		    },
+		    tooltips: {
+		      backgroundColor: "rgb(255,255,255)",
+		      bodyFontColor: "#858796",
+		      titleMarginBottom: 10,
+		      titleFontColor: '#6e707e',
+		      titleFontSize: 14,
+		      borderColor: '#dddfeb',
+		      borderWidth: 1,
+		      xPadding: 15,
+		      yPadding: 15,
+		      displayColors: false,
+		      intersect: false,
+		      mode: 'index',
+		      caretPadding: 10,
+		      callbacks: {
+		        label: function(tooltipItem, chart) {
+		          var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+		          return datasetLabel + ': ' + number_format(tooltipItem.yLabel);
+		        }
+		      }
     }
   }
 });
@@ -178,7 +178,7 @@ $.get("GetGenderStats", function (response){
 	      caretPadding: 10,
 	    },
 	    legend: {
-	      display: false
+	      display: true
 	    },
 	    cutoutPercentage: 80,
 	  },
