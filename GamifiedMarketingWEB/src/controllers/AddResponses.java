@@ -87,7 +87,7 @@ public class AddResponses extends HttpServlet {
 				
 				
 				if(ls.alreadyLogged(  ((User)session.getAttribute("user")).getUsername()) || ((User)session.getAttribute("user")).getBan() == 1 ) {
-					//se ha gia aggiunto una risposta o Ã¨ bloccato
+					//se ha gia aggiunto una risposta o è bloccato
 					response.sendRedirect("Home");
 					return;
 				}

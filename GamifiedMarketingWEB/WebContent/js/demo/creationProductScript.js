@@ -1,4 +1,4 @@
-var x=1;
+var x=2;
 
 
 window.onload = function(){
@@ -40,7 +40,7 @@ var addQuestion= function()
 
 var removeQuestion= function()
 {
-	if(x > 1)
+	if(x > 2)
 	{
 		var elem = document.getElementById("Question" + (x-1));
 		elem.remove();

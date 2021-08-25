@@ -60,11 +60,12 @@ public class Home extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		//prova commit
+		
 		
 		String path = "";
 		HttpSession session = request.getSession();
 		final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
+		//first of all check if the user is logged, if not redirect to index page
 		if(session.isNew() || session.getAttribute("user") == null) {
 			path = getServletContext().getContextPath() + "/index.html";
 			response.sendRedirect(path);
@@ -72,11 +73,13 @@ public class Home extends HttpServlet {
 		else {
 			Product prod = null;
 			try {
+				//retrive the product of the day
 				prod = ps.getProductOfTheDay();
 			} catch (ProductException e) {
+				//if the product is not found an exception is raised
 				ctx.setVariable("user", ((User)session.getAttribute("user")));
-				ctx.setVariable("noproductfound", 1);
-				ctx.setVariable("comment", 0);
+				ctx.setVariable("noproductfound", 1); // 1 means that the product is not found
+				ctx.setVariable("comment", 0); 
 				path = "/WEB-INF/Home.html";
 				templateEngine.process(path, ctx, response.getWriter());
 				return;
@@ -89,11 +92,13 @@ public class Home extends HttpServlet {
 				templateEngine.process(path, ctx, response.getWriter());
 			}
 			else {
+				//if the product is not null se the variable to be displayed on the hmtl page
 				ctx.setVariable("user", ((User)session.getAttribute("user")));
 				ctx.setVariable("image", prod.getImageData());
 				ctx.setVariable("noproductfound", 0);
 				ctx.setVariable("ean", prod.getEan());
 				try {
+					//variable used to check if the user has already reply to the questionnaire
 					ctx.setVariable("alreadylogged", ls.alreadyLogged(((User)session.getAttribute("user")).getUsername()));
 				} catch (CredentialsException | LogException e) {
 					ctx.setVariable("alreadylogged", true);

@@ -67,22 +67,26 @@ public class Comment extends HttpServlet {
 		final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
 		String path = "";
 		
+		//check if the user is logged
 		if(session.isNew() || session.getAttribute("user") == null) {
 			path = getServletContext().getContextPath();
 			response.sendRedirect(path + "/index.html");
 		}
 		else {
+			//take the parameter sent by the form
 			String comment = request.getParameter("review");
 			String ean = request.getParameter("ean");
 			String username = ((User)session.getAttribute("user")).getUsername();
 			
 			Product prod = null;
 			try {
+				//getting the product of the day
 				prod = ps.getProductOfTheDay();
 			} catch (ProductException e) {
+				//if not found raise an exception
 				ctx.setVariable("user", ((User)session.getAttribute("user")));
 				ctx.setVariable("noproductfound", 1);
-				ctx.setVariable("comment_err", 2);
+				ctx.setVariable("comment_err", 2); //if the product is not found maybe i'm trying to comment a product with different id that does not exist
 				path = "/WEB-INF/Home.html";
 				templateEngine.process(path, ctx, response.getWriter());
 				return;
@@ -109,8 +113,10 @@ public class Comment extends HttpServlet {
 					}
 					else {
 						try {
+							//comment insertion
 							rs.createComment(comment, username, ean);
 						} catch (ReviewException e) {
+							//if there is and error during the comment creation ad exceptions is raised
 							ctx.setVariable("user", ((User)session.getAttribute("user")));
 							ctx.setVariable("image", prod.getImageData());
 							ctx.setVariable("noproductfound", 0);
@@ -121,12 +127,13 @@ public class Comment extends HttpServlet {
 							templateEngine.process(path, ctx, response.getWriter());
 							return;
 						}
+						//if no error 
 						ctx.setVariable("user", ((User)session.getAttribute("user")));
 						ctx.setVariable("image", prod.getImageData());
-						ctx.setVariable("noproductfound", 0);
+						ctx.setVariable("noproductfound", 0);//this mean that the product is found
 						ctx.setVariable("ean", prod.getEan());
 						ctx.setVariable("alreadylogged", ls.alreadyLogged(((User)session.getAttribute("user")).getUsername()));
-						ctx.setVariable("comment_err", 1);
+						ctx.setVariable("comment_err", 1);//this mean that the comment is correctly inserted
 						path = "/WEB-INF/Home.html";
 						templateEngine.process(path, ctx, response.getWriter());
 					}
