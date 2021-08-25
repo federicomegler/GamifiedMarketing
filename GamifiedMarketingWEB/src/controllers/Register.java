@@ -57,13 +57,27 @@ public class Register extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		ServletContext servletContext = getServletContext();
+		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+		if(request.getParameter("username") == null || request.getParameter("email") == null || 
+				request.getParameter("password") == null || request.getParameter("confirmpassword") == null
+				|| request.getParameter("username").isBlank() || request.getParameter("email").isBlank() || 
+				request.getParameter("password").isBlank() || request.getParameter("confirmpassword").isBlank()) {
+			
+			String path = "/WEB-INF/Register.html";
+			ctx.setVariable("error", 1);
+			ctx.setVariable("errormsg", "Missing parameters");
+			templateEngine.process(path, ctx, response.getWriter());
+			return;
+		}
+		
+		
 		String username = StringEscapeUtils.escapeHtml(request.getParameter("username"));
 		String email = StringEscapeUtils.escapeHtml(request.getParameter("email"));
 		String password = StringEscapeUtils.escapeJava(request.getParameter("password"));
 		String confirm = StringEscapeUtils.escapeJava(request.getParameter("confirmpassword"));
 		
-		ServletContext servletContext = getServletContext();
-		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+		
 		try {
 			if(us.existCredentials(username, email)) {
 				String path = "/WEB-INF/Register.html";

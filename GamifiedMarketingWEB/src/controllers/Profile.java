@@ -64,6 +64,7 @@ public class Profile extends HttpServlet {
 			} catch (CredentialsException e) {
 				ctx.setVariable("error", e.getMessage());
 			}
+			session.setAttribute("user", user);
 			ctx.setVariable("user", user);
 			path = "/WEB-INF/Profile.html";
 			templateEngine.process(path, ctx, response.getWriter());

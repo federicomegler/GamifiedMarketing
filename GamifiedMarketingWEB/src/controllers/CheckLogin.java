@@ -64,6 +64,7 @@ public class CheckLogin extends HttpServlet {
 		}
 		else {
 			try {
+				//ottengo il salt dell'utente dal db
 				String salt = us.getSalt(request.getParameter("username"));
 				if(salt != null) {
 					String password = LoginUtils.get_SHA_512_Password(request.getParameter("password"), salt);

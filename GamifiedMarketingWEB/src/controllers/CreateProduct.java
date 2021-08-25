@@ -100,7 +100,7 @@ public class CreateProduct extends HttpServlet {
 				//controllo che gli input non siano vuoti e che siano validi
 				if(image == null || prodName == null || EAN == null || questionNumber == null || date == null
 						|| prodName.isBlank() || EAN.isBlank() || questionNumber.isBlank() || date.isBlank() || !StringUtils.isNumeric(questionNumber) || 
-						Integer.parseInt(questionNumber)<1) {
+						Integer.parseInt(questionNumber) < 1) {
 					path = "/WEB-INF/ProductCreation.html";
 					ctx.setVariable("user", ((User)session.getAttribute("user")));
 					ctx.setVariable("error", "Invalid data entered.");
@@ -197,6 +197,7 @@ public class CreateProduct extends HttpServlet {
 								return;
 							}
 							response.sendRedirect("Home");
+							
 						}
 					}
 				}
